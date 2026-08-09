@@ -216,24 +216,64 @@ function App() {
 
   useEffect(() => {
     if (!started || !soundOn) return
+    const bpm = 92
+    const beat = 60 / bpm
+    const loopDuration = beat * 32
+    const midiToFrequency = (note: number) => 440 * 2 ** ((note - 69) / 12)
+    const harmony = [
+      [50, 57, 64, 67], // Dm9
+      [46, 53, 60, 64], // Bb maj7(#11)
+      [53, 60, 64, 69], // F maj9
+      [48, 55, 62, 65], // C sus2(add4)
+      [50, 57, 64, 69],
+      [55, 62, 65, 72], // Gm11
+      [46, 53, 60, 65],
+      [45, 52, 57, 61], // A7(b9), returning to Dm
+    ]
+    const melody = [74, 77, 76, 72, 69, 72, 74, 81, 79, 76, 77, 72, 74, 69, 73, 76]
+
     const playPhrase = () => {
       const context = audioContextRef.current
       if (!context || context.state !== 'running') return
-      ;[261.6, 329.6, 392, 329.6].forEach((frequency, index) => {
-        const start = context.currentTime + index * .34
+      const phraseStart = context.currentTime + .06
+      const master = context.createGain()
+      master.gain.setValueAtTime(.48, phraseStart)
+      master.connect(context.destination)
+
+      const playNote = (note: number, start: number, duration: number, volume: number, type: OscillatorType, detune = 0) => {
         const oscillator = context.createOscillator()
         const gain = context.createGain()
-        oscillator.type = 'sine'
-        oscillator.frequency.setValueAtTime(frequency, start)
-        gain.gain.setValueAtTime(.012, start)
-        gain.gain.exponentialRampToValueAtTime(.001, start + .28)
-        oscillator.connect(gain).connect(context.destination)
+        oscillator.type = type
+        oscillator.frequency.setValueAtTime(midiToFrequency(note), start)
+        oscillator.detune.setValueAtTime(detune, start)
+        gain.gain.setValueAtTime(.0001, start)
+        gain.gain.exponentialRampToValueAtTime(volume, start + .025)
+        gain.gain.exponentialRampToValueAtTime(.0001, start + duration)
+        oscillator.connect(gain).connect(master)
         oscillator.start(start)
-        oscillator.stop(start + .3)
+        oscillator.stop(start + duration + .02)
+      }
+
+      harmony.forEach((chord, bar) => {
+        const barStart = phraseStart + bar * beat * 4
+        playNote(chord[0] - 12, barStart, beat * 3.7, .018, 'sine')
+        ;[0, 2, 1, 3, 2, 1].forEach((voice, step) => {
+          playNote(chord[voice], barStart + step * beat * 2 / 3, beat * .72, .014, 'triangle')
+        })
+        if (bar % 2 === 1) playNote(chord[3] + 12, barStart + beat * 3.25, beat * .6, .006, 'sine', 5)
       })
+
+      melody.forEach((note, index) => {
+        const start = phraseStart + index * beat * 2
+        const held = index % 4 === 3 ? beat * 1.65 : beat * 1.15
+        playNote(note, start, held, .012, 'sine')
+        playNote(note + 12, start + .018, held * .72, .0035, 'triangle', -6)
+      })
+
+      window.setTimeout(() => master.disconnect(), (loopDuration + .5) * 1000)
     }
     playPhrase()
-    const timer = window.setInterval(playPhrase, 2400)
+    const timer = window.setInterval(playPhrase, loopDuration * 1000)
     return () => window.clearInterval(timer)
   }, [started, soundOn])
 
