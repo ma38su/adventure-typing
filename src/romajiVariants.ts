@@ -12,7 +12,7 @@ const ALIASES: Array<[string, string[]]> = [
   ['fu', ['fu', 'hu']], ['ji', ['ji', 'zi']],
 ]
 
-const KANA: Record<string, string> = {
+export const ROMAJI_BY_KANA: Record<string, string> = {
   あ:'a',い:'i',う:'u',え:'e',お:'o',か:'ka',き:'ki',く:'ku',け:'ke',こ:'ko',
   さ:'sa',し:'shi',す:'su',せ:'se',そ:'so',た:'ta',ち:'chi',つ:'tsu',て:'te',と:'to',
   な:'na',に:'ni',ぬ:'nu',ね:'ne',の:'no',は:'ha',ひ:'hi',ふ:'fu',へ:'he',ほ:'ho',
@@ -49,9 +49,9 @@ function findSyllabicNPositions(reading: string, canonical: string) {
     }
 
     const pair = char + (kana[index + 1] ?? '')
-    const token = KANA[pair] ?? KANA[char]
+    const token = ROMAJI_BY_KANA[pair] ?? ROMAJI_BY_KANA[char]
     if (!token) continue
-    if (KANA[pair]) index += 1
+    if (ROMAJI_BY_KANA[pair]) index += 1
     canonicalIndex += token.length
   }
 

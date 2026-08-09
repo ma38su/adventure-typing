@@ -2,6 +2,13 @@
 .sentence-wrap{padding:16px 0 5px;border-bottom:0}
 .reading{margin-bottom:6px}
 .romaji-line{min-height:58px;padding:4px 0;letter-spacing:.06em;line-height:1.4;word-break:normal}
+.romaji-visual{display:flex;align-items:baseline;justify-content:center;flex-wrap:wrap}
+.romaji-mora-wrap{display:inline-flex;align-items:baseline;white-space:nowrap}
+.romaji-mora{ruby-align:center;ruby-position:over;margin-top:.52em}
+.romaji-rb{display:inline-flex;align-items:baseline}
+.romaji-mora rt{color:#657b7b;font-family:'M PLUS Rounded 1c',sans-serif;font-size:.31em;font-weight:800;letter-spacing:.04em;line-height:1}
+.romaji-mora.complete rt{color:#318c80}
+.romaji-annotation{color:#9aa8a7}
 .word-space{flex:0 0 .65em;white-space:pre}
 .kanji-chip{display:block;width:max-content;margin:2px auto 13px}
 
