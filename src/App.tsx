@@ -22,9 +22,11 @@ import { ParentReportPage } from './pages/ParentReportPage'
 import { GRADE_STORIES, getCourseStory } from './game/storyConfig'
 import { linearStageId, toLegacyStage, type LinearStageNumber } from './game/linearStageConfig'
 import { buildLinearStageQuestions } from './game/linearQuestionPool'
+import { getJourneyLabel } from './journey3d/journeyRoute'
 import './App.css'
 
 const KanaPracticePage = lazy(() => import('./KanaPracticePage').then((module) => ({ default: module.KanaPracticePage })))
+const JourneyWorld = lazy(() => import('./journey3d/JourneyWorld').then((module) => ({ default: module.JourneyWorld })))
 const RankGuidePage = lazy(() => import('./pages/RankGuidePage').then((module) => ({ default: module.RankGuidePage })))
 const CollectionPage = lazy(() => import('./pages/CollectionPage').then((module) => ({ default: module.CollectionPage })))
 const CatalogPage = lazy(() => import('./pages/CatalogPage').then((module) => ({ default: module.CatalogPage })))
@@ -71,6 +73,7 @@ function App() {
   const [bgmOn, setBgmOn] = useState(initialProfileData.audioSettings.bgmOn)
   const [soundEffectsOn, setSoundEffectsOn] = useState(initialProfileData.audioSettings.soundEffectsOn)
   const [typingDisplayCase, setTypingDisplayCase] = useState<TypingDisplayCase>(initialProfileData.typingDisplayCase)
+  const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
   const [characterStyle, setCharacterStyle] = useState<CharacterStyle>(initialProfile?.characterStyle ?? 'girl')
   const [keyStats, setKeyStats] = useState<KeyStats>(initialProfileData.keyStats)
   const [, setAdaptiveKeyStats] = useState<KeyStats>(initialProfileData.keyStats)
@@ -88,6 +91,13 @@ function App() {
   const [profileWriter] = useState(() => createDebouncedProfileWriter(750, localStorage, () => setStorageError(true)))
 
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'auto' }) }, [location.pathname])
+
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const update = () => setReducedMotion(media.matches)
+    media.addEventListener('change', update)
+    return () => media.removeEventListener('change', update)
+  }, [])
 
   const questions = useMemo(() => {
     const gradeQuestions = QUESTIONS[grade]
@@ -147,6 +157,10 @@ function App() {
   const treasureCount = collectedTreasures.reduce((total, item) => total + item.count, 0)
   const creatureCount = collectedFriends.reduce((total, item) => total + item.count, 0)
   const currentCourseId = linearStageId(selectedStage)
+  // Expand the numeric range only after each shared boundary passes its gate. Keeping
+  // this as one owner lets later stages retain the same scene/camera/transport.
+  const usesJourneyWorld = selectedStage === 1 && practiceMode === 'adventure'
+  const journeyTypingPace = Math.min(2, 0.65 + combo * 0.025 + stepQueue * 0.08)
   const chapterCompletedCourses = useMemo(() => Array.from({ length: 6 }, (_, index) => ({
     legacy: `${storyGrade}-${index + 1}`,
     linear: `stage-${(storyGrade - 1) * 6 + index + 1}`,
@@ -599,7 +613,7 @@ function App() {
   }
 
   return (
-    <main className="app-shell" onClick={() => inputRef.current?.focus()}>
+    <main className={`app-shell${usesJourneyWorld ? ' stage-one-shell' : ''}`} onClick={() => inputRef.current?.focus()}>
       <header className="topbar">
         <div className="brand"><span className="brand-mark">⌨</span><div><strong>ことば島</strong><small>の 大ぼうけん</small></div></div>
         <div className="header-grade-label">おすすめ {grade}年</div>
@@ -615,7 +629,25 @@ function App() {
         </div>
       </header>
 
-      <div className="world-layout">
+      {usesJourneyWorld ? (
+        <section className="stage-one-play" aria-label="第1話 3D冒険ステージ">
+          <Suspense fallback={<div className="stage-one-scene" aria-label="3D冒険ステージを読み込み中" />}>
+            <JourneyWorld stageNumber={selectedStage} journeyProgress={courseProgress} isTyping={typed.length > 0 && !awaitingFinish && !completed} typingPace={journeyTypingPace} reducedMotion={reducedMotion} />
+          </Suspense>
+          <div className="stage-one-hud" aria-live="polite">
+            <div className="stage-one-hud-title"><small>第1話</small><strong>{courseStory.title}</strong><span>{getJourneyLabel(courseProgress)}</span></div>
+            <div className="stage-one-hud-progress">
+              <span>コース {currentSegmentIndex + 1}/{segmentGroups.length}・問題 {questionIndex + 1}/{questions.length}</span>
+              <div role="progressbar" aria-label="このステージの道のり" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(courseProgress * 100)}><i style={{ width: `${courseProgress * 100}%` }} /></div>
+              <b>{Math.round(courseProgress * 100)}%</b>
+            </div>
+            <div className="stage-one-hud-score"><span>ステージ</span><b>{courseScore.toLocaleString()}<small> GP</small></b></div>
+          </div>
+          <div className="stage-one-typing-overlay">
+            <TypingCard question={question} practiceMode={practiceMode} reviewTargetKeys={reviewTargetKeys} typed={typed} displayProgress={displayProgress} inputDisplayProgress={inputDisplayProgress} canonicalRomaji={canonicalRomaji} notice={notice} awaitingFinish={awaitingFinish} combo={combo} currentChar={currentChar} nextKeyOptions={nextKeyOptions} displayCase={typingDisplayCase} inputRef={inputRef} onTyped={setTyped} onEnter={enterCharacters} onDisplayCase={setTypingDisplayCase} />
+          </div>
+        </section>
+      ) : <div className="world-layout">
         <CourseMap grade={storyGrade} selectedCourse={selectedCourse} completedCourses={chapterCompletedCourses} questionIndex={questionIndex} questionCount={questions.length} />
 
         <section className="game-area">
@@ -629,7 +661,7 @@ function App() {
         </section>
 
         <GameSidePanel collection={collection} creatureCount={creatureCount} treasureCount={treasureCount} mistakeCount={mistakes.length} weakKey={weakKeyStats[0]} totalKeyAttempts={totalKeyAttempts} accuracy={accuracy} onCollection={(tab) => { setCollectionTab(tab); setShowCollection(true) }} onReview={() => setShowReview(true)} onStats={() => setShowKeyStats(true)} />
-      </div>
+      </div>}
 
       {showReview && <ReviewModal mistakes={mistakes} onClose={() => setShowReview(false)} onRetry={() => { setShowReview(false); setTyped(''); setNotice(null) }} />}
       {showKeyStats && <KeyStatsModal grade={grade} totalAttempts={totalKeyAttempts} strongKeys={strongKeyStats} weakKeys={weakKeyStats} onClose={() => setShowKeyStats(false)} onPractice={startWeakKeyPractice} />}
