@@ -1,12 +1,14 @@
 # Stage 2〜12 連続3D制作ブリーフ
 
 最終更新: 2026-08-10
-状態: 制作前の正本候補。グレーボックス承認前
+状態: 文章正本候補。Stage 2〜12画像絵コンテ承認前（品質版3D着手禁止）
 対象: Stage 2〜12の空間、共有境界、イベント予兆、BGM意味区間
 
 ## 1. 共通指示
 
 本書の各Stageは独立シーンではない。[Stage 1〜36対応表](3d-stage-1-36-continuous-world-plan.md) の同一`JourneyWorld`上へ、`worldProgress / regionId / chunkId`で配置する。Stage終了によるscene再生成、canvas再マウント、背景交換、再ロード、暗転、ポータル、クロスフェードは禁止する。
+
+制作順と画像合否は [連続3Dステージ画像絵コンテ制作gate](stage-storyboard-production-gate.md) を正本とする。Stage 2〜12は文章ブリーフがあっても、各Stageの六コマ画像絵コンテと前後境界比較が承認されるまで品質版3Dへ着手しない。既存Stage 2 prototypeは技術greyboxでありアート承認ではない。
 
 本書のStage 2〜12は、Stage 1の技術ゲート通過後に順番に実制作してよい範囲である。ただし十二Stageを同時着手せず、一境界ずつ六コマ承認を取る。Stage 13〜36は [将来制作ブリーフ](3d-stage-13-36-production-briefs.md) を資料として整備済みだが、Stage 12承認まで制作・実装を禁止する。
 

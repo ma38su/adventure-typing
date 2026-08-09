@@ -1,7 +1,7 @@
 # 3Dシーン制作ブリーフ: 花と草原から木漏れ日の森へ
 
 最終更新: 2026-08-10
-状態: 実装用絵コンテ承認済み・Three.js品質プリビズ反復中
+状態: 文章ブリーフ継続・日本画水彩絵コンテv1が最新版正本。Three.jsは技術greybox
 対象区間: `花と草原 → 木漏れ日の森`
 
 ## 1. この文書の役割
@@ -32,13 +32,19 @@
 - 森の密度: 個別の葉の描き込みではなく、幹、樹冠、低木の大きな面の重なりで表す。
 - 輪郭: 強い黒線を使わず、色面と2〜3段階の柔らかな陰影で読む。
 
-雰囲気・色・物語上の移動方向の基準画像:
+雰囲気・色・景観構図・物語上の移動方向の最新版正本:
 
 - `artwork/preproduction/meadow-to-forest-storyboard-nihonga-simplified-v1.png`
 
-実装密度・再利用モデル・構図変化の基準画像:
+旧実装密度・再利用モデルの過去検討画像（正本ではない）:
 
 - `artwork/preproduction/meadow-to-forest-storyboard-webgl-implementation-v2.png`
+
+三人称構図追加時の制作順:
+
+- `docs/stage-storyboard-production-gate.md`
+- 日本画水彩v1の景観を正本として保ち、女の子三人称構図、HUD/typing safe zoneを追加検証する。新たな景観正本を作る工程ではない。
+- WebGL実装v1/v2は旧密度参考に降格し、構図や画調の判断には使わない。
 
 次区間にも適用する共通ルール:
 

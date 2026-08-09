@@ -1,12 +1,12 @@
 # Stage 13〜36 連続3D制作ブリーフ
 
 最終更新: 2026-08-10
-状態: 将来実装用の制作正本。**制作・実装着手禁止**
-解禁条件: Stage 1〜12の連続チャンク、章境界、発見演出、BGM意味遷移の承認
+状態: 将来実装用の文章制作正本。**画像絵コンテ・3D制作・実装着手禁止**
+解禁条件: Stage 1〜12の連続チャンク、章境界、発見演出、BGM意味遷移の承認。その後も [画像絵コンテ制作gate](stage-storyboard-production-gate.md) に従いStage 13から一つずつ制作する
 
 ## 1. 共通契約
 
-本書は資料を先に完成させるための設計であり、モデル、素材、HTML、アプリ実装を依頼するものではない。全Stageは [全36対応表](3d-stage-1-36-continuous-world-plan.md) の同一`JourneyWorld`上に置く。Stage境界でscene/canvas/audioを再生成せず、`worldProgress`を戻さない。各章は六地域を隣接する別の細道で再訪し、過去の回復結果を残す。
+本書は資料を先に完成させるための設計であり、画像絵コンテ、モデル、素材、HTML、アプリ実装を依頼するものではない。Stage 13〜36は文章資料が完成していても画像は未制作であり、Stage 12承認後に一Stageずつ「画像絵コンテ→技術greybox→品質版」の順で制作する。全Stageは [全36対応表](3d-stage-1-36-continuous-world-plan.md) の同一`JourneyWorld`上に置く。Stage境界でscene/canvas/audioを再生成せず、`worldProgress`を戻さない。各章は六地域を隣接する別の細道で再訪し、過去の回復結果を残す。
 
 各「六コマ」は正規化確認アンカー。`0`は直前Stageと同一チャンク、`1`は次Stageと同一チャンクでなければ不合格とする。動物発見の距離・遮蔽・退避・音OFF・`reducedMotion`・2D図鑑接続は [全36対応表の動物発見候補](3d-stage-1-36-continuous-world-plan.md#9-動物発見候補制作前仕様) を併用する。
 

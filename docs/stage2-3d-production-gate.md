@@ -1,14 +1,14 @@
 # Stage 2 3D制作gate — 小鳥が知っている道
 
 最終更新: 2026-08-10  
-状態: prototype承認待ち（ゲーム統合禁止）  
+状態: 技術greybox完了・画像絵コンテ承認待ち（品質制作・ゲーム統合禁止）
 対象: `evt-forest-creek-bridge` → `bnd-forest-mountain-a`
 
 ## 1. 固定する体験
 
 Stage 1の小川橋を同じscene・同じ共有chunkのまま渡り、湿った支流沿いの森から段丘崖、倒木gap、雲霧林の肩を経て、低い星見門の向こうに続く山腹道へ上る。背景交換、camera reload、空間skipは行わない。
 
-正本は `docs/3d-stage-2-12-production-briefs.md`、球面6anchorは `artwork/preproduction/world-map/kotoba-island-route-v2.js`。Stage 2距離5.74km、目安39問・5 courseは世界距離を縮める指示ではない。prototypeの短縮再生は景観確認だけに使う。
+正本は `docs/3d-stage-2-12-production-briefs.md`、画像制作gateは `docs/stage-storyboard-production-gate.md`、球面6anchorは `artwork/preproduction/world-map/kotoba-island-route-v2.js`。Stage 2距離5.74km、目安39問・5 courseは世界距離を縮める指示ではない。prototypeの短縮再生は経路・境界・資源状態の技術確認だけに使い、アートや構図の承認物としない。
 
 ## 2. 共有境界とchunk契約
 
@@ -78,5 +78,4 @@ Stage 1の小川橋を同じscene・同じ共有chunkのまま渡り、湿った
 
 ## 8. 承認後の順序
 
-prototypeの7画面、境界数値、resource表をレビューし、明示承認された後にだけJourneyWorld用Stage 2 adapterを実装する。ゲーム`src`統合、Stage 3本制作、正式小鳥モデル、個別3D報酬はこのgateに含めない。
-
+六コマ画像絵コンテ、Stage 1終端との比較、Stage 3入口との比較、HUD/typing overlay合成を先にレビューする。画像絵コンテ承認後、技術greyboxの7画面と境界数値・resource表を照合し、明示承認された後にだけJourneyWorld用Stage 2 adapterを実装する。ゲーム`src`統合、Stage 3本制作、正式小鳥モデル、個別3D報酬はこのgateに含めない。
