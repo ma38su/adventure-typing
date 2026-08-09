@@ -116,9 +116,9 @@
     <main>
       <section id="decision">
         <h2>1. 現在の決定</h2>
-        <div class="callout fail"><strong>このセッションでの3Dレンダラー実装指示は停止する。</strong> 未追跡のRaw WebGLグレーボックスは比較・構造検証資料として保存し、品質版へ継ぎ足さない。ゲーム本体にも適用しない。</div>
-        <p>止めた理由は、ルート同期や地形追従などの技術契約は前進した一方、承認済みスケッチが要求する「柔らかな森」「有機的な樹木」「湿った林床」「水彩の大きな色面」が画像で成立しなかったためです。数値条件だけで進めず、次は画面意図を一枚で判定できる狭い区間から再開します。</p>
-        <div class="callout good"><strong>再開時の第一ゲート:</strong> <code>s=.75</code>（森内部）周辺25〜35mだけをThree.jsで作り、承認スケッチの下中央コマと横並びで判定する。合格するまで全長・他コマ・ゲーム統合へ進まない。</div>
+        <div class="callout good"><strong>2026-08-10更新:</strong> Raw WebGL版は比較資料として凍結したまま、Three.js品質プリビズ <code>meadow-to-forest-threejs-v1.html</code> で全区間の画面反復を進めている。ゲーム本体統合はまだ行わない。</div>
+        <p>旧版を停止した理由は、ルート同期や地形追従などの技術契約は前進した一方、承認済みスケッチが要求する「柔らかな森」「有機的な樹木」「湿った林床」「水彩の大きな色面」が画像で成立しなかったためです。その後、完成イラストを雰囲気資料へ位置づけ直し、実装用絵コンテv2を作成してThree.js版へ移行しました。</p>
+        <div class="callout"><strong>現在のゲート:</strong> ルート外まで広がる樹林、森内部の空・霧・光、小川と橋の両岸、確認再生とゲーム歩行再生を画面で承認する。今回得た共通ルールは <a href="3d-scene-production-lessons.md">3d-scene-production-lessons.md</a> を正とし、次の「森→山」ブリーフへ反映する。</div>
       </section>
 
       <section id="authority">
@@ -130,6 +130,7 @@
           <li><a href="story-bible.md">ストーリーバイブル</a> — 世界観・地理・物語上の正史</li>
           <li><a href="game-design.md">ゲームデザイン</a> — タイピング体験・UI・アクセシビリティ</li>
           <li><a href="watercolor-renderer-implementation.md">レンダラー実装検討</a> — 上記を実現する技術候補</li>
+          <li><a href="3d-scene-production-lessons.md">3Dシーン制作の共通ルール</a> — 次区間へ持ち越す実装判断</li>
         </ol>
         <p class="small">矛盾時は、技術都合で上位の画面目標を弱めません。グレーボックスHTMLやQA READMEは正本ではなく、試行と検査結果です。</p>
       </section>
@@ -320,11 +321,14 @@
             <li><a href="3d-scene-brief-meadow-to-forest.md">docs/3d-scene-brief-meadow-to-forest.md</a></li>
             <li><a href="meadow-to-forest-greybox-shot-plan.md">docs/meadow-to-forest-greybox-shot-plan.md</a></li>
             <li><a href="watercolor-renderer-implementation.md">docs/watercolor-renderer-implementation.md</a></li>
+            <li><a href="3d-scene-production-lessons.md">docs/3d-scene-production-lessons.md</a></li>
             <li><a href="story-bible.md">docs/story-bible.md</a></li>
             <li><a href="game-design.md">docs/game-design.md</a></li>
           </ul></div>
           <div class="card"><h3>画像・試作・QA</h3><ul>
             <li><a href="../artwork/preproduction/meadow-to-forest-storyboard-nihonga-simplified-v1.png">承認済み絵コンテPNG</a></li>
+            <li><a href="../artwork/preproduction/meadow-to-forest-storyboard-webgl-implementation-v2.png">実装用絵コンテv2 PNG</a></li>
+            <li><a href="../artwork/renderer-prototypes/meadow-to-forest-threejs-v1.html">現行Three.js品質プリビズHTML</a></li>
             <li><a href="../artwork/renderer-prototypes/watercolor-journey-renderer.html">旧Three.js技術試作HTML</a></li>
             <li><a href="../artwork/renderer-prototypes/meadow-to-forest-greybox.html">Raw WebGLグレーボックスHTML</a></li>
             <li><a href="../artwork/renderer-prototypes/qa/meadow-to-forest-greybox/README.md">グレーボックスQA README</a></li>
@@ -336,33 +340,36 @@
 
       <section id="template">
         <h2>13. 次セッションへ渡す依頼文テンプレート</h2>
-        <pre><code>作業前に README.md と docs/3d-renderer-handoff.html を最後まで読み、
-リンク先の正本と承認済み絵コンテを確認してください。
+        <pre><code>作業前に README.md、docs/3d-renderer-handoff.html、
+docs/3d-scene-production-lessons.md と対象区間の制作ブリーフを最後まで
+読んでください。
 
-3Dレンダラー実装を再開します。ただし全長コースは作らず、最初は
-s=.75（森内部）周辺25〜35mだけをThree.jsで作ってください。
+現行の比較対象は artwork/renderer-prototypes/
+meadow-to-forest-threejs-v1.html です。Raw WebGL版と旧Three.js試作は
+比較資料として凍結し、品質版へ継ぎ足さないでください。
 
-Raw WebGL版は比較・構造検証資料として凍結し、品質版へ継ぎ足さないでください。
-共通スプライン、弧長LUT、trailWidth(s)、terrainHeight、進捗保持、
-デバッグ契約だけを移植してください。
+次の「木漏れ日の森 → 星見の山道」を作る場合、実装前に専用ブリーフと
+実装用絵コンテを作ってください。完成イラストは雰囲気資料として扱い、
+再利用モデル数、土地の占有範囲、カメラ、空、霧、光、遠景を実装用
+絵コンテで決めてください。
 
-承認済みの方向は「簡略化した日本画調 × 透明水彩 × 控えめな
-ファンタジー」です。写真PBRや黒輪郭にはしません。根元・幹・主枝・
-枝先樹冠の関係がある階層樹木、高木／若木／低木／草本／林床の5層、
-苔・落葉・シダ・岩・倒木、細い獣道、青緑の霧、オフセンターの光、
-薄い紙目を一枚の画像で判定できるところまで作ってください。
+歩行ルートの周囲だけを作らず、カメラ視錐台の外まで地形と環境を
+広げてください。開始地点から次の土地が点や列ではなく面積を持って
+見え、区間終端の両側と向こう側にも現在地の環境が続くようにします。
 
-実装前に、その版で画像から判定する項目を短く提示してください。
-承認スケッチ下中央コマと実装画像を横並びにし、引継ぎ書の
-「s=.75単独ゲートの合格条件」を項目ごとに自己判定してください。
-合格・ユーザー承認前は、残り5コマ、橋、全ステージ、ゲーム統合、
-最適化へ進まないでください。
+空シェーダー、距離霧、環境光、主光源、露出は同じ土地ブレンド値で
+連続変化させてください。森の次は山なので、海は物語上の見通し地点まで
+大きく見せません。
 
-開発時はファイルを分割してよいですが、承認用にはネットワーク不要で
-開ける通常HTMLを生成してください。</code></pre>
+確認再生とゲーム歩行再生を分け、typingPaceは足取り、風、粒子などの
+演出だけへ使用してください。旅座標と前進距離はjourneyProgressだけで
+決定し、文区切りでも位置を戻しません。
+
+ストーリースクリプト接続前は背景と環境小物を中心に作り、台詞、動物、
+報酬、伏線記号を先回りして焼き込まないでください。</code></pre>
       </section>
     </main>
   </div>
-  <footer>作成日: 2026-08-09 / 対象: 「花の草原 → 木漏れ日の森 → 小川手前」3Dシーン / 本文書は実装コードを変更しない引継ぎ資料です。</footer>
+  <footer>作成日: 2026-08-09 / 更新日: 2026-08-10 / 対象: 「花の草原 → 木漏れ日の森 → 小川手前」3Dシーン / 次区間へ持ち越す共通ルールを含みます。</footer>
 </body>
 </html>

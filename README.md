@@ -105,6 +105,8 @@ npm run build
 上記のストーリーバイブルとゲームデザインに加えて、対象区間の制作ブリーフを最後まで読んでください。
 
 - 草原から森: `docs/3d-scene-brief-meadow-to-forest.md`
+- 3Dシーン制作の共通ルール: `docs/3d-scene-production-lessons.md`
+- 全地域の連続接続・チャンクストリーミング: `docs/3d-continuous-world-architecture.md`
 
 制作ブリーフが存在する区間は、ブリーフ記載の基準画像、カメラ、ルート、植生、完成条件を優先します。いきなり全地域へ展開せず、一つの区間でグレーボックス、画面確認、品質版の順に承認してください。
 

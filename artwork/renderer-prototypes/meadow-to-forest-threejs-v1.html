@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ことば島 — 草原から木漏れ日の森 Three.js v1</title>
+  <style>
+    :root{color-scheme:light;--ink:#29483f;--panel:#f7f5e9;--accent:#427f6d}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#e8eee5;color:var(--ink);font-family:ui-rounded,"Hiragino Maru Gothic ProN",system-ui,sans-serif}
+    body{padding:12px}.shell{width:min(1280px,100%);margin:auto}.viewport{position:relative;overflow:hidden;aspect-ratio:16/9;min-height:430px;border-radius:22px;background:#bdd8d1;box-shadow:0 18px 55px #29483f35}
+    canvas{display:block;width:100%;height:100%}.paper,.wash{position:absolute;z-index:2;inset:0;pointer-events:none}.paper{opacity:.17;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.58' numOctaves='3' seed='23'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.3'/%3E%3C/svg%3E")}.wash{background:radial-gradient(ellipse at 63% 32%,#fff3b72b,transparent 35%),linear-gradient(180deg,#fff8df0d 42%,#315c4b1c);box-shadow:inset 0 0 70px #28483e2e;mix-blend-mode:soft-light}
+    .hud{position:absolute;z-index:4;inset:12px 14px auto;display:flex;justify-content:space-between;gap:12px;padding:9px 13px;border:1px solid #ffffff55;border-radius:12px;background:#173d36c9;color:white;backdrop-filter:blur(8px);font-size:12px}.hud strong{font-size:13px}
+    .controls{display:grid;grid-template-columns:auto auto auto auto minmax(240px,1fr) minmax(160px,.45fr);gap:9px;margin-top:10px;padding:11px;border:1px solid #c6d2c7;border-radius:15px;background:#fffdf5}button{min-height:40px;border:0;border-radius:10px;padding:0 14px;background:var(--accent);color:#fff;font-weight:800;cursor:pointer}button.walk{background:#9a6547}button.secondary{background:#6c7d76}label{display:grid;gap:3px;font-size:10px;font-weight:800;color:#587068}input[type=range]{width:100%;accent-color:var(--accent)}.options,.jumps{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:8px}.options{padding:8px 10px;border-radius:11px;background:#f7faf6;font-size:11px}.options label{display:flex;align-items:center;gap:5px}.jumps button{min-height:31px;padding:0 10px;background:#668072;font-size:10px}.jumps button.active{background:#b1744d}.note{margin:8px 4px;color:#62746d;font-size:10px;line-height:1.6}.error{display:none;position:absolute;z-index:8;inset:20%;padding:20px;border-radius:15px;background:#fff3ee;color:#8a342d}
+    @media(max-width:760px){body{padding:5px}.viewport{min-height:360px}.controls{grid-template-columns:repeat(3,1fr)}.controls label{grid-column:1/-1}.hud{font-size:10px}}
+  </style>
+  <script type="importmap">{"imports":{"three":"../../node_modules/three/build/three.module.js"}}</script>
+</head>
+<body>
+<main class="shell">
+  <section class="viewport" id="viewport" aria-label="花の草原から木漏れ日の森へ続く一人称3Dシーン">
+    <div class="error" id="error"></div>
+    <div class="hud"><span>Three.js 水彩プリビズ v1 · 同一ワールド</span><strong id="sceneLabel">花の草原 · s 0.00</strong></div>
+    <div class="paper"></div><div class="wash"></div>
+  </section>
+  <section class="controls" aria-label="シーン操作">
+    <button id="play">確認再生</button><button id="walkPlay" class="walk">ゲーム歩行再生</button><button id="pause" class="secondary">一時停止</button><button id="reset" class="secondary">先頭へ</button>
+    <label>journeyProgress <output id="progressOut">0.000</output><input id="progress" type="range" min="0" max="1000" value="0"></label>
+    <label>タイピングペース（足取り演出のみ） <output id="paceOut">1.23</output><input id="pace" type="range" min="0" max="20" value="10"></label>
+  </section>
+  <div class="options"><label><input id="reduced" type="checkbox"> reduced motion</label><label><input id="motes" type="checkbox" checked> 光粒</label><label><input id="paper" type="checkbox" checked> 紙目</label><button id="sentence" class="secondary">文区切り（位置保持）</button><output id="sentenceOut">文 1</output></div>
+  <div class="jumps" id="jumps"></div>
+  <p class="note">実装用絵コンテ v2 を基準にした品質プリビズです。地形、道、植生、カメラは一本のルート座標 s=0〜1 で連続し、背景交換やクロスフェードは使用していません。</p>
+</main>
+<script type="module">
+import * as THREE from 'three';
+
+const viewport=document.getElementById('viewport'),error=document.getElementById('error');
+const ui={play:document.getElementById('play'),walkPlay:document.getElementById('walkPlay'),pause:document.getElementById('pause'),reset:document.getElementById('reset'),progress:document.getElementById('progress'),progressOut:document.getElementById('progressOut'),pace:document.getElementById('pace'),paceOut:document.getElementById('paceOut'),reduced:document.getElementById('reduced'),motes:document.getElementById('motes'),paper:document.getElementById('paper'),label:document.getElementById('sceneLabel'),sentence:document.getElementById('sentence'),sentenceOut:document.getElementById('sentenceOut')};
+let renderer;
+try{renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});}catch(e){error.style.display='block';error.textContent='WebGLを開始できません: '+e.message;throw e}
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(viewport.clientWidth,viewport.clientHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.06;viewport.prepend(renderer.domElement);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0xbad7d0);scene.fog=new THREE.FogExp2(0xaac7b8,.017);
+const camera=new THREE.PerspectiveCamera(55,viewport.clientWidth/viewport.clientHeight,.08,180);
+const hemi=new THREE.HemisphereLight(0xfff5cf,0x476b53,2.0);scene.add(hemi);
+const sun=new THREE.DirectionalLight(0xffe8a8,3.1);sun.position.set(-18,28,18);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-24;sun.shadow.camera.right=24;sun.shadow.camera.top=24;sun.shadow.camera.bottom=-24;sun.shadow.camera.far=85;sun.shadow.bias=-.001;scene.add(sun);
+const skyUniforms={topColor:{value:new THREE.Color(0x9bcfdf)},horizonColor:{value:new THREE.Color(0xe9efd8)},forestMix:{value:0}};
+const sky=new THREE.Mesh(new THREE.SphereGeometry(145,24,12),new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:false,uniforms:skyUniforms,vertexShader:`varying vec3 vDir;void main(){vDir=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,fragmentShader:`uniform vec3 topColor;uniform vec3 horizonColor;uniform float forestMix;varying vec3 vDir;void main(){float h=smoothstep(-.12,.72,vDir.y);vec3 col=mix(horizonColor,topColor,h);float canopy=forestMix*(.10+.12*(1.0-h));col*=1.0-canopy;col=mix(col,vec3(.31,.46,.38),forestMix*.13*(1.0-h));gl_FragColor=vec4(col,1.0);}`}));sky.renderOrder=-10;scene.add(sky);
+
+let seed=872341;const rnd=()=>((seed=Math.imul(seed^seed>>>15,1|seed))+(seed^seed>>>7)>>>0)/4294967296;
+const route=new THREE.CatmullRomCurve3([[-2,0,10],[-1,0,-10],[2,0,-29],[-2.5,0,-47],[-.3,0,-66],[2.2,0,-84],[-1.8,0,-103],[.8,0,-124],[0,0,-142]].map(v=>new THREE.Vector3(...v)),false,'catmullrom',.32);
+const point=s=>route.getPointAt(THREE.MathUtils.clamp(s,0,1)),tangent=s=>route.getTangentAt(THREE.MathUtils.clamp(s,0,1)).normalize();
+const rightAt=s=>{const t=tangent(s);return new THREE.Vector3(-t.z,0,t.x).normalize()};
+const widthAt=s=>{const k=[[0,2.4],[.2,2.15],[.4,1.9],[.55,1.55],[.75,1.75],[1,1.65]];for(let i=1;i<k.length;i++)if(s<=k[i][0]){let f=(s-k[i-1][0])/(k[i][0]-k[i-1][0]);f=f*f*(3-2*f);return THREE.MathUtils.lerp(k[i-1][1],k[i][1],f)}return 1.65};
+const height=(x,z)=>.38*Math.sin(x*.17+z*.035)+.2*Math.sin(z*.09)-.12*Math.cos(x*.35-z*.025);
+
+function canvasTexture(base,spots,seedValue=1){const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d');x.fillStyle=base;x.fillRect(0,0,256,256);let q=seedValue;const rr=()=>((q=Math.imul(q^q>>>15,1|q))+(q^q>>>7)>>>0)/4294967296;for(let i=0;i<110;i++){x.globalAlpha=.025+rr()*.08;x.fillStyle=spots[(rr()*spots.length)|0];x.beginPath();x.ellipse(rr()*256,rr()*256,8+rr()*42,5+rr()*28,rr()*Math.PI,0,Math.PI*2);x.fill()}x.globalAlpha=.07;x.strokeStyle='#fff8df';for(let i=0;i<90;i++){x.beginPath();x.moveTo(rr()*256,rr()*256);x.lineTo(rr()*256,rr()*256);x.stroke()}const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.colorSpace=THREE.SRGBColorSpace;return t}
+const groundTex=canvasTexture('#78965b',['#9ab56b','#607e52','#c2b269','#5b7751'],41);groundTex.repeat.set(10,44);
+const trailTex=canvasTexture('#ad9864',['#cbb477','#8d7650','#d9c58b'],72);trailTex.wrapS=trailTex.wrapT=THREE.RepeatWrapping;trailTex.repeat.set(1.2,32);
+const groundMat=new THREE.MeshToonMaterial({map:groundTex,color:0xcbd7a1});const trailMat=new THREE.MeshToonMaterial({map:trailTex,color:0xe1c18a,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4});
+const terrain=new THREE.Mesh(new THREE.PlaneGeometry(76,190,96,220).rotateX(-Math.PI/2),groundMat);terrain.position.z=-68;const pos=terrain.geometry.attributes.position;for(let i=0;i<pos.count;i++){const x=pos.getX(i),z=pos.getZ(i)-68;pos.setY(i,height(x,z))}terrain.geometry.computeVertexNormals();terrain.receiveShadow=true;scene.add(terrain);
+function ribbon(){const vertices=[],uv=[],indices=[],steps=260;for(let i=0;i<=steps;i++){const s=i/steps,p=point(s),r=rightAt(s),w=widthAt(s)/2*(.88+.08*Math.sin(s*91));for(const side of [-1,1]){const x=p.x+r.x*w*side,z=p.z+r.z*w*side;vertices.push(x,height(x,z)+.075,z);uv.push(side<0?0:1,s*30)}if(i<steps){const a=i*2;indices.push(a,a+2,a+1,a+1,a+2,a+3)}}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(indices);g.computeVertexNormals();return new THREE.Mesh(g,trailMat)}const trail=ribbon();trail.receiveShadow=true;scene.add(trail);
+
+const mats={trunk:new THREE.MeshToonMaterial({color:0x7b5839}),trunkLight:new THREE.MeshToonMaterial({color:0x9a7149}),leaf:new THREE.MeshToonMaterial({color:0x456f46}),leafLight:new THREE.MeshToonMaterial({color:0x6f904e}),leafGold:new THREE.MeshToonMaterial({color:0x8faa54}),shrub:new THREE.MeshToonMaterial({color:0x476f43}),fern:new THREE.MeshToonMaterial({color:0x789858,side:THREE.DoubleSide}),rock:new THREE.MeshToonMaterial({color:0x6f7861}),moss:new THREE.MeshToonMaterial({color:0x769052}),wood:new THREE.MeshToonMaterial({color:0x8e6845}),water:new THREE.MeshToonMaterial({color:0x47a6a0,transparent:true,opacity:.78,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3})};
+const trunkGeo=new THREE.CylinderGeometry(.55,.88,7,7,3);const canopyGeo=new THREE.IcosahedronGeometry(2.0,1);const shrubGeo=new THREE.IcosahedronGeometry(1,1);const rockGeo=new THREE.DodecahedronGeometry(1,0);
+function tree(scale=1,lean=0,tone=0){const g=new THREE.Group(),tr=new THREE.Mesh(trunkGeo,tone?mats.trunkLight:mats.trunk);tr.position.y=3.4;tr.rotation.z=lean;tr.castShadow=tr.receiveShadow=true;g.add(tr);const offsets=[[-1.15,7.1,0],[.8,7.6,.15],[.15,8.55,-.35],[1.45,6.9,-.5]];offsets.forEach((o,i)=>{const c=new THREE.Mesh(canopyGeo,i===2?mats.leafGold:(tone?mats.leafLight:mats.leaf));c.position.set(...o);c.scale.set(1.15+i*.06,.72,.95);c.rotation.set(rnd(),rnd(),rnd());c.castShadow=true;g.add(c)});g.scale.setScalar(scale);return g}
+function shrub(scale=1,tone=0){const g=new THREE.Group();for(let i=0;i<3;i++){const m=new THREE.Mesh(shrubGeo,tone?mats.leafLight:mats.shrub);m.position.set((i-1)*.72,.55+(i%2)*.25,(i%2-.5)*.32);m.scale.set(1,.72,.8);m.castShadow=true;g.add(m)}g.scale.setScalar(scale);return g}
+function fern(scale=1){const g=new THREE.Group();for(let i=0;i<7;i++){const geo=new THREE.PlaneGeometry(.18,1.35,1,1);geo.translate(0,.65,0);const m=new THREE.Mesh(geo,mats.fern);m.rotation.y=i/7*Math.PI*2;m.rotation.z=.48;m.position.y=.05;g.add(m)}g.scale.setScalar(scale);return g}
+function place(obj,s,offset=0,yOffset=0,rot=0){const p=point(s),r=rightAt(s);obj.position.set(p.x+r.x*offset,p.y+r.y*offset,p.z+r.z*offset);obj.position.y=height(obj.position.x,obj.position.z)+yOffset;obj.rotation.y=Math.atan2(tangent(s).x,tangent(s).z)+rot;scene.add(obj);return obj}
+function rock(s,offset,scale=.7){const m=new THREE.Mesh(rockGeo,mats.rock);m.scale.set(scale,scale*.62,scale*.85);m.rotation.set(rnd()*.4,rnd()*4,rnd()*.3);m.castShadow=m.receiveShadow=true;place(m,s,offset,scale*.35);const cap=new THREE.Mesh(new THREE.SphereGeometry(.68,8,5,0,Math.PI*2,0,Math.PI/2),mats.moss);cap.scale.set(scale,.18*scale,.75*scale);cap.position.copy(m.position).add(new THREE.Vector3(0,scale*.42,0));scene.add(cap)}
+
+// Sparse meadow and the young-tree edge.
+for(let i=0;i<22;i++){const s=.015+rnd()*.29,side=i%2?1:-1,offset=side*(widthAt(s)/2+.45+rnd()*4.5);const flower=new THREE.Group();const stem=new THREE.Mesh(new THREE.CylinderGeometry(.025,.035,.55,5),mats.fern);stem.position.y=.28;flower.add(stem);const petalMat=new THREE.MeshToonMaterial({color:i%3?0xf2e4b6:0xd9a2a4});for(let p=0;p<5;p++){const pet=new THREE.Mesh(new THREE.CircleGeometry(.12,6),petalMat);pet.position.set(Math.cos(p*1.256)*.11,.6,Math.sin(p*1.256)*.11);pet.rotation.x=-Math.PI/2;flower.add(pet)}place(flower,s,offset,0,0)}
+[[.17,-3.2,.62,-.08],[.22,3.0,.68,.04],[.28,-4,.78,.03],[.31,3.6,.74,-.04]].forEach(v=>place(tree(v[2],v[3],1),v[0],v[1]));
+for(let i=0;i<16;i++){const s=.18+rnd()*.24,side=i%2?1:-1;place(shrub(.65+rnd()*.45,i%3===0),s,side*(widthAt(s)/2+.7+rnd()*3))}
+
+// Panel 3: a single left gateway trunk, moss rocks, ferns, and the passage ahead.
+place(tree(1.38,-.035,0),.37,-3.0,0,.18);rock(.39,-1.7,.9);rock(.43,2.0,.62);for(const [s,o,z] of [[.37,-1.4,1],[.40,-2.2,.8],[.43,1.6,.9],[.45,-1.3,.7]])place(fern(z),s,o);
+// Panel 4: asymmetric pinch point. Trunks frame the trail but keep a clear walking corridor.
+place(tree(1.28,-.16,0),.53,-2.05,0,-.08);place(tree(1.22,.025,1),.565,2.0,0,.12);
+// Panel 5: opening, vertical rhythm, fallen log and warm light pool.
+[[.66,-4.3,1.0],[.69,3.8,.82],[.73,-3.5,.92],[.77,4.6,.96],[.81,-4.6,.88],[.84,3.7,.78]].forEach((v,i)=>place(tree(v[2],(i%3-1)*.025,i%2),v[0],v[1]));
+// A broad forest mass starts before the threshold instead of reading as two rows beside the trail.
+// All offsets include the trail half-width plus clearance so trunks never enter the walking corridor.
+for(let i=0;i<40;i++){const s=.20+rnd()*.31,side=i%2?1:-1,scale=.58+rnd()*.38,clear=widthAt(s)/2+1.05+scale*.8,offset=side*(clear+rnd()*12.5);place(tree(scale,(rnd()-.5)*.09,i%5===0),s,offset,0,(rnd()-.5)*.55)}
+// Three transverse belts make the forest read as a wide destination from the opening meadow.
+for(const [rowS,rowScale] of [[.255,.82],[.325,.72],[.405,.66]])for(const side of [-1,1])for(let band=0;band<7;band++){const scale=rowScale-(band%3)*.055,clear=widthAt(rowS)/2+1.1+scale*.82,offset=side*(clear+band*2.35+(band%2)*.65);place(tree(scale,(band%3-1)*.045,band%4===0),rowS+(band%2)*.012,offset,0,(band-3)*.08)}
+// Dense instanced crowns close the remaining horizon gaps at very low draw-call cost.
+const distantCapacity=96,distantTrunks=new THREE.InstancedMesh(trunkGeo,mats.trunk,distantCapacity),distantCrowns=new THREE.InstancedMesh(canopyGeo,mats.leaf,distantCapacity),dummy=new THREE.Object3D();let distantIndex=0;
+// This is a world-space forest apron, not another pair of route-side rows. It spans
+// beyond the camera frustum so the destination reads as a large woodland area.
+for(let row=0;row<4;row++){const rowS=.245+row*.064,routeCenter=point(rowS);for(let col=0;col<19;col++){const x=-36+col*4+(row%2)*1.35;if(Math.abs(x-routeCenter.x)<3.4)continue;const z=routeCenter.z+(col%3-1)*1.15,scale=.58+((row*2+col)%5)*.065,y=height(x,z),angle=(col%4-1.5)*.11;dummy.position.set(x,y+3.35*scale,z);dummy.rotation.set(0,angle,0);dummy.scale.set(scale*.62,scale,scale*.62);dummy.updateMatrix();distantTrunks.setMatrixAt(distantIndex,dummy.matrix);dummy.position.set(x,y+7.1*scale,z);dummy.rotation.set((col%2)*.1,angle,(row%3-1)*.07);dummy.scale.set(scale*1.2,scale*.74,scale*1.04);dummy.updateMatrix();distantCrowns.setMatrixAt(distantIndex,dummy.matrix);distantIndex++}}
+distantTrunks.count=distantIndex;distantCrowns.count=distantIndex;distantTrunks.castShadow=true;distantCrowns.castShadow=true;scene.add(distantTrunks,distantCrowns);
+// A wide perimeter forest surrounds the entire playable route. These layers extend
+// well beyond the camera path and continue around the creek instead of ending there.
+const perimeterCapacity=192,perimeterTrunks=new THREE.InstancedMesh(trunkGeo,mats.trunk,perimeterCapacity),perimeterCrowns=new THREE.InstancedMesh(canopyGeo,mats.leaf,perimeterCapacity);let perimeterIndex=0;
+for(let stepIndex=0;stepIndex<22;stepIndex++){const s=.37+stepIndex/21*.625,p=point(s),r=rightAt(s),heading=Math.atan2(tangent(s).x,tangent(s).z);for(const side of [-1,1])for(let layer=0;layer<4;layer++){const scale=.88-layer*.095+((stepIndex+layer)%3)*.045,offset=side*(widthAt(s)/2+3.8+[0,5.8,13.5,22][layer]+(stepIndex%2)*.8),x=p.x+r.x*offset,z=p.z+r.z*offset+(layer%2?1.2:-.7),y=height(x,z),angle=heading+(stepIndex%4-1.5)*.1;dummy.position.set(x,y+3.35*scale,z);dummy.rotation.set(0,angle,0);dummy.scale.set(scale*.64,scale,scale*.64);dummy.updateMatrix();perimeterTrunks.setMatrixAt(perimeterIndex,dummy.matrix);dummy.position.set(x,y+7.1*scale,z);dummy.rotation.set((stepIndex%2)*.08,angle,(layer-1.5)*.035);dummy.scale.set(scale*1.22,scale*.74,scale*1.06);dummy.updateMatrix();perimeterCrowns.setMatrixAt(perimeterIndex,dummy.matrix);perimeterIndex++}}
+perimeterTrunks.count=perimeterIndex;perimeterCrowns.count=perimeterIndex;perimeterTrunks.castShadow=true;perimeterCrowns.castShadow=true;scene.add(perimeterTrunks,perimeterCrowns);
+// Inside the forest, near, middle and far side layers overlap to hide the open meadow plane.
+for(let i=0;i<52;i++){const s=.40+rnd()*.53,side=i%2?1:-1,layer=i%3,scale=layer===0?.58+rnd()*.34:.38+rnd()*.34,clear=widthAt(s)/2+1.0+scale*.85,depth=layer===0?rnd()*2.8:layer===1?3+rnd()*4.2:7.4+rnd()*6.2,offset=side*(clear+depth);place(tree(scale,(rnd()-.5)*.09,i%6===0),s,offset,0,(rnd()-.5)*.5)}
+// Deterministic side rows prevent random gaps from exposing an empty plain around bends.
+for(const side of [-1,1])for(let i=0;i<14;i++){const s=.56+i*.027+(side>0?.008:0),layer=i%3,scale=.48+(i%4)*.07,clear=widthAt(s)/2+1.15+scale*.8,offset=side*(clear+2.1+layer*3.0);place(tree(scale,(i%3-1)*.035,i%5===0),s,offset,0,(i%4-1.5)*.12)}
+for(let i=0;i<24;i++){const s=.45+rnd()*.43,side=i%2?1:-1,edge=widthAt(s)/2;place(i%3?shrub(.55+rnd()*.55,i%5===0):fern(.65+rnd()*.5),s,side*(edge+.5+rnd()*2.6))}
+for(let i=0;i<34;i++){const s=.31+rnd()*.63,side=i%2?1:-1,edge=widthAt(s)/2;place(shrub(.42+rnd()*.55,i%7===0),s,side*(edge+1.8+rnd()*7.5),0,(rnd()-.5)*.8)}
+// A low fallen log crosses the route as a gentle story beat; the camera steps over it.
+const log=new THREE.Mesh(new THREE.CylinderGeometry(.3,.38,3.25,8),mats.wood);log.rotation.z=Math.PI/2;log.castShadow=true;place(log,.74,0,.3,0);
+const lightPool=new THREE.Mesh(new THREE.CircleGeometry(3.8,28),new THREE.MeshBasicMaterial({color:0xffe99b,transparent:true,opacity:.2,depthWrite:false}));lightPool.rotation.x=-Math.PI/2;place(lightPool,.78,1.8,.055);
+
+// A modest feather-post sign hints at the island's delivery network. The ancient-tree
+// spiral is intentionally deferred until it can be applied as a subtle bark texture.
+const sign=new THREE.Group(),post=new THREE.Mesh(new THREE.CylinderGeometry(.055,.07,1.45,6),mats.wood),board=new THREE.Mesh(new THREE.BoxGeometry(.62,.3,.08),mats.wood);post.position.y=.72;board.position.set(.15,1.25,0);sign.add(post,board);place(sign,.31,1.75);
+
+// Creek and bridge endpoint. The creek uses irregular banks rather than a rectangular plane.
+function creekRibbon(){const vertices=[],uv=[],indices=[],steps=56;for(let i=0;i<=steps;i++){const x=-38+i/steps*76,center=-138+Math.sin(x*.16)*1.15+Math.sin(x*.055)*.7,half=2.0+.55*Math.sin(x*.23+1.2)+.3*Math.sin(x*.47);for(const side of [-1,1]){const z=center+half*side;vertices.push(x,height(x,z)+.09,z);uv.push(i/steps,side<0?0:1)}if(i<steps){const a=i*2;indices.push(a,a+2,a+1,a+1,a+2,a+3)}}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(indices);g.computeVertexNormals();return new THREE.Mesh(g,mats.water)}const creek=creekRibbon();creek.renderOrder=1;scene.add(creek);
+const bridge=new THREE.Group();for(let i=0;i<8;i++){const plank=new THREE.Mesh(new THREE.BoxGeometry(2.35,.13,.62),mats.wood);plank.position.z=(i-3.5)*.62;plank.castShadow=plank.receiveShadow=true;bridge.add(plank)}for(const x of [-1.05,1.05])for(const z of [-2.25,0,2.25]){const post=new THREE.Mesh(new THREE.CylinderGeometry(.055,.07,1.05,6),mats.wood);post.position.set(x,.5,z);bridge.add(post)}place(bridge,.985,0,.34);
+for(const [s,o,sc] of [[.91,-3,.9],[.93,3.2,.72],[.97,-2.7,.65],[.99,3.4,.78]])rock(s,o,sc);
+
+// Low-cost distant cards: the next destination is the star-viewing mountain path.
+// The ridgeline is mostly hidden by the forest and reappears beyond the creek bridge.
+function mountainCard(color,x,y,z,sx,sy,variant=0){const peaks=variant?[[-1,0],[-.72,.18],[-.48,.42],[-.2,.22],[.08,.62],[.34,.3],[.62,.48],[1,0]]:[[-1,0],[-.7,.22],[-.42,.58],[-.12,.25],[.18,.82],[.45,.4],[.72,.57],[1,0]],shape=new THREE.Shape();shape.moveTo(peaks[0][0],peaks[0][1]);for(let i=1;i<peaks.length;i++)shape.lineTo(peaks[i][0],peaks[i][1]);shape.lineTo(1,-.12);shape.lineTo(-1,-.12);shape.closePath();const m=new THREE.Mesh(new THREE.ShapeGeometry(shape),new THREE.MeshBasicMaterial({color,side:THREE.DoubleSide,fog:true}));m.position.set(x,y,z);m.scale.set(sx,sy,1);scene.add(m)}
+mountainCard(0x6f8e86,-8,1.4,-164,29,4.9,0);mountainCard(0x91aa91,14,1.0,-158,24,3.4,1);
+const motes=[];const moteGeo=new THREE.SphereGeometry(.035,5,4),moteMat=new THREE.MeshBasicMaterial({color:0xffe7a2,transparent:true,opacity:.52});for(let i=0;i<34;i++){const s=.43+rnd()*.53,p=point(s),r=rightAt(s),m=new THREE.Mesh(moteGeo,moteMat);m.position.copy(p).addScaledVector(r,(rnd()-.5)*8);m.position.y=1+rnd()*5;scene.add(m);motes.push({m,phase:rnd()*9})}
+
+const labels=[[0,'花の草原'],[.2,'林縁手前'],[.4,'森の入口'],[.55,'成木の狭間'],[.75,'光の森内部'],[1,'小川の橋']];
+const jumps=document.getElementById('jumps');labels.forEach(([s,label],i)=>{const b=document.createElement('button');b.textContent=label;b.onclick=()=>{playing=false;progress=s;sync();document.querySelectorAll('.jumps button').forEach(x=>x.classList.remove('active'));b.classList.add('active')};jumps.appendChild(b)});
+let progress=0,playing=false,playMode='preview',sentence=1,last=performance.now(),walkPhase=0;
+function nearestLabel(s){let n=0;for(let i=1;i<labels.length;i++)if(Math.abs(labels[i][0]-s)<Math.abs(labels[n][0]-s))n=i;return n}
+function sync(){ui.progress.value=Math.round(progress*1000);ui.progressOut.textContent=progress.toFixed(3);ui.paceOut.textContent=(.45+(+ui.pace.value/20)*1.55).toFixed(2);const n=nearestLabel(progress);ui.label.textContent=labels[n][1]+' · s '+progress.toFixed(2);document.querySelector('.paper').style.display=ui.paper.checked?'block':'none'}
+ui.play.onclick=()=>{playMode='preview';playing=true};ui.walkPlay.onclick=()=>{playMode='walk';playing=true};ui.pause.onclick=()=>playing=false;ui.reset.onclick=()=>{playing=false;progress=0;walkPhase=0;sync()};ui.progress.oninput=()=>{playing=false;progress=+ui.progress.value/1000;sync()};ui.pace.oninput=sync;ui.paper.onchange=sync;ui.sentence.onclick=()=>{sentence++;ui.sentenceOut.textContent='文 '+sentence+' / s '+progress.toFixed(2)+' を保持'};
+function resize(){const w=viewport.clientWidth,h=viewport.clientHeight;if(renderer.domElement.width!==Math.round(w*renderer.getPixelRatio())||renderer.domElement.height!==Math.round(h*renderer.getPixelRatio())){renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}}
+function smoothPulse(s,a,b){if(s<=a||s>=b)return 0;const x=(s-a)/(b-a);return Math.sin(x*Math.PI)}
+function logStep(s){return -.055*smoothPulse(s,.685,.716)+.43*smoothPulse(s,.708,.765)-.045*smoothPulse(s,.758,.79)}
+function logLook(s){return -.22*smoothPulse(s,.665,.724)+.10*smoothPulse(s,.725,.775)}
+const meadowTop=new THREE.Color(0x9bcfdf),meadowHorizon=new THREE.Color(0xe9efd8),forestTop=new THREE.Color(0x52786b),forestHorizon=new THREE.Color(0x9bb59a),fogMeadow=new THREE.Color(0xc4dcd2),fogForest=new THREE.Color(0x779485);
+function render(now){requestAnimationFrame(render);resize();const dt=Math.min(.05,(now-last)/1000);last=now;const pace=.45+(+ui.pace.value/20)*1.55,walking=playing&&playMode==='walk';if(playing){const logSlow=walking&&progress>.67&&progress<.79?.58:1;progress=Math.min(1,progress+dt/12*logSlow);if(progress===1)playing=false;sync()}if(walking)walkPhase+=dt*(4.4+pace*3.4);const s=progress>.975?.925:Math.min(progress,.975),p=point(s),t=tangent(s),r=rightAt(s),look=point(Math.min(1,s+.045));const motion=ui.reduced.checked?.25:1,foot=Math.sin(walkPhase),vertical=walking?Math.abs(foot)*.052*motion*(.65+.35*pace):0,lateral=walking?foot*.034*motion:0,step=walking?logStep(progress)*(ui.reduced.checked?.18:1):0,baseY=height(p.x,p.z)+1.52+vertical+step;camera.position.set(p.x+r.x*lateral,baseY,p.z+r.z*lateral);camera.up.set(Math.sin(walkPhase*.5)*.012*motion,1,Math.cos(walkPhase*.5)*.006*motion).normalize();camera.lookAt(look.x+r.x*lateral*.25,height(look.x,look.z)+(progress>.975?.42:1.25)+vertical*.35+step*.18+(walking?logLook(progress)*motion:0),look.z+r.z*lateral*.25);sky.position.copy(camera.position);const forestBase=THREE.MathUtils.smoothstep(progress,.22,.68),bridgeOpening=THREE.MathUtils.smoothstep(progress,.88,1),forestMix=forestBase*(1-.36*bridgeOpening);skyUniforms.forestMix.value=forestMix;skyUniforms.topColor.value.copy(meadowTop).lerp(forestTop,forestMix);skyUniforms.horizonColor.value.copy(meadowHorizon).lerp(forestHorizon,forestMix);scene.fog.color.copy(fogMeadow).lerp(fogForest,forestMix);scene.fog.density=THREE.MathUtils.lerp(.0085,.024,forestMix);hemi.intensity=THREE.MathUtils.lerp(2.0,1.22,forestMix);sun.intensity=THREE.MathUtils.lerp(3.1,1.85,forestMix);renderer.toneMappingExposure=THREE.MathUtils.lerp(1.06,.91,forestMix);motes.forEach(({m,phase},i)=>{m.visible=ui.motes.checked;m.position.y+=Math.sin(now*.0012+phase+i)*.00035});renderer.render(scene,camera)}
+sync();requestAnimationFrame(render);
+window.__journeyScene={setProgress(v){playing=false;progress=THREE.MathUtils.clamp(v,0,1);sync()},state(){const p=point(progress);return{journeyProgress:progress,isTyping:playing,playMode,typingPace:.45+(+ui.pace.value/20)*1.55,reducedMotion:ui.reduced.checked,cameraTerrainY:height(p.x,p.z),trailWidth:widthAt(progress)}}};
+</script>
+</body>
+</html>
