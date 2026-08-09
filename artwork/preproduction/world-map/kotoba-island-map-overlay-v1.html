@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ことば島 球面座標オーバーレイ検証 v1</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, -apple-system, "Hiragino Sans", sans-serif; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-width: 0; background: #10211f; color: #f7f4e8; }
+    body { min-height: 100vh; overflow-x: hidden; }
+    header { min-height: 68px; padding: 10px clamp(12px, 2vw, 24px); display: flex; gap: 14px; align-items: center; justify-content: space-between; background: #17332f; border-bottom: 1px solid #73968b; }
+    h1 { margin: 0; font-size: clamp(15px, 2vw, 22px); line-height: 1.25; }
+    .sub { margin: 3px 0 0; color: #c7d9d2; font-size: 12px; }
+    .controls { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+    button { border: 1px solid #a9c7bc; border-radius: 999px; padding: 7px 11px; color: inherit; background: #234c45; font: inherit; font-size: 12px; cursor: pointer; }
+    button[aria-pressed="true"] { color: #10211f; background: #f5d783; border-color: #fff1bb; }
+    main { width: min(100%, 1280px); margin: 0 auto; padding: 10px; }
+    .map { position: relative; width: 100%; aspect-ratio: 1636 / 964; overflow: hidden; border: 1px solid #668a80; border-radius: 12px; background: #173f55; }
+    .map > img, .map > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .map > img { object-fit: contain; }
+    svg { overflow: visible; }
+    .layer { transition: opacity .15s linear; }
+    .off { opacity: 0; pointer-events: none; }
+    .route-built { fill: none; stroke: #fff1a6; stroke-width: 5; paint-order: stroke; filter: drop-shadow(0 1px 2px #132a26); }
+    .route-plan { fill: none; stroke: #e7d7ff; stroke-width: 3.5; stroke-dasharray: 12 9; filter: drop-shadow(0 1px 2px #132a26); }
+    .node { fill: #17332f; stroke: white; stroke-width: 2.5; }
+    .node-label { fill: white; font-size: 14px; font-weight: 800; text-anchor: middle; dominant-baseline: central; paint-order: stroke; stroke: #17332f; stroke-width: 4; stroke-linejoin: round; }
+    .chapter { fill: #f7c856; stroke: #fff; stroke-width: 3; }
+    .vertical { fill: none; stroke: #ffb85c; stroke-width: 4; marker-end: url(#arrow); }
+    .down { stroke: #75d4ff; }
+    .watershed { fill: none; stroke: #ffec9a; stroke-width: 3; stroke-dasharray: 7 6; }
+    .stream { fill: none; stroke: #58c9f0; stroke-width: 5; }
+    .wetland { fill: #57bb9d; fill-opacity: .32; stroke: #b7f4dd; stroke-width: 2; }
+    .reef { fill: none; stroke: #66f0df; stroke-width: 7; stroke-dasharray: 3 7; }
+    .wind { fill: none; stroke: #fff; stroke-width: 3; marker-end: url(#wind-arrow); opacity: .9; }
+    .rain { fill: #4da5ff; fill-opacity: .19; stroke: #bfe4ff; stroke-width: 2; }
+    .shadow { fill: #e5b44f; fill-opacity: .17; stroke: #ffe0a0; stroke-width: 2; }
+    .place-bg { fill: #10211f; fill-opacity: .78; stroke: #e9f2ec; stroke-width: 1; }
+    .place { color: white; font-size: 16px; font-weight: 700; text-align: center; line-height: 1.15; }
+    ruby { ruby-position: over; }
+    rt { font-size: .58em; }
+    .cal-line { stroke: #ff77bd; stroke-width: 1.5; stroke-dasharray: 4 4; }
+    .cal-ref { fill: #ff77bd; }
+    .cal-fit { fill: none; stroke: #fff; stroke-width: 2; }
+    .cal-text { fill: white; font-size: 12px; paint-order: stroke; stroke: #402037; stroke-width: 3; }
+    .legend { margin-top: 8px; display: grid; grid-template-columns: 1fr auto; gap: 8px 14px; align-items: start; font-size: 12px; color: #dbe8e2; }
+    .warning { color: #ffdf91; }
+    details { min-width: 0; }
+    summary { cursor: pointer; }
+    code { overflow-wrap: anywhere; }
+    @media (max-width: 800px) { header { align-items: flex-start; flex-direction: column; } .controls { justify-content: flex-start; } .legend { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1><ruby>ことば島<rt>ことばじま</rt></ruby>・<ruby>球面座標<rt>きゅうめんざひょう</rt></ruby>オーバーレイ検証 v1</h1>
+      <p class="sub">座標正本 → 局所ENU → 決定論的affine較正。線を絵へ手描きで合わせない。</p>
+    </div>
+    <nav class="controls" aria-label="表示レイヤー">
+      <button data-layer="route" aria-pressed="true">route</button>
+      <button data-layer="water" aria-pressed="false">流域</button>
+      <button data-layer="climate" aria-pressed="false">気候</button>
+      <button data-layer="labels" aria-pressed="true">地名</button>
+      <button data-layer="calibration" aria-pressed="false">較正QA</button>
+      <button id="terrainOnly" aria-pressed="false">地形のみ</button>
+    </nav>
+  </header>
+  <main>
+    <div class="map" id="map">
+      <img src="kotoba-island-geology-map-concept-v2.png" alt="文字とrouteを含まない、ことば島の地学コンセプトv2">
+      <svg id="overlay" viewBox="0 0 1636 964" role="img" aria-label="球面座標から投影したroute、流域、気候、地名の検証オーバーレイ">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ffb85c"/></marker>
+          <marker id="wind-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#fff"/></marker>
+        </defs>
+        <g id="climate" class="layer off"></g>
+        <g id="water" class="layer off"></g>
+        <g id="route" class="layer"></g>
+        <g id="labels" class="layer"></g>
+        <g id="calibration" class="layer off"></g>
+      </svg>
+    </div>
+    <div class="legend">
+      <div>
+        <strong>凡例:</strong> 黄実線 Stage 1〜12 ／ 薄紫破線 Stage 13〜36 ／ 六角 Stage 6・12・18・24・30・36 ／ 橙↑ 上昇 ／ 青↓ 下降
+        <span class="warning">　v2画像の古代樹〜雲上遺跡の螺旋路は強すぎ、最終修正待ち。route正本として承認しない。</span>
+      </div>
+      <details>
+        <summary>投影・較正情報</summary>
+        <p>基準点 <code>12.025°N, 142.000°E</code>。半径6371km相当の局所正距方位投影の小範囲近似としてENU kmを算出し、地形画の斜俯瞰へ最小二乗affineで写す。高度は検証用に <code>-230px/km</code> の画面上方offset。pinkの点が画像上ランドマーク、白円が座標投影結果、線が残差。大きな残差は画像と正本の不一致であり、routeを手で曲げて隠さない。</p>
+      </details>
+    </div>
+  </main>
+  <script>
+    const W = 1636, H = 964, LAT0 = 12.025, LON0 = 142.000;
+    const AX = [65.8766933671, -0.9888348509, 890.4857738602];
+    const AY = [-1.5386732804, -55.0751505470, 501.0273078];
+    const ALT_PX_PER_KM = 230;
+    const stages = [
+      [1,11.982,142.062,.08,12.040,142.025,.22],[2,12.040,142.025,.22,12.078,141.992,.72],[3,12.078,141.992,.72,12.018,141.948,.03],[4,12.018,141.948,.03,12.006,141.982,.12],[5,12.006,141.982,.12,12.024,142.000,1.76],[6,12.024,142.000,1.76,11.986,142.058,.10],
+      [7,11.986,142.058,.10,12.043,142.029,.24],[8,12.043,142.029,.24,12.081,141.996,.76],[9,12.081,141.996,.76,12.021,141.951,.04],[10,12.021,141.951,.04,12.009,141.985,.14],[11,12.009,141.985,.14,12.027,142.003,1.82],[12,12.027,142.003,1.82,12.029,141.998,1.91],
+      [13,12.029,141.998,1.91,12.046,142.022,.26],[14,12.046,142.022,.26,12.084,141.989,.80],[15,12.084,141.989,.80,12.024,141.944,.04],[16,12.024,141.944,.04,12.012,141.978,.15],[17,12.012,141.978,.15,12.030,141.996,1.88],[18,12.030,141.996,1.88,11.978,142.054,.08],
+      [19,11.978,142.054,.08,12.037,142.019,.21],[20,12.037,142.019,.21,12.075,141.986,.69],[21,12.075,141.986,.69,12.015,141.941,.03],[22,12.015,141.941,.03,12.003,141.975,.11],[23,12.003,141.975,.11,12.021,141.993,1.72],[24,12.021,141.993,1.72,11.975,142.051,.07],
+      [25,11.975,142.051,.07,12.034,142.016,.20],[26,12.034,142.016,.20,12.072,141.983,.66],[27,12.072,141.983,.66,12.012,141.938,.03],[28,12.012,141.938,.03,12.000,141.972,.10],[29,12.000,141.972,.10,12.018,141.990,1.69],[30,12.018,141.990,1.69,11.972,142.048,.07],
+      [31,11.972,142.048,.07,12.031,142.013,.19],[32,12.031,142.013,.19,12.069,141.980,.63],[33,12.069,141.980,.63,12.009,141.935,.03],[34,12.009,141.935,.03,11.997,141.969,.10],[35,11.997,141.969,.10,12.015,141.987,1.66],[36,12.015,141.987,1.66,12.025,142.001,1.96]
+    ];
+    const calibration = [
+      [11.982,142.062,0,1360,742,'南東船着き'], [12.040,142.025,0,1020,405,'森の橋'],
+      [12.086,141.982,0,750,120,'最高峰'], [12.018,141.948,0,598,560,'河口'],
+      [12.020,142.000,0,910,590,'古代樹'], [12.046,142.022,0,1050,350,'林縁'],
+      [11.990,141.945,0,430,700,'外礁']
+    ];
+    const NS = 'http://www.w3.org/2000/svg';
+    const svgEl = (tag, attrs = {}, parent) => { const el=document.createElementNS(NS,tag); Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v)); if(parent) parent.appendChild(el); return el; };
+    function project(lat, lon, alt=0) {
+      const n=(lat-LAT0)*111.195, e=(lon-LON0)*111.195*Math.cos(LAT0*Math.PI/180);
+      return { x:AX[0]*e+AX[1]*n+AX[2], y:AY[0]*e+AY[1]*n+AY[2]-alt*ALT_PX_PER_KM };
+    }
+    function path(points) { return points.map((p,i)=>`${i?'L':'M'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' '); }
+    function hex(x,y,r=12){return Array.from({length:6},(_,i)=>{const a=Math.PI/3*i-Math.PI/2;return `${x+r*Math.cos(a)},${y+r*Math.sin(a)}`}).join(' ')}
+    function drawRoute(){
+      const g=document.querySelector('#route');
+      stages.forEach(s=>{
+        const [n,a,b,h,c,d,k]=s, p1=project(a,b,h), p2=project(c,d,k), mid={x:(p1.x+p2.x)/2,y:(p1.y+p2.y)/2};
+        svgEl('path',{d:path([p1,p2]),class:n<=12?'route-built':'route-plan'},g);
+        if(Math.abs(k-h)>.8) svgEl('path',{d:path([{x:mid.x-12,y:mid.y+18},{x:mid.x+12,y:mid.y-18}]),class:`vertical ${k<h?'down':''}`},g);
+        if([6,12,18,24,30,36].includes(n)) svgEl('polygon',{points:hex(p2.x,p2.y,14),class:'chapter'},g);
+        else svgEl('circle',{cx:p2.x,cy:p2.y,r:8,class:'node'},g);
+        const t=svgEl('text',{x:p2.x,y:p2.y,class:'node-label'},g);t.textContent=n;
+      });
+    }
+    function drawWater(){
+      const g=document.querySelector('#water');
+      const ridge=[[12.090,141.970],[12.082,141.995],[12.068,142.018]].map(p=>project(...p));
+      svgEl('path',{d:path(ridge),class:'watershed'},g);
+      const streams=[
+        [[12.075,142.005],[12.055,142.010],[12.040,142.025],[12.026,141.985],[12.015,141.945]],
+        [[12.082,141.986],[12.060,141.980],[12.035,141.970],[12.015,141.945]],
+        [[12.030,142.000],[12.018,141.985],[12.015,141.945]]
+      ];
+      streams.forEach(s=>svgEl('path',{d:path(s.map(p=>project(...p))),class:'stream'},g));
+      const wet=[[12.030,141.942],[12.020,141.936],[12.000,141.940],[11.990,141.958],[12.010,141.968]].map(p=>project(...p));
+      svgEl('polygon',{points:wet.map(p=>`${p.x},${p.y}`).join(' '),class:'wetland'},g);
+      const reef=[[11.985,141.936],[11.978,141.950],[11.982,141.970],[11.995,141.975]].map(p=>project(...p));
+      svgEl('path',{d:path(reef),class:'reef'},g);
+    }
+    function drawClimate(){
+      const g=document.querySelector('#climate');
+      const rain=[[12.100,142.010],[12.075,142.050],[12.025,142.045],[12.020,142.005],[12.060,141.985]].map(p=>project(...p));
+      const shadow=[[12.055,141.970],[12.015,141.925],[11.970,141.950],[11.975,142.020],[12.010,142.000]].map(p=>project(...p));
+      svgEl('polygon',{points:rain.map(p=>`${p.x},${p.y}`).join(' '),class:'rain'},g);
+      svgEl('polygon',{points:shadow.map(p=>`${p.x},${p.y}`).join(' '),class:'shadow'},g);
+      [[1450,270,1160,300],[1500,360,1190,380],[1470,450,1160,470]].forEach(([x1,y1,x2,y2])=>svgEl('path',{d:`M${x1} ${y1} L${x2} ${y2}`,class:'wind'},g));
+    }
+    function label(x,y,w,html){
+      const g=document.querySelector('#labels'), fo=svgEl('foreignObject',{x:x-w/2,y:y-24,width:w,height:55},g);
+      const div=document.createElement('div');div.className='place';div.innerHTML=html;div.style.background='rgba(16,33,31,.78)';div.style.border='1px solid #e9f2ec';div.style.borderRadius='8px';div.style.padding='3px 6px';fo.appendChild(div);
+    }
+    function drawLabels(){
+      label(1325,710,120,'<ruby>花草原<rt>はなくさはら</rt></ruby>');
+      label(1125,390,150,'<ruby>木漏れ日の森<rt>こもれびのもり</rt></ruby>');
+      label(700,150,145,'<ruby>星見山脈<rt>ほしみさんみゃく</rt></ruby>');
+      label(435,700,150,'<ruby>珊瑚の入り江<rt>さんごのいりえ</rt></ruby>');
+      label(880,590,140,'<ruby>古代樹<rt>こだいじゅ</rt></ruby>');
+      label(1115,105,140,'<ruby>雲上遺跡<rt>うんじょういせき</rt></ruby>');
+    }
+    function drawCalibration(){
+      const g=document.querySelector('#calibration');
+      calibration.forEach(([lat,lon,alt,rx,ry,name])=>{const p=project(lat,lon,alt),res=Math.round(Math.hypot(p.x-rx,p.y-ry));svgEl('line',{x1:rx,y1:ry,x2:p.x,y2:p.y,class:'cal-line'},g);svgEl('circle',{cx:rx,cy:ry,r:5,class:'cal-ref'},g);svgEl('circle',{cx:p.x,cy:p.y,r:7,class:'cal-fit'},g);const t=svgEl('text',{x:rx+8,y:ry-8,class:'cal-text'},g);t.textContent=`${name} ${res}px`;});
+    }
+    drawClimate();drawWater();drawRoute();drawLabels();drawCalibration();
+    document.querySelectorAll('button[data-layer]').forEach(btn=>btn.addEventListener('click',()=>{const on=btn.getAttribute('aria-pressed')!=='true';btn.setAttribute('aria-pressed',String(on));document.querySelector(`#${btn.dataset.layer}`).classList.toggle('off',!on);document.querySelector('#terrainOnly').setAttribute('aria-pressed','false');}));
+    document.querySelector('#terrainOnly').addEventListener('click',e=>{const on=e.currentTarget.getAttribute('aria-pressed')!=='true';e.currentTarget.setAttribute('aria-pressed',String(on));document.querySelectorAll('.layer').forEach(g=>g.classList.toggle('off',on));document.querySelectorAll('button[data-layer]').forEach(b=>b.setAttribute('aria-pressed',on?'false':String(!b.closest('.off'))));});
+  </script>
+</body>
+</html>
