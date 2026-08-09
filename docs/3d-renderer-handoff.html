@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>3Dレンダラー検討・再開用引継ぎ書</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f6f1e5;
+      --paper-2: #fffdf7;
+      --ink: #24332d;
+      --muted: #66746d;
+      --line: #d5d6c8;
+      --forest: #315e4d;
+      --forest-soft: #dbe8dc;
+      --moss: #829b63;
+      --amber: #b67938;
+      --amber-soft: #f3e3c9;
+      --fail: #9b443f;
+      --fail-soft: #f4ddda;
+      --shadow: 0 12px 32px rgba(51, 63, 54, .09);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 4%, rgba(151, 177, 138, .18), transparent 30rem),
+        linear-gradient(180deg, #edf2e7 0, var(--paper) 24rem);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+      line-height: 1.75;
+    }
+    a { color: #28644f; text-underline-offset: .18em; }
+    code { padding: .12rem .35rem; border-radius: .3rem; background: #edf0e8; font-size: .92em; }
+    pre { overflow: auto; padding: 1rem; border-radius: .7rem; background: #1e2b26; color: #eff5ed; line-height: 1.55; }
+    .hero { padding: 4.5rem max(1.3rem, calc((100vw - 1120px) / 2)) 3rem; }
+    .eyebrow { margin: 0 0 .6rem; color: var(--forest); font-weight: 700; letter-spacing: .11em; }
+    h1 { max-width: 900px; margin: 0; font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-size: clamp(2rem, 5vw, 4.4rem); line-height: 1.18; }
+    .lead { max-width: 820px; margin: 1.4rem 0 0; font-size: 1.08rem; }
+    .status { display: inline-flex; gap: .55rem; align-items: center; margin-top: 1.5rem; padding: .55rem .9rem; border: 1px solid #d8b7b0; border-radius: 999px; background: var(--fail-soft); color: #793b36; font-weight: 700; }
+    .layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 2rem; width: min(1180px, calc(100% - 2rem)); margin: 0 auto 5rem; }
+    nav { position: sticky; top: 1rem; align-self: start; padding: 1rem; border: 1px solid var(--line); border-radius: 1rem; background: rgba(255, 253, 247, .92); box-shadow: var(--shadow); }
+    nav strong { display: block; margin-bottom: .5rem; }
+    nav a { display: block; padding: .28rem .1rem; color: var(--muted); text-decoration: none; font-size: .92rem; }
+    nav a:hover { color: var(--forest); }
+    main { min-width: 0; }
+    section { margin: 0 0 1.4rem; padding: clamp(1.2rem, 3vw, 2.1rem); border: 1px solid var(--line); border-radius: 1.15rem; background: rgba(255, 253, 247, .94); box-shadow: var(--shadow); }
+    h2 { margin: 0 0 1rem; color: var(--forest); font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-size: 1.65rem; line-height: 1.35; }
+    h3 { margin: 1.55rem 0 .55rem; font-size: 1.08rem; }
+    p, ul, ol { margin-top: .55rem; }
+    li + li { margin-top: .28rem; }
+    .callout { padding: 1rem 1.1rem; border-left: .34rem solid var(--amber); border-radius: .35rem .7rem .7rem .35rem; background: var(--amber-soft); }
+    .callout.good { border-left-color: var(--forest); background: var(--forest-soft); }
+    .callout.fail { border-left-color: var(--fail); background: var(--fail-soft); }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .card { padding: 1rem; border: 1px solid var(--line); border-radius: .8rem; background: var(--paper-2); }
+    .card h3 { margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; font-size: .94rem; }
+    th, td { padding: .7rem .75rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { color: #365448; background: #eef1e8; }
+    .table-wrap { overflow-x: auto; }
+    figure { margin: 1rem 0; }
+    figure img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: .8rem; background: #e7ebdf; }
+    figcaption { margin-top: .45rem; color: var(--muted); font-size: .88rem; }
+    .compare { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; }
+    .compare figure { margin: 0; }
+    .badge { display: inline-block; margin-right: .35rem; padding: .15rem .55rem; border-radius: 999px; font-size: .8rem; font-weight: 700; }
+    .pass { background: var(--forest-soft); color: #315744; }
+    .conditional { background: var(--amber-soft); color: #76512d; }
+    .reject { background: var(--fail-soft); color: #843f39; }
+    .small { color: var(--muted); font-size: .88rem; }
+    .sources a { word-break: break-all; }
+    footer { width: min(1120px, calc(100% - 2rem)); margin: 0 auto 3rem; color: var(--muted); font-size: .88rem; }
+    @media (max-width: 820px) {
+      .layout { grid-template-columns: 1fr; }
+      nav { position: static; }
+      .grid, .compare { grid-template-columns: 1fr; }
+      .hero { padding-top: 2.8rem; }
+    }
+    @media print {
+      body { background: white; }
+      nav { display: none; }
+      .layout { display: block; width: 100%; }
+      section { box-shadow: none; break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <p class="eyebrow">ことば島 / STAGE 1 / HANDOFF</p>
+    <h1>3Dレンダラー検討・<br>再開用引継ぎ書</h1>
+    <p class="lead">草原から木漏れ日の森へ歩く一人称シーンについて、承認済みの意図、技術契約、試作結果、画像レビュー、未達、再開手順を一つにまとめた文書です。次の担当は、既存実装を完成品として継ぎ足さず、本書の承認ゲートから再開してください。</p>
+    <div class="status">実装停止中 / Raw WebGLグレーボックス不合格 / Three.js再検討待ち</div>
+  </header>
+
+  <div class="layout">
+    <nav aria-label="目次">
+      <strong>目次</strong>
+      <a href="#decision">1. 現在の決定</a>
+      <a href="#authority">2. 正本と優先順位</a>
+      <a href="#vision">3. 承認済み方向</a>
+      <a href="#scope">4. 対象範囲</a>
+      <a href="#contract">5. 技術契約</a>
+      <a href="#history">6. 試作と継承点</a>
+      <a href="#review">7. 画像レビュー</a>
+      <a href="#options">8. 基盤比較</a>
+      <a href="#restart">9. 推奨再開手順</a>
+      <a href="#criteria">10. 判定基準</a>
+      <a href="#non-goals">11. 未着手事項</a>
+      <a href="#files">12. 関連ファイル</a>
+      <a href="#template">13. 次回依頼文</a>
+    </nav>
+
+    <main>
+      <section id="decision">
+        <h2>1. 現在の決定</h2>
+        <div class="callout fail"><strong>このセッションでの3Dレンダラー実装指示は停止する。</strong> 未追跡のRaw WebGLグレーボックスは比較・構造検証資料として保存し、品質版へ継ぎ足さない。ゲーム本体にも適用しない。</div>
+        <p>止めた理由は、ルート同期や地形追従などの技術契約は前進した一方、承認済みスケッチが要求する「柔らかな森」「有機的な樹木」「湿った林床」「水彩の大きな色面」が画像で成立しなかったためです。数値条件だけで進めず、次は画面意図を一枚で判定できる狭い区間から再開します。</p>
+        <div class="callout good"><strong>再開時の第一ゲート:</strong> <code>s=.75</code>（森内部）周辺25〜35mだけをThree.jsで作り、承認スケッチの下中央コマと横並びで判定する。合格するまで全長・他コマ・ゲーム統合へ進まない。</div>
+      </section>
+
+      <section id="authority">
+        <h2>2. 正本と優先順位</h2>
+        <ol>
+          <li><a href="3d-scene-brief-meadow-to-forest.md">3Dシーン制作ブリーフ</a> — 当該区間の画面目標・制作範囲</li>
+          <li><a href="../artwork/preproduction/meadow-to-forest-storyboard-nihonga-simplified-v1.png">承認済み絵コンテ</a> — 構図と画風の画像基準</li>
+          <li><a href="meadow-to-forest-greybox-shot-plan.md">6コマ画面設計表</a> — 各地点の密度・画面占有・合否</li>
+          <li><a href="story-bible.md">ストーリーバイブル</a> — 世界観・地理・物語上の正史</li>
+          <li><a href="game-design.md">ゲームデザイン</a> — タイピング体験・UI・アクセシビリティ</li>
+          <li><a href="watercolor-renderer-implementation.md">レンダラー実装検討</a> — 上記を実現する技術候補</li>
+        </ol>
+        <p class="small">矛盾時は、技術都合で上位の画面目標を弱めません。グレーボックスHTMLやQA READMEは正本ではなく、試行と検査結果です。</p>
+      </section>
+
+      <section id="vision">
+        <h2>3. 承認済みのビジュアル方向</h2>
+        <p><strong>簡略化した日本画調 × 透明水彩 × 控えめなファンタジー。</strong> 細密画や写真表現ではなく、大きな色面、余白、非対称配置、簡略化した植物を使います。黒い輪郭は立てず、2〜3段階の柔らかな陰影、薄い紙目、輪郭付近だけのにじみ、青緑の距離霧で奥行きを作ります。</p>
+        <figure>
+          <img src="../artwork/preproduction/meadow-to-forest-storyboard-nihonga-simplified-v1.png" alt="承認済みの草原から森への6コマ絵コンテ">
+          <figcaption>承認済み基準。画面の密度、非対称性、道の細さ、森の包まれ方、橋先の抜けを読む。細部をそのまま複製するための絵ではない。</figcaption>
+        </figure>
+        <div class="grid">
+          <div class="card"><h3>目指すもの</h3><ul><li>枝先にまとまる3〜6個の樹冠塊</li><li>暖かな樹皮、翡翠の苔、青緑の霧</li><li>高木・若木・低木・草本・林床の5層</li><li>大きく柔らかな木漏れ日と空気遠近</li><li>少数の光粒による控えめな幻想性</li></ul></div>
+          <div class="card"><h3>避けるもの</h3><ul><li>棒状の幹＋球／菱形の葉</li><li>等間隔の並木、左右対称の門</li><li>写真樹皮、写実PBR、強い鏡面</li><li>黒いアウトライン、ネオン発光</li><li>高周波な個別葉・花・全面ノイズ</li></ul></div>
+        </div>
+      </section>
+
+      <section id="scope">
+        <h2>4. ステージ1で扱う範囲</h2>
+        <p>対象は <strong>花の草原 → 林縁 → 最初の成木前 → 成木通過 → 森内部 → 小川手前</strong> の一本の連続空間です。10秒は方向確認用の短縮デモで、本番ステージ時間ではありません。</p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>s</th><th>地点</th><th>一枚で読める必須要素</th></tr></thead>
+          <tbody>
+            <tr><td>0.00</td><td>花の草原</td><td>広い空、細い踏み跡、少数の花、遠い林縁と山</td></tr>
+            <tr><td>0.20</td><td>林縁手前</td><td>若木・低木・岩、減る花、近づく森</td></tr>
+            <tr><td>0.40</td><td>最初の成木前</td><td>片側の近景成木、次に通る二本、苔・落葉・岩・シダ</td></tr>
+            <tr><td>0.55</td><td>成木通過</td><td>前コマと同じ二本を非対称に通過、頭上の樹冠、曲がる細道</td></tr>
+            <tr><td>0.75</td><td>森内部</td><td>5層、倒木／大岩、湿った林床、中央を外した奥の光</td></tr>
+            <tr><td>1.00</td><td>小川手前</td><td>土の取り付き、小川、5〜8枚の橋板、対岸路、明るい抜け、遠山</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section id="contract">
+        <h2>5. 移動・経路・カメラの技術契約</h2>
+        <h3>同一空間を前進する</h3>
+        <ul>
+          <li>背景画像の交換、クロスフェード、暗転、霧の壁、ポータルでは繋がない。</li>
+          <li>文が終わっても位置を戻さず、ステージ全体の <code>journeyProgress</code> を0〜1で単調増加させる。</li>
+          <li><code>sentenceProgress</code> を旅座標へ使わない。入力停止時も到達位置を保持する。</li>
+        </ul>
+        <pre><code>type JourneySceneInput = {
+  journeyProgress: number // 0..1、文をまたいで単調増加
+  isTyping: boolean
+  typingPace: number      // 揺れ・風・粒子の強さだけ
+  reducedMotion: boolean
+}</code></pre>
+        <h3>一本のルートを唯一の情報源にする</h3>
+        <p>弧長正規化したワールドスプラインから、カメラ、先読み、地形上のtrail mask、道幅、植生配置、橋中心と向きをすべて求めます。処理ごとの独自sin曲線や目測中心は禁止です。同じ <code>s</code> とシードから同じ画面を再現できることが必要です。</p>
+        <h3>獣道と地形</h3>
+        <ul>
+          <li>道は別の長方形メッシュではなく、地形上の踏圧、土色、草・苔・落葉の密度差で表す。</li>
+          <li>幅は草原2.2〜2.5m → 林縁1.8〜2.2m → 森1.5〜1.8mへ連続的に狭める。</li>
+          <li>道中央にも苔5〜12%、落葉8〜18%、短草3〜8%を非周期に戻す。</li>
+          <li>根・草・シダを左右から非対称に侵入させるが、実効幅は重点区間で約1.2m以上を保つ。</li>
+        </ul>
+        <h3>カメラ</h3>
+        <ul>
+          <li>一人称、地上約1.5m、35mm換算28〜35mm相当。道に沿って緩く蛇行する。</li>
+          <li><code>cameraY = terrainHeight(cameraX, cameraZ) + eyeHeight</code>。注視点も先読み地点の地形高へ追従。</li>
+          <li>基準姿勢は <code>s</code> だけから決定。歩行揺れは後段の一時オフセットとして分離。</li>
+          <li>reduced motionでは揺れ・強い視差・粒子を減らすが、場所と場面内容は変えない。</li>
+        </ul>
+        <h3>橋</h3>
+        <p>カメラは水際2.5〜4m手前。橋は中央から5〜12%ずらし、5〜8枚の板を台形の連なりとして見せます。水路は進行方向を横断し、両岸と対岸へ続く細道を同時に読み取れる構図にします。橋中心から左右3m以内へ太い幹を置きません。</p>
+      </section>
+
+      <section id="history">
+        <h2>6. 試した方式と、過去試作から継承するもの</h2>
+        <div class="grid">
+          <div class="card"><h3>2D背景／クロスフェード案</h3><p>複数背景を重ねるだけでは「森から海へ歩いて出る」空間移動より、場面転換に見えやすいと判断。通常移動の本案から除外しました。</p></div>
+          <div class="card"><h3>Three.js旧技術試作</h3><p>水彩テクスチャ、紙目、距離霧、草・岩・倒木・小川、簡易橋などを確認。見た目の長所はある一方、森内部中心、独立曲線、固定カメラ高、終端ループのため完成土台にはしません。</p></div>
+          <div class="card"><h3>Raw WebGLグレーボックス</h3><p>共通ルート、弧長LUT、道幅、地形追従、進捗停止、デバッグ表示を単体HTMLで検証。構造面は前進しましたが、階層モデル・材質・影・5層の反復に向かないことが判明しました。</p></div>
+          <div class="card"><h3>継承する長所</h3><p>固定シード、非対称配置、低周波な林床色面、暖色樹皮＋青緑霧＋黄緑木漏れ日、近景を濃く遠景を低彩度にする空気遠近、複数樹冠塊という考え方。</p></div>
+        </div>
+        <div class="callout">コードを継ぎ足すのではなく、視覚的長所と共通ルート契約を新しいThree.js構造上へ再実装します。</div>
+      </section>
+
+      <section id="review">
+        <h2>7. Raw WebGL版の画像レビュー</h2>
+        <p>以下は同一版から撮影したQAです。<code>s=0/.2/.55</code> は構造グレーボックスとして成立。<code>s=.4/.75/1</code> は、事前に定義した画面設計と画像基準に対して不合格です。</p>
+        <h3>s=.40 — 最初の成木前 <span class="badge reject">不合格</span></h3>
+        <div class="compare">
+          <figure><img src="../artwork/renderer-prototypes/qa/meadow-to-forest-greybox/sketch-s040.png" alt="s=.40承認スケッチ"><figcaption>基準: 太い前景幹、苔岩、シダ、次に通る二本。</figcaption></figure>
+          <figure><img src="../artwork/renderer-prototypes/qa/meadow-to-forest-greybox/frame-s040.png" alt="s=.40実装画像"><figcaption>実装: 幹列と抽象的な葉塊が支配し、有機的な入口と通過対象の二本が弱い。</figcaption></figure>
+        </div>
+        <h3>s=.55 — 成木通過 <span class="badge pass">構造合格</span></h3>
+        <div class="compare">
+          <figure><img src="../artwork/renderer-prototypes/qa/meadow-to-forest-greybox/sketch-s055.png" alt="s=.55承認スケッチ"><figcaption>基準: 非対称な二本を実際に通過。</figcaption></figure>
+          <figure><img src="../artwork/renderer-prototypes/qa/meadow-to-forest-greybox/frame-s055.png" alt="s=.55実装画像"><figcaption>実装: s=.4と同じ空間を切替なしで通過する構造は確認できた。</figcaption></figure>
+        </div>
+        <h3>s=.75 — 森内部 <span class="badge reject">第一ゲート不合格</span></h3>
+        <div class="compare">
+          <figure><img src="../artwork/renderer-prototypes/qa/meadow-to-forest-greybox/sketch-s075.png" alt="s=.75承認スケッチ"><figcaption>基準: 5層、湿った林床、倒木、重なる幹、右寄りの光。</figcaption></figure>
+          <figure><img src="../artwork/renderer-prototypes/qa/meadow-to-forest-greybox/interim-render-s075.png" alt="s=.75中間レンダー"><figcaption>中間: 空が広すぎ、球状低木が壁となり、幹・枝・樹冠の生態的関係と林床の判読性が不足。</figcaption></figure>
+        </div>
+        <ul>
+          <li>空が画面の約半分を占め、林冠が頭上で部分的につながらない。</li>
+          <li>高木が棒状の幹＋単純な葉塊に見え、根元・主枝・枝先の関係がない。</li>
+          <li>シダ、落葉、苔、倒木が小さく、5層の湿った森として読めない。</li>
+          <li>trail maskの明色面が広く、公園道に近い。根と草の侵入も弱い。</li>
+          <li>紙目・材質差・木漏れ日・霧はコード上にあっても、通常画像で十分に読めない。</li>
+        </ul>
+        <h3>s=1.00 — 小川手前 <span class="badge reject">不合格</span></h3>
+        <div class="compare">
+          <figure><img src="../artwork/renderer-prototypes/qa/meadow-to-forest-greybox/sketch-s100.png" alt="s=1承認スケッチ"><figcaption>基準: 両岸、橋板、対岸路、明るい抜け、遠山。</figcaption></figure>
+          <figure><img src="../artwork/renderer-prototypes/qa/meadow-to-forest-greybox/frame-s100.png" alt="s=1実装画像"><figcaption>実装: 橋板は読めるが、水・岸・対岸路・山が単純面で、橋の先へ進む期待を作れていない。</figcaption></figure>
+        </div>
+        <p>特に、巨大な空白の空、水の単純平面、認識しにくい対岸路、弱い明るい抜け・遠山が設計条件に反します。橋だけを整えても合格にはなりません。</p>
+      </section>
+
+      <section id="options">
+        <h2>8. Raw WebGL拡張とThree.jsの比較</h2>
+        <div class="table-wrap"><table>
+          <thead><tr><th>評価軸</th><th>Raw WebGLを拡張</th><th>Three.jsへ移行</th></tr></thead>
+          <tbody>
+            <tr><td>共通ルート契約</td><td>現状を維持可能</td><td>移植可能</td></tr>
+            <tr><td>階層樹木</td><td>Transform・枝接続を自作</td><td>scene graphで直接表現</td></tr>
+            <tr><td>5層の反復</td><td>低速。描画基盤の開発が主作業化</td><td>高木・若木・低木・草本を別Groupで調整</td></tr>
+            <tr><td>影・霧・材質・ポスト</td><td>framebuffer、shadow、shader variantを自作</td><td>標準機能を土台に水彩方向へ抑制</td></tr>
+            <tr><td>s=.75到達見込み</td><td>8〜15実働日程度、確度は低〜中</td><td>基盤2〜4日＋承認候補3〜6日、確度は高い</td></tr>
+            <tr><td>通常HTML提出</td><td>一枚を維持できるが肥大化</td><td>開発時は分割、提出時にbundleして一枚化可能</td></tr>
+            <tr><td>結論</td><td><span class="badge reject">非推奨</span></td><td><span class="badge pass">推奨</span></td></tr>
+          </tbody>
+        </table></div>
+        <p>Three.jsのPBR基盤を使うことは写実化を意味しません。シーングラフ、geometry、shadow、fog、render target、material管理だけを土台にし、写真テクスチャや強い鏡面は使わず、簡略日本画・水彩調へ制御します。</p>
+      </section>
+
+      <section id="restart">
+        <h2>9. 推奨する再開手順</h2>
+        <ol>
+          <li>現Raw WebGL HTMLとQAを比較資料として凍結する。</li>
+          <li>Three.jsのバージョンをローカル固定し、開発時はHTML・scene moduleを分ける。</li>
+          <li>共通スプライン、弧長LUT、<code>trailWidth(s)</code>、<code>terrainHeight</code>、進捗UI、デバッグ契約だけを移植する。</li>
+          <li><strong>s=.75周辺25〜35mだけ</strong>を作る。全長や橋はまだ作らない。</li>
+          <li>階層樹木2〜3種、若木、低木、扇状シダ、苔岩、倒木、湿った林床を配置する。</li>
+          <li>承認スケッチ下中央と同じsの画像を横並びにし、完成条件を一項ずつ判定する。</li>
+          <li>ユーザー承認後だけ、同じscene graphで残り5コマと全長ルートへ展開する。</li>
+          <li>6コマと橋前デバッグを再撮影し、10秒停止・スクラブ再現・文区切り保持を確認する。</li>
+          <li>提出時に依存をbundleした通常HTMLを生成し、ネットワークなしで開けることを確認する。</li>
+        </ol>
+        <div class="callout"><strong>場当たり的な試行を避ける運用:</strong> 実装前に「この版で何を画像から判定するか」を明記し、画像ではその項目だけを合否判定します。合格前に別地点や細部へ作業を広げません。</div>
+      </section>
+
+      <section id="criteria">
+        <h2>10. 完成・不合格の基準</h2>
+        <h3>s=.75単独ゲートの合格条件</h3>
+        <ol>
+          <li>根元、先細る幹、主枝、枝先の3〜6樹冠塊が一樹として読める。</li>
+          <li>高木、若木、低木、草本、林床の5層が通常サイズの画像で区別できる。</li>
+          <li>苔、落葉、シダ、岩、倒木が湿った林床を作り、道中央にも一部戻っている。</li>
+          <li>空の抜け30〜45%。樹冠が部分的に頭上を覆うが、水平天井にはならない。</li>
+          <li>中央を少し外した光、青緑の距離霧、柔らかな陰影、薄い紙目が読める。</li>
+          <li>実効幅1.2m以上の細い獣道が進行方向を示し、公園道路に見えない。</li>
+          <li>承認スケッチと横並びにし、構図意図が一致する。</li>
+        </ol>
+        <h3>全区間の完成条件</h3>
+        <ul>
+          <li>草原から森、小川までが同じ空間の連続移動に見える。</li>
+          <li>s=.4で通過対象が分かり、s=.55で同じ木を通過する。</li>
+          <li>s=1で両岸、橋板、対岸路、明るい抜け、遠山が一枚で読める。</li>
+          <li>文区切りで位置が戻らず、10秒デモは終端で停止する。</li>
+          <li>カメラ・道・植生・橋が共通中心線と地形高に同期する。</li>
+          <li>UI想定域に高周波な細部が集中せず、reduced motionでも場所を理解できる。</li>
+        </ul>
+        <h3>即時不合格</h3>
+        <p>背景交換／クロスフェード、広い道路、左右対称の並木、棒＋球の木、巨大な樹冠板、単色の林床、橋だけで対岸路がない、写真PBR、黒輪郭、数値だけ満たして基準画像の構図意図がないもの。</p>
+      </section>
+
+      <section id="non-goals">
+        <h2>11. 意図的に未着手・先送りしている事項</h2>
+        <ul>
+          <li>残り5地域、36話のイベント差分、全ステージ共通エンジン</li>
+          <li>ゲーム本体へのReact統合、本番保存データ接続</li>
+          <li>キャラクター、動物、報酬アイテムの3Dモデル</li>
+          <li>アイテム発見演出（将来は「地面の光 → タイピング成功 → 2D報酬」を1種だけ検証）</li>
+          <li>自由移動、衝突、戦闘、物理演算</li>
+          <li>高解像度手描き地面・樹皮・樹冠テクスチャ、最終シェーダー</li>
+          <li>完成版の水面、岸、橋材、風、光粒、地域別カラーグレーディング</li>
+          <li>iPad向けLOD・負荷最適化（初期ゲートでは品質優先）</li>
+        </ul>
+      </section>
+
+      <section id="files" class="sources">
+        <h2>12. 関連ファイル</h2>
+        <div class="grid">
+          <div class="card"><h3>正本・設計</h3><ul>
+            <li><a href="3d-scene-brief-meadow-to-forest.md">docs/3d-scene-brief-meadow-to-forest.md</a></li>
+            <li><a href="meadow-to-forest-greybox-shot-plan.md">docs/meadow-to-forest-greybox-shot-plan.md</a></li>
+            <li><a href="watercolor-renderer-implementation.md">docs/watercolor-renderer-implementation.md</a></li>
+            <li><a href="story-bible.md">docs/story-bible.md</a></li>
+            <li><a href="game-design.md">docs/game-design.md</a></li>
+          </ul></div>
+          <div class="card"><h3>画像・試作・QA</h3><ul>
+            <li><a href="../artwork/preproduction/meadow-to-forest-storyboard-nihonga-simplified-v1.png">承認済み絵コンテPNG</a></li>
+            <li><a href="../artwork/renderer-prototypes/watercolor-journey-renderer.html">旧Three.js技術試作HTML</a></li>
+            <li><a href="../artwork/renderer-prototypes/meadow-to-forest-greybox.html">Raw WebGLグレーボックスHTML</a></li>
+            <li><a href="../artwork/renderer-prototypes/qa/meadow-to-forest-greybox/README.md">グレーボックスQA README</a></li>
+            <li><a href="../artwork/renderer-prototypes/qa/meadow-to-forest-greybox/debug-s082.png">橋前debug s=.82</a> / <a href="../artwork/renderer-prototypes/qa/meadow-to-forest-greybox/debug-s090.png">s=.90</a> / <a href="../artwork/renderer-prototypes/qa/meadow-to-forest-greybox/debug-s096.png">s=.96</a></li>
+          </ul></div>
+        </div>
+        <p class="small">Git上の主要な節目: <code>b58fd28</code> 3Dシーンブリーフ、<code>312fe52</code> レンダラー検討整合、<code>03b8d5e</code> 旧技術試作保存、<code>ca69b14</code> 6コマ画面設計。Raw WebGLグレーボックスとQAは、品質版ではなく比較・構造検証資料として本書とともに保存します。</p>
+      </section>
+
+      <section id="template">
+        <h2>13. 次セッションへ渡す依頼文テンプレート</h2>
+        <pre><code>作業前に README.md と docs/3d-renderer-handoff.html を最後まで読み、
+リンク先の正本と承認済み絵コンテを確認してください。
+
+3Dレンダラー実装を再開します。ただし全長コースは作らず、最初は
+s=.75（森内部）周辺25〜35mだけをThree.jsで作ってください。
+
+Raw WebGL版は比較・構造検証資料として凍結し、品質版へ継ぎ足さないでください。
+共通スプライン、弧長LUT、trailWidth(s)、terrainHeight、進捗保持、
+デバッグ契約だけを移植してください。
+
+承認済みの方向は「簡略化した日本画調 × 透明水彩 × 控えめな
+ファンタジー」です。写真PBRや黒輪郭にはしません。根元・幹・主枝・
+枝先樹冠の関係がある階層樹木、高木／若木／低木／草本／林床の5層、
+苔・落葉・シダ・岩・倒木、細い獣道、青緑の霧、オフセンターの光、
+薄い紙目を一枚の画像で判定できるところまで作ってください。
+
+実装前に、その版で画像から判定する項目を短く提示してください。
+承認スケッチ下中央コマと実装画像を横並びにし、引継ぎ書の
+「s=.75単独ゲートの合格条件」を項目ごとに自己判定してください。
+合格・ユーザー承認前は、残り5コマ、橋、全ステージ、ゲーム統合、
+最適化へ進まないでください。
+
+開発時はファイルを分割してよいですが、承認用にはネットワーク不要で
+開ける通常HTMLを生成してください。</code></pre>
+      </section>
+    </main>
+  </div>
+  <footer>作成日: 2026-08-09 / 対象: 「花の草原 → 木漏れ日の森 → 小川手前」3Dシーン / 本文書は実装コードを変更しない引継ぎ資料です。</footer>
+</body>
+</html>
