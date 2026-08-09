@@ -2,7 +2,9 @@ import { QUESTIONS, type Grade, type Question, type StageSection } from '../ques
 import { linearCoursePlanForStage, targetQuestionCountForStage } from './linearCoursePlan'
 import { toLegacyStage, type LinearStageNumber } from './linearStageConfig'
 import { selectCourseQuestions, type SelectableQuestion } from './selectCourseQuestions'
-import { STAGE_1_QUESTION_BANK, type LinearAuthoredQuestion } from './stage1QuestionBank'
+import type { LinearAuthoredQuestion } from './linearQuestionTypes'
+import { STAGE_1_QUESTION_BANK } from './stage1QuestionBank'
+import { STAGE_2_QUESTION_BANK } from './stage2QuestionBank'
 
 export const difficultyCeilingForStage = (stage: LinearStageNumber) => Math.round(12 + (stage - 1) * 44 / 35)
 
@@ -44,8 +46,9 @@ export function buildLinearStageQuestionRun(stage: LinearStageNumber, profileGra
   const plan = linearCoursePlanForStage(stage)
   const targetCount = targetQuestionCountForStage(stage)
 
-  if (stage === 1) {
-    const eligible = STAGE_1_QUESTION_BANK.filter((question) => question.difficultyLevel <= difficultyCeilingForStage(stage))
+  const authoredBank = stage === 1 ? STAGE_1_QUESTION_BANK : stage === 2 ? STAGE_2_QUESTION_BANK : null
+  if (authoredBank) {
+    const eligible = authoredBank.filter((question) => question.difficultyLevel <= difficultyCeilingForStage(stage))
     return {
       questions: eligible.map((question) => ({ ...question })),
       targetCount,

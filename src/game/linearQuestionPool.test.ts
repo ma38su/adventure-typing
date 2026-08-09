@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { buildLinearStageQuestionRun, buildLinearStageQuestions, difficultyCeilingForStage } from './linearQuestionPool'
 import { STAGE_1_QUESTION_BANK } from './stage1QuestionBank'
+import { STAGE_2_QUESTION_BANK } from './stage2QuestionBank'
 
 describe('linear question pool', () => {
   it('builds the complete Stage 1 spline pilot as seven variable courses', () => {
@@ -12,11 +13,15 @@ describe('linear question pool', () => {
     expect(questions.every(({ romaji }) => romaji.replaceAll(' ', '').length <= 12)).toBe(true)
   })
 
-  it('never fills an unfinished story stage with questions from another episode', () => {
+  it('builds the complete Stage 2 bank without borrowing from another episode', () => {
     const run = buildLinearStageQuestionRun(2, 1, 'profile-a:visit-1')
     expect(run.targetCount).toBe(39)
-    expect(run.complete).toBe(false)
-    expect(run.questions.every(({ id }) => id.startsWith('1-s05') || id.startsWith('1-s06') || id.startsWith('1-s07') || id.startsWith('1-s08') || id.startsWith('1-001') || id.startsWith('1-002') || id.startsWith('1-x03') || id.startsWith('1-x04'))).toBe(true)
+    expect(run.complete).toBe(true)
+    expect(run.usedDifficultyFallback).toBe(false)
+    expect(run.questions).toHaveLength(39)
+    expect(Array.from({ length: 5 }, (_, index) => run.questions.filter(({ section }) => section === index + 1).length))
+      .toEqual([7, 8, 8, 8, 8])
+    expect(run.questions.every((question) => (question as { storyStage?: number }).storyStage === 2)).toBe(true)
   })
 
   it('keeps ten audited sources plus 42 new Stage 1 questions with ruby and metadata', () => {
@@ -29,6 +34,21 @@ describe('linear question pool', () => {
       expect(question.difficultyLevel).toBe(question.romaji.replaceAll(' ', '').length)
       if (/[一-鿿]/u.test(question.sentence)) expect(question.ruby.join('')).toContain('[')
     }
+  })
+
+  it('keeps seven human-audited sources plus 32 new Stage 2 questions with ruby and metadata', () => {
+    expect(STAGE_2_QUESTION_BANK.filter(({ sourceId }) => sourceId).length).toBe(7)
+    expect(STAGE_2_QUESTION_BANK.filter(({ sourceId }) => !sourceId).length).toBe(32)
+    for (const question of STAGE_2_QUESTION_BANK) {
+      expect(question.storyStage).toBe(2)
+      expect(question.difficultyLevel).toBe(question.romaji.replaceAll(' ', '').length)
+      expect(question.difficultyLevel).toBeLessThanOrEqual(13)
+      if (/[一-鿿]/u.test(question.sentence)) expect(question.ruby.join('')).toContain('[')
+    }
+    const courseCeilings = [8, 9, 10, 12, 13]
+    courseCeilings.forEach((ceiling, index) => {
+      expect(STAGE_2_QUESTION_BANK.filter(({ section }) => section === index + 1).every(({ difficultyLevel }) => difficultyLevel <= ceiling)).toBe(true)
+    })
   })
 
   it('keeps one visit deterministic and raises the ceiling gradually', () => {

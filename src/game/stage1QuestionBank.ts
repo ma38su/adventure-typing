@@ -1,12 +1,5 @@
-import { QUESTIONS, type Grade, type Question, type StageSection } from '../questions'
-
-export type LinearAuthoredQuestion = Question & {
-  storyStage: 1
-  anchorId: string
-  recommendedGrade: Grade
-  difficultyLevel: number
-  sourceId?: string
-}
+import { QUESTIONS, type Grade, type StageSection } from '../questions'
+import type { LinearAuthoredQuestion } from './linearQuestionTypes'
 
 const compactLength = (romaji: string) => romaji.replaceAll(' ', '').length
 const anchorIds = ['arrival', 'flower-slope', 'tracks', 'seed-glow', 'seed-restored', 'forest-edge', 'rabbit-creek-bridge'] as const
