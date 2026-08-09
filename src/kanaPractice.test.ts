@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { FINGER_KEYBOARD_ROWS, getFingerGuide, KANA_COURSES } from './kanaPractice'
+import { FINGER_KEYBOARD_ROWS, getFingerGuide, getNextKanaCourse, KANA_COURSES } from './kanaPractice'
 import { buildRomajiCandidates } from './romajiVariants'
 
 describe('kana practice courses', () => {
@@ -30,5 +30,12 @@ describe('kana practice courses', () => {
     expect(getFingerGuide('j')).toMatchObject({ hand: 'right', finger: '人差し指' })
     expect(getFingerGuide('0')).toMatchObject({ hand: 'right', finger: '小指' })
     expect(getFingerGuide('/')).toMatchObject({ hand: 'right', finger: '小指' })
+  })
+
+  it('continues directly to the next route and ends at the route list', () => {
+    expect(getNextKanaCourse('home-position')?.id).toBe('index-fingers')
+    expect(getNextKanaCourse('numbers')?.id).toBe('symbols')
+    expect(getNextKanaCourse('symbols')).toBeUndefined()
+    expect(getNextKanaCourse('unknown')).toBeUndefined()
   })
 })

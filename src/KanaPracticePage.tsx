@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { buildRomajiCandidates } from './romajiVariants'
-import { FINGER_KEYS, FINGER_KEYBOARD_ROWS, getFingerGuide, HOME_KEYS, KANA_COURSES, type KanaCourse } from './kanaPractice'
+import { FINGER_KEYS, FINGER_KEYBOARD_ROWS, getFingerGuide, getNextKanaCourse, HOME_KEYS, KANA_COURSES, type KanaCourse } from './kanaPractice'
 import { useConfirmShortcut } from './useConfirmShortcut'
 
 type Result = 'idle' | 'wrong' | 'correct'
@@ -55,13 +55,18 @@ export function KanaPracticePage({ profileId, tutorial, onTutorialComplete, onBa
     timersRef.current.push(timer)
   }
   const clearTimers = () => { timersRef.current.forEach(window.clearTimeout); timersRef.current = [] }
-  const continueAfterFinish = tutorial && course?.unlocksAdventure ? onStartAdventure : () => { clearTimers(); setCourse(null) }
-  useConfirmShortcut(finished, continueAfterFinish)
 
   const startCourse = (selected: KanaCourse) => {
     clearTimers()
     setCourse(selected); setIndex(0); setTyped(''); setResult('idle'); setMistakes(0); setFinished(false)
   }
+  const nextCourse = course ? getNextKanaCourse(course.id) : undefined
+  const continueAfterFinish = () => {
+    if (tutorial && course?.unlocksAdventure) onStartAdventure()
+    else if (nextCourse) startCourse(nextCourse)
+    else { clearTimers(); setCourse(null) }
+  }
+  useConfirmShortcut(finished, continueAfterFinish)
 
   const enterKey = (key: string) => {
     if (!course || !item || finished || result === 'correct' || !/^[a-z0-9,./-]$/.test(key)) return
@@ -96,7 +101,7 @@ export function KanaPracticePage({ profileId, tutorial, onTutorialComplete, onBa
 
   return <main className={`kana-page kana-play-page ${result}`} onClick={() => inputRef.current?.focus()}>
     <header className="kana-play-header"><button onClick={() => { clearTimers(); setCourse(null) }}>‹ ルートをえらぶ</button><div><small>{course.icon} {course.name}ルート</small><b>{index + 1} / {course.items.length}</b><i><span style={{ width: `${((index + (finished ? 1 : 0)) / course.items.length) * 100}%` }} /></i></div><output>ミス {mistakes}</output></header>
-    {finished ? <section className="kana-finish"><span>🎉</span><small>ROUTE CLEAR!</small><h1>{course.name}ルート クリア！</h1><p>{course.items.length}この問題を、さいごまで入力できたよ。</p><div><b>{course.items.length}<small>問題</small></b><b>{mistakes}<small>ミス</small></b></div><button aria-keyshortcuts="Space" onClick={continueAfterFinish}>{tutorial && course.unlocksAdventure ? '本編の冒険へ しゅっぱつ　▶' : 'つぎのルートをえらぶ　▶'}</button><small className="confirm-shortcut-hint">Spaceキーでも進める</small></section> : item && <section className="kana-practice-card">
+    {finished ? <section className="kana-finish"><span>🎉</span><small>ROUTE CLEAR!</small><h1>{course.name}ルート クリア！</h1><p>{course.items.length}この問題を、さいごまで入力できたよ。</p><div><b>{course.items.length}<small>問題</small></b><b>{mistakes}<small>ミス</small></b></div><button aria-keyshortcuts="Space" onClick={continueAfterFinish}>{tutorial && course.unlocksAdventure ? '本編の冒険へ しゅっぱつ　▶' : nextCourse ? `つぎの「${nextCourse.name}」へ　▶` : 'ルート一覧へ戻る'}</button><small className="confirm-shortcut-hint">Spaceキーでも進める</small></section> : item && <section className="kana-practice-card">
       <div className="kana-level-label">{course.icon} {course.subtitle}</div>
       <p>この ひらがなを ローマ字で入力しよう</p>
       <div className="kana-target">{item.kana}</div>

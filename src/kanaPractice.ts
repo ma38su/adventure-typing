@@ -72,3 +72,8 @@ export const KANA_COURSES: KanaCourse[] = [
     ],
   },
 ]
+
+export function getNextKanaCourse(courseId: string) {
+  const index = KANA_COURSES.findIndex((course) => course.id === courseId)
+  return index >= 0 ? KANA_COURSES[index + 1] : undefined
+}

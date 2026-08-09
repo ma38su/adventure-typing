@@ -534,7 +534,14 @@ function App() {
   }
 
   if (!started) {
-    return <><TitlePage profile={activeProfile} grade={grade} course={selectedCourse} character={characterStyle} points={scoreData.lifetime} rank={adventureRank} soundOn={soundOn} completedCourses={completedCourses} goalProgress={goalProgress} tutorialComplete={Boolean(tutorialCompletedAt)} onSound={() => setSoundOn(!soundOn)} onProfiles={() => setShowProfileManager(true)} onRomaji={() => { playSound('key'); setShowKanaPractice(true) }} onCourse={(course) => { if (isCourseUnlocked(grade, course, completedCourses)) { playSound('key'); setSelectedCourse(course) } }} onStart={() => { if (!tutorialCompletedAt) { setShowKanaPractice(true); return }; if (!isCourseUnlocked(grade, selectedCourse, completedCourses)) return; playSound('complete'); reset(grade, selectedCourse); setProfileRegistry((registry) => ({ ...registry, profiles: registry.profiles.map((profile) => profile.id === activeProfileId ? { ...profile, lastPlayedAt: new Date().toISOString() } : profile) })); setStarted(true) }} onCatalog={() => { setCatalogGrade(grade); setShowCatalog(true) }} onCollection={() => setShowCollection(true)} onRankGuide={() => setShowRankGuide(true)} onReport={() => setShowParentReport(true)} />{storageWarning}</>
+    return <><TitlePage profile={activeProfile} grade={grade} character={characterStyle} points={scoreData.lifetime} rank={adventureRank} soundOn={soundOn} completedCourses={completedCourses} goalProgress={goalProgress} tutorialComplete={Boolean(tutorialCompletedAt)} onSound={() => setSoundOn(!soundOn)} onProfiles={() => setShowProfileManager(true)} onRomaji={() => { playSound('key'); setShowKanaPractice(true) }} onCourse={(course) => {
+      if (!tutorialCompletedAt) { setShowKanaPractice(true); return }
+      if (!isCourseUnlocked(grade, course, completedCourses)) return
+      playSound('complete')
+      reset(grade, course)
+      setProfileRegistry((registry) => ({ ...registry, profiles: registry.profiles.map((profile) => profile.id === activeProfileId ? { ...profile, lastPlayedAt: new Date().toISOString() } : profile) }))
+      setStarted(true)
+    }} onCatalog={() => { setCatalogGrade(grade); setShowCatalog(true) }} onCollection={() => setShowCollection(true)} onRankGuide={() => setShowRankGuide(true)} onReport={() => setShowParentReport(true)} />{storageWarning}</>
   }
 
   return (
