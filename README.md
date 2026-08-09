@@ -60,6 +60,8 @@ npm run build
 
 - 配信用画像：`public/`
 - 編集用の高解像度素材：`artwork/`
+- 世界観・全36話・物語上の試練：[ストーリーバイブル](docs/story-bible.md)
+- タイピング体験・ステージ演出・素材仕様：[ゲームデザイン](docs/game-design.md)
 
 配信用画像はiPadでの読み込み負荷を抑えるためWebPへ変換しています。高解像度PNGは配信対象外の`artwork/`に保管しています。
 
