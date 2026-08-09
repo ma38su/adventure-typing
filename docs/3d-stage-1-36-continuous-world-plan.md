@@ -35,6 +35,8 @@ Stage 1〜36を独立背景として作らず、一つの島を歩き続ける�
 
 各Stage制作データは最低限`geology / soil / drainage / prevailingWind / vegetationBand / settlementTrace / faunaResource / routeDistanceKm`を持つ。詳細は [地学・気候設計](world-geology-and-climate-spec.md) と [植生・生物・文化設計](world-biomes-fauna-culture-spec.md) を正とする。
 
+全36の開始・終了間を直線補間してはならない。[球面route spline正本](world-route-spline-v2.md) の216 `scenicAnchor`、region、watershed、chunk、Catmull–Rom sample、再計算済み`routeDistanceKm`を地図・3D・問題計画で共有する。
+
 ### 2.2 距離から問題密度を決める契約
 
 `5 course × 3問 = 15問`はStage 1の初期UI検証値であり、全36の固定仕様ではない。制作時はStageごとに次の暫定式で必要問題数を見積もり、実歩行QA後に増減する。

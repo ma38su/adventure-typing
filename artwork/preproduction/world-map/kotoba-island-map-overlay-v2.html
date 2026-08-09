@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ことば島 座標正本SVG + route spline v2</title>
+  <style>
+    :root{color-scheme:dark;font-family:system-ui,-apple-system,"Hiragino Sans",sans-serif}*{box-sizing:border-box}html,body{margin:0;background:#10211f;color:#f8f4e7;overflow-x:hidden}header{padding:10px clamp(12px,2vw,24px);display:flex;gap:12px;align-items:center;justify-content:space-between;background:#17332f;border-bottom:1px solid #76958c}h1{font-size:clamp(15px,2vw,22px);margin:0}.sub{font-size:12px;color:#c7d9d2;margin:3px 0 0}.controls{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}button{border:1px solid #a9c7bc;border-radius:999px;padding:7px 11px;color:inherit;background:#234c45;font:inherit;font-size:12px;cursor:pointer}button[aria-pressed=true]{color:#10211f;background:#f5d783}main{width:min(100%,1280px);margin:auto;padding:10px}.map{position:relative;width:100%;aspect-ratio:16/10;overflow:hidden;border:1px solid #668a80;border-radius:12px;background:#173f55}.map>img,.map>svg{position:absolute;inset:0;width:100%;height:100%;display:block}.map>img{object-fit:cover;opacity:.24}.off{opacity:0!important;pointer-events:none}.terrain{fill:#6e9554;stroke:#f4e4ad;stroke-width:4}.region{stroke:#15372f;stroke-width:2}.meadow{fill:#aab951}.forest{fill:#315f45}.mountain{fill:#66725e}.inlet{fill:#79c1bc}.ancient{fill:#263f38}.contour{fill:none;stroke:#e3d6b4;stroke-opacity:.55;stroke-width:2}.ridge{fill:none;stroke:#f6dfa0;stroke-width:4;stroke-dasharray:10 7}.stream{fill:none;stroke:#69d3f1;stroke-width:5}.reef{fill:none;stroke:#7bf0df;stroke-width:7;stroke-dasharray:3 8}.route-built{fill:none;stroke:#fff1a6;stroke-width:5}.route-plan{fill:none;stroke:#eadbff;stroke-width:3.5;stroke-dasharray:12 8}.anchor{fill:#132a26;stroke:white;stroke-width:2}.boundary{fill:#f6c85b;stroke:white;stroke-width:3}.stage-num{fill:white;font-size:13px;font-weight:800;text-anchor:middle;dominant-baseline:central;paint-order:stroke;stroke:#17332f;stroke-width:4}.anchor-num{fill:#d9f5ec;font-size:8px;text-anchor:middle}.vertical{stroke:#ffb85c;stroke-width:4;fill:none;marker-end:url(#up)}.down{stroke:#75d4ff}.label{font-size:17px;font-weight:800;fill:white;text-anchor:middle;paint-order:stroke;stroke:#10211f;stroke-width:5}.grid{stroke:#fff;stroke-opacity:.18;stroke-width:1}.grid-text{fill:#fff;font-size:10px;opacity:.75}.legend{font-size:12px;color:#dbe8e2;margin-top:7px;display:grid;grid-template-columns:1fr auto;gap:8px}.warning{color:#ffdc88}.metrics{font-variant-numeric:tabular-nums}.watercolor{transition:opacity .15s}.note{max-width:460px}ruby{ruby-position:over}rt{font-size:.55em}@media(max-width:800px){header{align-items:flex-start;flex-direction:column}.controls{justify-content:flex-start}.legend{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div><h1><ruby>ことば島<rt>ことばじま</rt></ruby> 座標正本SVG + route spline v2</h1><p class="sub">座標地形が正本。水彩v2は比較用の雰囲気レイヤーであり、線を画像へ合わせない。</p></div>
+    <nav class="controls" aria-label="表示レイヤー">
+      <button data-target="watercolor" aria-pressed="false">水彩比較</button><button data-target="terrain" aria-pressed="true">座標地形</button><button data-target="route-built" aria-pressed="true">Stage 1–12</button><button data-target="route-plan" aria-pressed="true">Stage 13–36</button><button data-target="anchors" aria-pressed="false">216 anchor</button><button data-target="grid" aria-pressed="false">緯度経度</button>
+    </nav>
+  </header>
+  <main>
+    <div class="map">
+      <img id="watercolor" class="watercolor off" src="kotoba-island-geology-map-concept-v2.png" alt="比較用の水彩地学コンセプトv2">
+      <svg viewBox="0 0 1600 1000" role="img" aria-label="球面座標から決定論的に描いた島地形と全36 Stageのroute spline">
+        <defs><marker id="up" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ffb85c"/></marker></defs>
+        <g id="terrain"></g><g id="grid" class="off"></g><g id="route-built"></g><g id="route-plan"></g><g id="anchors" class="off"></g><g id="labels"></g>
+      </svg>
+    </div>
+    <div class="legend"><div>黄実線 Stage 1–12 ／ 紫破線 Stage 13–36 ／ 六角 章境界 ／ 小丸 scenicAnchor ／ 橙 上昇・青 下降。<span class="warning">水彩v2の螺旋路は未承認。座標地形と合わない箇所は水彩側の修正対象。</span></div><div id="metrics" class="metrics"></div></div>
+  </main>
+  <script src="kotoba-island-route-v2.js"></script>
+  <script>
+    const D=window.KOTOBA_WORLD_ROUTE_V2,NS='http://www.w3.org/2000/svg',B={latMin:11.955,latMax:12.105,lonMin:141.925,lonMax:142.085};
+    const el=(tag,a={},p)=>{const n=document.createElementNS(NS,tag);Object.entries(a).forEach(([k,v])=>n.setAttribute(k,v));p&&p.appendChild(n);return n};
+    const project=(lat,lon)=>({x:100+(lon-B.lonMin)/(B.lonMax-B.lonMin)*1400,y:70+(B.latMax-lat)/(B.latMax-B.latMin)*860});
+    const pts=a=>a.map(([lat,lon])=>{const p=project(lat,lon);return `${p.x},${p.y}`}).join(' '), path=a=>a.map((p,i)=>`${i?'L':'M'}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+    const terrain=document.querySelector('#terrain');
+    const island=[[12.098,141.965],[12.103,142.015],[12.080,142.068],[12.030,142.083],[11.980,142.075],[11.958,142.025],[11.960,141.970],[11.982,141.932],[12.035,141.925],[12.078,141.940]];
+    el('polygon',{points:pts(island),class:'terrain'},terrain);
+    const regions=[['meadow',[[12.030,142.005],[12.055,142.055],[12.025,142.080],[11.960,142.070],[11.960,141.995],[11.995,141.975]]],['forest',[[12.020,141.980],[12.080,141.985],[12.085,142.050],[12.030,142.070],[11.985,142.020]]],['mountain',[[12.100,141.955],[12.104,142.020],[12.080,142.045],[12.055,141.995],[12.025,141.950],[12.060,141.930]]],['inlet',[[12.035,141.925],[12.025,141.970],[11.985,141.985],[11.958,141.970],[11.980,141.930]]],['ancient',[[12.045,141.970],[12.050,142.010],[12.020,142.025],[11.985,142.010],[11.990,141.970]]]];
+    regions.forEach(([c,p])=>el('polygon',{points:pts(p),class:`region ${c}`},terrain));
+    const ridge=[[12.090,141.970],[12.082,141.995],[12.068,142.018]];el('path',{d:path(ridge.map(x=>project(...x))),class:'ridge'},terrain);
+    [[[12.075,142.005],[12.055,142.010],[12.040,142.025],[12.026,141.985],[12.015,141.945]],[[12.082,141.986],[12.060,141.980],[12.035,141.970],[12.015,141.945]],[[12.030,142.000],[12.018,141.985],[12.015,141.945]]].forEach(p=>el('path',{d:path(p.map(x=>project(...x))),class:'stream'},terrain));
+    el('path',{d:path([[11.985,141.936],[11.978,141.950],[11.982,141.970],[11.995,141.975]].map(x=>project(...x))),class:'reef'},terrain);
+    [0.25,.5,.75].forEach(f=>{const ring=island.map(([lat,lon])=>[12.025+(lat-12.025)*(1-f*.45),142+(lon-142)*(1-f*.45)]);el('polygon',{points:pts(ring),class:'contour'},terrain)});
+    const grid=document.querySelector('#grid');for(let lat=11.96;lat<=12.10;lat+=.02){const a=project(lat,B.lonMin),b=project(lat,B.lonMax);el('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,class:'grid'},grid);const t=el('text',{x:a.x+3,y:a.y-3,class:'grid-text'},grid);t.textContent=lat.toFixed(2)+'°N'}for(let lon=141.94;lon<=142.08;lon+=.02){const a=project(B.latMin,lon),b=project(B.latMax,lon);el('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,class:'grid'},grid);const t=el('text',{x:a.x+3,y:a.y-4,class:'grid-text'},grid);t.textContent=lon.toFixed(2)+'°E'}
+    const anchorsG=document.querySelector('#anchors');D.stages.forEach(s=>{const g=document.querySelector(s.stage<=12?'#route-built':'#route-plan'),samples=s.splineSamples.map(a=>project(a.latitudeDeg,a.longitudeDeg));el('path',{d:path(samples),class:s.stage<=12?'route-built':'route-plan'},g);s.anchors.forEach((a,i)=>{const p=project(a.latitudeDeg,a.longitudeDeg);el('circle',{cx:p.x,cy:p.y,r:i===0||i===5?7:4,class:'anchor'},anchorsG);const t=el('text',{x:p.x,y:p.y-7,class:'anchor-num'},anchorsG);t.textContent=`${s.stage}.${i+1}`});const end=s.anchors.at(-1),p=project(end.latitudeDeg,end.longitudeDeg),delta=end.altitudeKm-s.anchors[0].altitudeKm;if(Math.abs(delta)>.8){el('path',{d:`M${p.x-15} ${p.y+14}L${p.x+12} ${p.y-14}`,class:`vertical ${delta<0?'down':''}`},g)}if([6,12,18,24,30,36].includes(s.stage)){const poly=Array.from({length:6},(_,i)=>{const a=i*Math.PI/3-Math.PI/2;return `${p.x+14*Math.cos(a)},${p.y+14*Math.sin(a)}`}).join(' ');el('polygon',{points:poly,class:'boundary'},g)}const t=el('text',{x:p.x,y:p.y,class:'stage-num'},g);t.textContent=s.stage});
+    const labels=document.querySelector('#labels'),place=(lat,lon,html)=>{const p=project(lat,lon),t=el('text',{x:p.x,y:p.y,class:'label'},labels);t.innerHTML=html};place(11.985,142.055,'花草原');place(12.052,142.035,'木漏れ日の森');place(12.088,141.982,'星見山脈');place(11.985,141.948,'珊瑚の入り江');place(12.020,142.000,'古代樹');
+    const total=D.stages.reduce((n,s)=>n+s.routeDistanceKm,0),q=D.stages.reduce((n,s)=>n+s.targetQuestions,0),metrics=document.querySelector('#metrics');const updateMetrics=()=>{const comparing=document.querySelector('[data-target="watercolor"]').getAttribute('aria-pressed')==='true';metrics.textContent=`216 anchors / ${total.toFixed(1)} km / ${q}問案${comparing?' / 水彩v2較正RMS≈52px':''}`};updateMetrics();
+    document.querySelectorAll('button[data-target]').forEach(b=>b.addEventListener('click',()=>{const on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',String(on));document.querySelector('#'+b.dataset.target).classList.toggle('off',!on);updateMetrics()}));
+  </script>
+</body>
+</html>

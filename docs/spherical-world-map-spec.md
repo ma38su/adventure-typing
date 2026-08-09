@@ -78,7 +78,7 @@ type SphericalJourneyPoint = {
 
 ## 5. Stage 1〜36 球面route座標表
 
-表の座標は各Stageの開始→終了アンカー。実routeは二点間の大円直線ではなく、専用ブリーフの蛇行・高低差を持つ球面splineとする。`wp`は全旅程の正規化値で、Stage Nの開始を`(N-1)/36`、終了を`N/36`とする。
+表の座標は各Stageの開始→終了アンカー。実routeは二点間の大円直線ではなく、[全36球面route spline正本](world-route-spline-v2.md) の各Stage六つの`scenicAnchor`とCatmull–Rom補間を正とする。機械可読な全216座標は同書から参照する`kotoba-island-route-v2.js`が所有する。`wp`は全旅程の正規化値で、Stage Nの開始を`(N-1)/36`、終了を`N/36`とする。
 
 | Stage | 開始 lat, lon, alt km | 終了 lat, lon, alt km | 主移動方向 | 終了chunk |
 |---:|---|---|---|---|
