@@ -58,12 +58,12 @@ export function loadProfileData(id: string | null, storage: StorageLike = localS
   if (!id) {
     const problemStats = readStored<ProfileData['problemStats']>(storage, LEGACY_KEYS.problemStats, {})
     return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     keyStats: readStored(storage, LEGACY_KEYS.keyStats, {}),
     collection: normalizeCollection(readStored(storage, LEGACY_KEYS.collection, [])),
-    completedCourses: readStored(storage, LEGACY_KEYS.completedCourses, []),
+    completedCourses: [],
     problemStats,
-    scoreData: { ...emptyScoreData(), ...readStored(storage, LEGACY_KEYS.scoreData, emptyScoreData()) },
+    scoreData: emptyScoreData(),
     dailyActivity: {}, goals: { dailyProblems: 5, weeklyProblems: 25 }, tutorialCompletedAt: Object.values(problemStats).some((stat) => stat.completions > 0) ? 'legacy' : '', audioSettings: { bgmOn: true, soundEffectsOn: true },
     }
   }
@@ -75,12 +75,13 @@ export function migrateProfileData(saved: LegacyProfileData): ProfileData {
   const score: Record<string, unknown> = isRecord(saved.scoreData) ? saved.scoreData : {}
   const problemStats = isRecord(saved.problemStats) ? saved.problemStats as ProfileData['problemStats'] : {}
   const legacySoundOn = typeof saved.soundOn === 'boolean' ? saved.soundOn : true
+  const usesStageSectionSchema = typeof saved.schemaVersion === 'number' && saved.schemaVersion >= 2
   // 新しい版を古いクライアントで開いても、既知の項目は捨てずに読み取る。
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     keyStats: isRecord(saved.keyStats) ? saved.keyStats as ProfileData['keyStats'] : {},
     collection: normalizeCollection(saved.collection),
-    completedCourses: Array.isArray(saved.completedCourses) ? saved.completedCourses.filter((id): id is string => typeof id === 'string') : [],
+    completedCourses: usesStageSectionSchema && Array.isArray(saved.completedCourses) ? saved.completedCourses.filter((id): id is string => typeof id === 'string') : [],
     problemStats,
     dailyActivity: normalizeDailyActivity(saved.dailyActivity),
     goals: {
@@ -94,9 +95,9 @@ export function migrateProfileData(saved: LegacyProfileData): ProfileData {
     },
     scoreData: {
       ...emptyScoreData(),
-      lifetime: nonNegativeNumber(score.lifetime),
-      courseBest: numberRecord(score.courseBest),
-      coursePlays: numberRecord(score.coursePlays),
+      lifetime: usesStageSectionSchema ? nonNegativeNumber(score.lifetime) : 0,
+      courseBest: usesStageSectionSchema ? numberRecord(score.courseBest) : {},
+      coursePlays: usesStageSectionSchema ? numberRecord(score.coursePlays) : {},
     },
   }
 }

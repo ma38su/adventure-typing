@@ -1,10 +1,10 @@
 export const ADVENTURE_RANKS = [
   { min: 0, name: 'たまご探検家', icon: '🥚' },
-  { min: 8_000, name: 'ひよこ探検家', icon: '🐣' },
-  { min: 30_000, name: 'ブロンズ探検家', icon: '🥉' },
-  { min: 80_000, name: 'シルバー探検家', icon: '🥈' },
-  { min: 180_000, name: 'ゴールド探検家', icon: '🥇' },
-  { min: 400_000, name: '伝説の探検家', icon: '👑' },
+  { min: 5_000, name: 'ひよこ探検家', icon: '🐣' },
+  { min: 20_000, name: 'ブロンズ探検家', icon: '🥉' },
+  { min: 50_000, name: 'シルバー探検家', icon: '🥈' },
+  { min: 120_000, name: 'ゴールド探検家', icon: '🥇' },
+  { min: 300_000, name: '伝説の探検家', icon: '👑' },
 ] as const
 
 export function getAdventureRank(points: number) {

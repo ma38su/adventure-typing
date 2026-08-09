@@ -1,6 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { QUESTIONS, type Grade, type Question } from './questions'
+import { getQuestionSection, groupQuestionsBySection, QUESTIONS, type Grade, type Question } from './questions'
 import { getReward, rollCourseCreature, rollCourseTreasure, type CollectionRecord, type Course } from './rewards'
 import { emptyProblemStat, emptyProfileData, type CharacterStyle, type DailyActivity, type KeyStats, type LearningGoals, type ProblemStats, type ProfileData, type ProfileRegistry, type ScoreBreakdown, type ScoreData, type UserProfile } from './domain'
 import { getAdventureRank } from './ranks'
@@ -84,7 +84,10 @@ function App() {
 
   const questions = useMemo(() => {
     const gradeQuestions = QUESTIONS[grade]
-    if (practiceMode !== 'weak-keys' || reviewTargetKeys.length === 0) return adaptQuestions(gradeQuestions.filter((item) => item.stage === selectedCourse), adaptiveKeyStats, grade)
+    if (practiceMode !== 'weak-keys' || reviewTargetKeys.length === 0) {
+      const stageQuestions = gradeQuestions.filter((item) => item.stage === selectedCourse)
+      return groupQuestionsBySection(stageQuestions).flatMap((sectionQuestions) => adaptQuestions(sectionQuestions, adaptiveKeyStats, grade))
+    }
     return gradeQuestions
       .map((item) => ({ item, score: reviewTargetKeys.reduce((total, key) => total + item.romaji.replaceAll(' ', '').split(key).length - 1, 0) }))
       .filter(({ score }) => score > 0)
@@ -93,6 +96,13 @@ function App() {
       .map(({ item }) => item)
   }, [grade, practiceMode, reviewTargetKeys, selectedCourse, adaptiveKeyStats])
   const question = questions[questionIndex]
+  const segmentGroups = useMemo(() => groupQuestionsBySection(questions), [questions])
+  const currentSegment = getQuestionSection(question)
+  const currentSegmentIndex = Math.max(0, segmentGroups.findIndex((items) => items.some((item) => item.id === question.id)))
+  const currentSegmentQuestions = segmentGroups[currentSegmentIndex] ?? [question]
+  const currentSegmentQuestionIndex = Math.max(0, currentSegmentQuestions.findIndex((item) => item.id === question.id))
+  const isFinalStageQuestion = questionIndex === questions.length - 1
+  const isCurrentSegmentFinalQuestion = isFinalStageQuestion || getQuestionSection(questions[questionIndex + 1]) !== currentSegment
   const gradeStory = GRADE_STORIES[grade]
   const courseStory = getCourseStory(grade, selectedCourse)
   const stageIndex = question.stage - 1
@@ -160,7 +170,7 @@ function App() {
   }, [profileRegistry])
   useEffect(() => {
     if (!activeProfileId) return
-    const data: ProfileData = { schemaVersion: 1, keyStats, collection, completedCourses, problemStats, scoreData, dailyActivity, goals, tutorialCompletedAt, audioSettings: { bgmOn, soundEffectsOn } }
+    const data: ProfileData = { schemaVersion: 2, keyStats, collection, completedCourses, problemStats, scoreData, dailyActivity, goals, tutorialCompletedAt, audioSettings: { bgmOn, soundEffectsOn } }
     profileWriter.schedule(activeProfileId, data)
   }, [activeProfileId, keyStats, collection, completedCourses, problemStats, scoreData, dailyActivity, goals, tutorialCompletedAt, bgmOn, soundEffectsOn, profileWriter])
   useEffect(() => {
@@ -293,8 +303,13 @@ function App() {
   }, [started, bgmOn])
 
   const advanceAfterEvent = useCallback(() => {
-    if (questionIndex === questions.length - 1) {
+    if (isCurrentSegmentFinalQuestion) {
+      setRewardAwaitingConfirmation(false)
+      setAdventureEvent(null)
+      setAdventureReward(null)
       setCompleted(true)
+    }
+    if (isFinalStageQuestion) {
       const courseId = `${grade}-${selectedCourse}`
       if (practiceMode === 'adventure') {
         const storyTreasure = getReward(courseStory.featuredTreasureId)
@@ -309,8 +324,8 @@ function App() {
         setCompletedCourses((items) => items.includes(courseId) ? items : [...items, courseId])
       }
     }
-    dispatchGameRun({ type: 'advance-question', questionIndex: questionIndex === questions.length - 1 ? questionIndex : questionIndex + 1 })
-  }, [questionIndex, questions.length, practiceMode, grade, selectedCourse, selectedCourseFullyCompleted, courseScore, courseStory.featuredTreasureId, setCompleted, dispatchGameRun])
+    if (!isCurrentSegmentFinalQuestion) dispatchGameRun({ type: 'advance-question', questionIndex: questionIndex + 1 })
+  }, [questionIndex, practiceMode, grade, selectedCourse, selectedCourseFullyCompleted, courseScore, courseStory.featuredTreasureId, isCurrentSegmentFinalQuestion, isFinalStageQuestion, setCompleted, setRewardAwaitingConfirmation, setAdventureEvent, setAdventureReward, dispatchGameRun])
 
   useEffect(() => { inputRef.current?.focus({ preventScroll: true }) }, [questionIndex, grade, showReview, showKeyStats, started])
 
@@ -422,6 +437,11 @@ function App() {
       reset(grade, selectedCourse)
       return
     }
+    if (!isFinalStageQuestion) {
+      setCompleted(false)
+      dispatchGameRun({ type: 'advance-question', questionIndex: questionIndex + 1 })
+      return
+    }
     if (!selectedCourseFullyCompleted) {
       reset(grade, selectedCourse)
       setCatalogGrade(grade)
@@ -471,7 +491,7 @@ function App() {
 
   const saveCurrentProfileNow = () => {
     if (!activeProfileId) return
-    const data: ProfileData = { schemaVersion: 1, keyStats, collection, completedCourses, problemStats, scoreData, dailyActivity, goals, tutorialCompletedAt, audioSettings: { bgmOn, soundEffectsOn } }
+    const data: ProfileData = { schemaVersion: 2, keyStats, collection, completedCourses, problemStats, scoreData, dailyActivity, goals, tutorialCompletedAt, audioSettings: { bgmOn, soundEffectsOn } }
     profileWriter.cancel()
     if (!saveProfileData(activeProfileId, data)) setStorageError(true)
   }
@@ -505,7 +525,7 @@ function App() {
     const now = new Date().toISOString()
     const id = globalThis.crypto?.randomUUID?.() ?? `player-${Date.now()}-${Math.random().toString(36).slice(2)}`
     const profile: UserProfile = { id, name, createdAt: now, lastPlayedAt: now, lastGrade: newProfileGrade, characterStyle: newProfileCharacter }
-    const data = profileRegistry.profiles.length === 0 ? { schemaVersion: 1 as const, keyStats, collection, completedCourses, problemStats, scoreData, dailyActivity, goals, tutorialCompletedAt, audioSettings: { bgmOn, soundEffectsOn } } : emptyProfileData()
+    const data = profileRegistry.profiles.length === 0 ? { schemaVersion: 2 as const, keyStats, collection, completedCourses, problemStats, scoreData, dailyActivity, goals, tutorialCompletedAt, audioSettings: { bgmOn, soundEffectsOn } } : emptyProfileData()
     if (!saveProfileData(id, data)) setStorageError(true)
     setProfileRegistry((registry) => ({ schemaVersion: 1, activeProfileId: id, profiles: [...registry.profiles, profile] }))
     setActiveProfileId(id)
@@ -597,7 +617,7 @@ function App() {
 
         <section className="game-area">
           <div className="stage-hud panel">
-          <div className={`stage-title ${practiceMode === 'weak-keys' ? 'practice-title' : ''}`}><div><span>{practiceMode === 'weak-keys' ? `🎯 苦手キー「${reviewTargetKeys.join('・')}」を特訓中` : `${grade}年生の物語・第${selectedCourse}話　${gradeStory.chapterTitle}`}</span><h1>{practiceMode === 'weak-keys' ? 'にがてキー特訓' : courseStory.title}</h1>{practiceMode === 'adventure' && <p className="stage-theme-description">🎯 {courseStory.objective}　<span>{courseStory.intro}</span></p>}</div><div className="xp-wrap">{practiceMode === 'weak-keys' && <button className="leave-practice" onClick={(event) => { event.stopPropagation(); reset(grade, selectedCourse) }}>通常モードへ</button>}<span>問題 {questionIndex + 1}/{questions.length}</span><div className="xp-bar"><i style={{ width: `${(questionIndex + 1) / questions.length * 100}%` }} /></div><b>{questionIndex + 1}/{questions.length}</b></div></div>
+          <div className={`stage-title ${practiceMode === 'weak-keys' ? 'practice-title' : ''}`}><div><span>{practiceMode === 'weak-keys' ? `🎯 苦手キー「${reviewTargetKeys.join('・')}」を特訓中` : `${grade}年生の物語・第${selectedCourse}話　${gradeStory.chapterTitle}`}</span><h1>{practiceMode === 'weak-keys' ? 'にがてキー特訓' : courseStory.title}</h1>{practiceMode === 'adventure' && <p className="stage-theme-description">🎯 {courseStory.objective}　<span>{courseStory.intro}</span></p>}</div><div className="xp-wrap">{practiceMode === 'weak-keys' && <button className="leave-practice" onClick={(event) => { event.stopPropagation(); reset(grade, selectedCourse) }}>通常モードへ</button>}{practiceMode === 'adventure' && segmentGroups.length > 1 && <span>コース {currentSegmentIndex + 1}/{segmentGroups.length}・問題 {currentSegmentQuestionIndex + 1}/{currentSegmentQuestions.length}</span>}<span>ステージ全体 {questionIndex + 1}/{questions.length}</span><div className="xp-bar"><i style={{ width: `${(questionIndex + 1) / questions.length * 100}%` }} /></div><b>{questionIndex + 1}/{questions.length}</b></div></div>
           <div className="course-score-hud"><div><span>今回のステージスコア</span><b>{courseScore.toLocaleString()}<small> GP</small></b></div><div><span>ステージベスト</span><b>{currentCourseBest.toLocaleString()}<small> GP</small></b></div><div><span>発見ボーナス</span><b>+{runBonus.toLocaleString()}<small> GP</small></b></div>{lastScore && <div className="last-score-chip"><span>直前の問題</span><b>+{lastScore.total.toLocaleString()}</b><small>正確さ {lastScore.accuracy}%・{lastScore.kpm} KPM</small></div>}</div>
           </div>
           <AdventureScenes stageIndex={stageIndex} action={adventureAction} event={adventureEvent} reward={adventureReward} trailTreasure={trailTreasure} character={characterStyle} stageWalked={stageWalked} stepQueue={stepQueue} stepDelay={stepDelay} courseProgress={courseProgress} walkPercent={walkPercent} sentenceProgress={sentenceProgress} awaitingFinish={awaitingFinish} />
@@ -611,7 +631,7 @@ function App() {
       {showReview && <ReviewModal mistakes={mistakes} onClose={() => setShowReview(false)} onRetry={() => { setShowReview(false); setTyped(''); setNotice(null) }} />}
       {showKeyStats && <KeyStatsModal grade={grade} totalAttempts={totalKeyAttempts} strongKeys={strongKeyStats} weakKeys={weakKeyStats} onClose={() => setShowKeyStats(false)} onPractice={startWeakKeyPractice} />}
       {rewardAwaitingConfirmation && adventureEvent && adventureReward && <RewardDiscoveryModal reward={adventureReward} score={lastScore} onConfirm={advanceAfterEvent} />}
-      {completed && <CourseClearModal practiceMode={practiceMode} reviewTargetKeys={reviewTargetKeys} fullyCompleted={selectedCourseFullyCompleted} grade={grade} course={selectedCourse} storyCompletion={courseStory.completion} chapterFinale={selectedCourse === 6 ? gradeStory.finale : ''} courseScore={courseScore} runBonus={runBonus} accuracy={accuracy} attempts={runAttempts} misses={runMisses} strongKeys={runStrongKeys} weakKeys={runWeakKeys} creatureCount={creatureCount} treasureCount={treasureCount} lifetimePoints={scoreData.lifetime} onContinue={continueAfterCourseClear} />}
+      {completed && <CourseClearModal practiceMode={practiceMode} reviewTargetKeys={reviewTargetKeys} segmentClear={practiceMode === 'adventure' && !isFinalStageQuestion} segmentNumber={currentSegmentIndex + 1} segmentCount={segmentGroups.length} fullyCompleted={selectedCourseFullyCompleted} grade={grade} course={selectedCourse} storyCompletion={courseStory.completion} chapterFinale={selectedCourse === 6 ? gradeStory.finale : ''} courseScore={courseScore} runBonus={runBonus} accuracy={accuracy} attempts={runAttempts} misses={runMisses} strongKeys={runStrongKeys} weakKeys={runWeakKeys} creatureCount={creatureCount} treasureCount={treasureCount} lifetimePoints={scoreData.lifetime} onContinue={continueAfterCourseClear} />}
       {storageWarning}
     </main>
   )

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { QUESTIONS, type Grade } from './questions'
+import { groupQuestionsBySection, QUESTIONS, type Grade } from './questions'
 
 const compactLength = (value: string) => value.replaceAll(' ', '').length
 const segments = (value: string) => value.split(' ').filter(Boolean)
@@ -40,5 +40,17 @@ describe('question data', () => {
       expect(segments(question.romaji).length).toBeLessThanOrEqual(3)
     }
     expect(stage2[4].id).toBe('1-001')
+  })
+
+  it('splits the first stage pilot into five ordered sections of three questions', () => {
+    const stage1 = QUESTIONS[1].filter((question) => question.stage === 1)
+    const sections = groupQuestionsBySection(stage1)
+
+    expect(sections).toHaveLength(5)
+    expect(sections.map((items) => items.length)).toEqual([3, 3, 3, 3, 3])
+    expect(sections.flat().map((question) => question.section)).toEqual([
+      1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5,
+    ])
+    expect(sections[0].every((question) => compactLength(question.romaji) <= 7)).toBe(true)
   })
 })

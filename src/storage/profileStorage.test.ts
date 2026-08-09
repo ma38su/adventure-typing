@@ -15,8 +15,8 @@ describe('profile storage', () => {
 
   it('migrates unversioned profile data into the current schema', () => {
     const migrated = migrateProfileData({ scoreData: { lifetime: 123, courseBest: {}, coursePlays: {} } })
-    expect(migrated.schemaVersion).toBe(1)
-    expect(migrated.scoreData.lifetime).toBe(123)
+    expect(migrated.schemaVersion).toBe(2)
+    expect(migrated.scoreData.lifetime).toBe(0)
     expect(migrated.problemStats).toEqual({})
     expect(migrated.audioSettings).toEqual({ bgmOn: true, soundEffectsOn: true })
   })
@@ -35,6 +35,20 @@ describe('profile storage', () => {
     const migrated = migrateProfileData({ schemaVersion: 99, scoreData: { lifetime: 456 } as never, completedCourses: ['2-1'] })
     expect(migrated.scoreData).toEqual({ lifetime: 456, courseBest: {}, coursePlays: {} })
     expect(migrated.completedCourses).toEqual(['2-1'])
+  })
+
+  it('resets old stage completion and incompatible score scale while preserving learning history', () => {
+    const migrated = migrateProfileData({
+      schemaVersion: 1,
+      completedCourses: ['1-1'],
+      problemStats: { '1-s01': { attempts: 1 } as never },
+      keyStats: { '1:a': { attempts: 2, misses: 0, wrongKeys: {} } },
+      scoreData: { lifetime: 500, courseBest: { '1-1': 400 }, coursePlays: { '1-1': 1 } },
+    })
+    expect(migrated.completedCourses).toEqual([])
+    expect(migrated.scoreData).toEqual({ lifetime: 0, courseBest: {}, coursePlays: {} })
+    expect(migrated.problemStats['1-s01']).toBeDefined()
+    expect(migrated.keyStats['1:a']).toBeDefined()
   })
 
   it('does not throw when storage is unavailable', () => {

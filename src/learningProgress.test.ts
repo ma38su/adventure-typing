@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { adaptQuestions, addDailyActivity, getGoalProgress, localDateKey } from './learningProgress'
 import type { Question } from './questions'
 
-const question = (id: string, romaji: string): Question => ({ id, stage: 1, sentence: id, reading: id, ruby: [id], romaji, focus: '', meaning: '' })
+const question = (id: string, romaji: string): Question => ({ id, stage: 1, section: 1, sentence: id, reading: id, ruby: [id], romaji, focus: '', meaning: '' })
 
 describe('learning progress', () => {
   it('collects daily totals and calculates a streak with today grace', () => {

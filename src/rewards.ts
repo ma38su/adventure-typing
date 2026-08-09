@@ -39,7 +39,14 @@ export type CourseTheme = {
   rareFriendIcon: string
 }
 
-const COMMON_TREASURES: RewardDefinition[] = [
+export const REWARD_BONUSES = {
+  commonTreasure: 15,
+  commonFriend: 20,
+  rareTreasure: 60,
+  rareFriend: 80,
+} as const
+
+const COMMON_TREASURE_DEFINITIONS: RewardDefinition[] = [
   { id: 'flower-charm', type: 'treasure', name: '花のチャーム', icon: '🌸', rarity: 'common', bonus: 120, chance: 10 },
   { id: 'trail-badge', type: 'treasure', name: '冒険者のバッジ', icon: '🎖️', rarity: 'common', bonus: 120, chance: 10 },
   { id: 'sun-stone', type: 'treasure', name: 'おひさま石', icon: '☀️', rarity: 'common', bonus: 120, chance: 10 },
@@ -59,8 +66,9 @@ const COMMON_TREASURES: RewardDefinition[] = [
   { id: 'hero-shield', type: 'treasure', name: '勇者の盾飾り', icon: '🛡️', rarity: 'common', bonus: 120, chance: 10 },
   { id: 'summit-scope', type: 'treasure', name: '天空の望遠鏡', icon: '🔭', rarity: 'common', bonus: 120, chance: 10 },
 ]
+const COMMON_TREASURES: RewardDefinition[] = COMMON_TREASURE_DEFINITIONS.map((reward): RewardDefinition => ({ ...reward, bonus: REWARD_BONUSES.commonTreasure }))
 
-const COMMON_FRIENDS: RewardDefinition[] = [
+const COMMON_FRIEND_DEFINITIONS: RewardDefinition[] = [
   { id: 'fox-kon', type: 'friend', name: 'キツネのコン', icon: '🦊', asset: '/companions/fox.webp', rarity: 'common', bonus: 150, chance: 10, encounterAccuracy: 88, encounterKpmRatio: .65 },
   { id: 'rabbit-mimi', type: 'friend', name: '白うさぎのミミ', icon: '🐇', rarity: 'common', bonus: 150, chance: 10, encounterAccuracy: 85, encounterKpmRatio: .55 },
   { id: 'butterfly-hira', type: 'friend', name: 'チョウのヒラリ', icon: '🦋', rarity: 'common', bonus: 150, chance: 10, encounterAccuracy: 88, encounterKpmRatio: .6 },
@@ -80,6 +88,7 @@ const COMMON_FRIENDS: RewardDefinition[] = [
   { id: 'lion-leo', type: 'friend', name: '若ライオンのレオ', icon: '🦁', rarity: 'common', bonus: 150, chance: 10, encounterAccuracy: 92, encounterKpmRatio: .8 },
   { id: 'hawk-sho', type: 'friend', name: '天空ワシのショウ', icon: '🦅', rarity: 'common', bonus: 150, chance: 10, encounterAccuracy: 92, encounterKpmRatio: .82 },
 ]
+const COMMON_FRIENDS: RewardDefinition[] = COMMON_FRIEND_DEFINITIONS.map((reward): RewardDefinition => ({ ...reward, bonus: REWARD_BONUSES.commonFriend }))
 
 export const COURSE_THEMES: Record<Course, CourseTheme> = {
   1: { name: 'ことばの小道', habitat: '花と草原', description: '陽だまりの草原で短いことばから練習', icon: '🌱', commonTreasureIds: ['flower-charm', 'trail-badge', 'sun-stone'], commonFriendIds: ['rabbit-mimi', 'fox-kon', 'butterfly-hira'], rareTreasure: '冒険はじまりの金バッジ', rareTreasureIcon: '🏵️', rareFriend: '花冠うさぎのフルル', rareFriendIcon: '🐇' },
@@ -95,7 +104,7 @@ const GRADE_MOTIFS: Record<Grade, string> = { 1: 'ひだまり', 2: 'そよか�
 const RARE_TREASURES = ([1, 2, 3, 4, 5, 6] as Grade[]).flatMap((grade) =>
   (Object.values(COURSE_THEMES)).map((theme, index): RewardDefinition => ({
     id: `rare-t-${grade}-${index + 1}`,
-    type: 'treasure', name: `${GRADE_MOTIFS[grade]}の${theme.rareTreasure}`, icon: theme.rareTreasureIcon, rarity: 'rare', bonus: 800,
+    type: 'treasure', name: `${GRADE_MOTIFS[grade]}の${theme.rareTreasure}`, icon: theme.rareTreasureIcon, rarity: 'rare', bonus: REWARD_BONUSES.rareTreasure,
     chance: 3, grade, course: (index + 1) as Course,
   })),
 )
@@ -103,7 +112,7 @@ const RARE_TREASURES = ([1, 2, 3, 4, 5, 6] as Grade[]).flatMap((grade) =>
 const RARE_FRIENDS = ([1, 2, 3, 4, 5, 6] as Grade[]).flatMap((grade) =>
   (Object.values(COURSE_THEMES)).map((theme, index): RewardDefinition => ({
     id: `rare-f-${grade}-${index + 1}`,
-    type: 'friend', name: `${GRADE_MOTIFS[grade]}の${theme.rareFriend}`, icon: theme.rareFriendIcon, rarity: 'rare', bonus: 1000,
+    type: 'friend', name: `${GRADE_MOTIFS[grade]}の${theme.rareFriend}`, icon: theme.rareFriendIcon, rarity: 'rare', bonus: REWARD_BONUSES.rareFriend,
     chance: 3, encounterAccuracy: 94, encounterKpmRatio: .88, grade, course: (index + 1) as Course,
   })),
 )

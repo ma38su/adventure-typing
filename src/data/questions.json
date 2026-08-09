@@ -3,6 +3,7 @@
     {
       "id": "1-s01",
       "stage": 1,
+      "section": 1,
       "sentence": "海だ",
       "reading": "うみだ",
       "ruby": [
@@ -13,8 +14,63 @@
       "meaning": "草原の先に海が見えた"
     },
     {
+      "id": "1-s01b",
+      "stage": 1,
+      "section": 1,
+      "sentence": "空だ",
+      "reading": "そらだ",
+      "ruby": [
+        "[空:そら]だ"
+      ],
+      "romaji": "sorada",
+      "focus": "空",
+      "meaning": "広い空を見上げた"
+    },
+    {
+      "id": "1-s01c",
+      "stage": 1,
+      "section": 1,
+      "sentence": "風だ",
+      "reading": "かぜだ",
+      "ruby": [
+        "[風:かぜ]だ"
+      ],
+      "romaji": "kazeda",
+      "focus": "風",
+      "meaning": "海から風が吹いてきた"
+    },
+    {
+      "id": "1-000b",
+      "stage": 1,
+      "section": 2,
+      "sentence": "赤い 花",
+      "reading": "あかい はな",
+      "ruby": [
+        "[赤:あか]い",
+        "[花:はな]"
+      ],
+      "romaji": "akai hana",
+      "focus": "赤・花",
+      "meaning": "赤い花を はっけん"
+    },
+    {
+      "id": "1-000a",
+      "stage": 1,
+      "section": 2,
+      "sentence": "山へ 行く",
+      "reading": "やまへ いく",
+      "ruby": [
+        "[山:やま]へ",
+        "[行:い]く"
+      ],
+      "romaji": "yamahe iku",
+      "focus": "山・行",
+      "meaning": "山へ しゅっぱつ"
+    },
+    {
       "id": "1-s02",
       "stage": 1,
+      "section": 2,
       "sentence": "森へ 行く",
       "reading": "もりへ いく",
       "ruby": [
@@ -28,6 +84,7 @@
     {
       "id": "1-s03",
       "stage": 1,
+      "section": 3,
       "sentence": "花が さく",
       "reading": "はなが さく",
       "ruby": [
@@ -41,6 +98,7 @@
     {
       "id": "1-s04",
       "stage": 1,
+      "section": 3,
       "sentence": "鳥が とぶ",
       "reading": "とりが とぶ",
       "ruby": [
@@ -52,34 +110,37 @@
       "meaning": "鳥が森の方へ飛んでいく"
     },
     {
-      "id": "1-000a",
+      "id": "1-x01",
       "stage": 1,
-      "sentence": "山へ 行く",
-      "reading": "やまへ いく",
+      "section": 3,
+      "sentence": "空を 見る",
+      "reading": "そらを みる",
       "ruby": [
-        "[山:やま]へ",
-        "[行:い]く"
+        "[空:そら]を",
+        "[見:み]る"
       ],
-      "romaji": "yamahe iku",
-      "focus": "山・行",
-      "meaning": "山へ しゅっぱつ"
+      "romaji": "sorawo miru",
+      "focus": "空・見",
+      "meaning": "空を見上げよう"
     },
     {
-      "id": "1-000b",
+      "id": "1-x02",
       "stage": 1,
-      "sentence": "赤い 花",
-      "reading": "あかい はな",
+      "section": 4,
+      "sentence": "水を のむ",
+      "reading": "みずを のむ",
       "ruby": [
-        "[赤:あか]い",
-        "[花:はな]"
+        "[水:みず]を",
+        "のむ"
       ],
-      "romaji": "akai hana",
-      "focus": "赤・花",
-      "meaning": "赤い花を はっけん"
+      "romaji": "mizuwo nomu",
+      "focus": "水",
+      "meaning": "水を飲んでひと休み"
     },
     {
       "id": "1-000c",
       "stage": 1,
+      "section": 4,
       "sentence": "犬と 走る",
       "reading": "いぬと はしる",
       "ruby": [
@@ -89,6 +150,66 @@
       "romaji": "inuto hashiru",
       "focus": "犬・走",
       "meaning": "犬と かけっこ"
+    },
+    {
+      "id": "1-s04b",
+      "stage": 1,
+      "section": 4,
+      "sentence": "草を ふみ 進む",
+      "reading": "くさを ふみ すすむ",
+      "ruby": [
+        "[草:くさ]を",
+        "ふみ",
+        "[進:すす]む"
+      ],
+      "romaji": "kusawo fumi susumu",
+      "focus": "草・進",
+      "meaning": "草原の細い道を進む"
+    },
+    {
+      "id": "1-s04c",
+      "stage": 1,
+      "section": 5,
+      "sentence": "海の 風が ふく",
+      "reading": "うみの かぜが ふく",
+      "ruby": [
+        "[海:うみ]の",
+        "[風:かぜ]が",
+        "ふく"
+      ],
+      "romaji": "umino kazega fuku",
+      "focus": "海・風",
+      "meaning": "海からの風を感じる"
+    },
+    {
+      "id": "1-s04d",
+      "stage": 1,
+      "section": 5,
+      "sentence": "森の 道へ 進む",
+      "reading": "もりの みちへ すすむ",
+      "ruby": [
+        "[森:もり]の",
+        "[道:みち]へ",
+        "[進:すす]む"
+      ],
+      "romaji": "morino michihe susumu",
+      "focus": "森・道・進",
+      "meaning": "海辺から森へ旅を続ける"
+    },
+    {
+      "id": "1-s04e",
+      "stage": 1,
+      "section": 5,
+      "sentence": "青い 空を 見上げる",
+      "reading": "あおい そらを みあげる",
+      "ruby": [
+        "[青:あお]い",
+        "[空:そら]を",
+        "[見上:みあ]げる"
+      ],
+      "romaji": "aoi sorawo miageru",
+      "focus": "青・空・見上",
+      "meaning": "旅の先の空を見上げる"
     },
     {
       "id": "1-s05",
@@ -219,32 +340,6 @@
       "romaji": "akai hanaga nanatsu sakimashita",
       "focus": "赤・花・七",
       "meaning": "花ばたけに とうちゃく"
-    },
-    {
-      "id": "1-x01",
-      "stage": 1,
-      "sentence": "空を 見る",
-      "reading": "そらを みる",
-      "ruby": [
-        "[空:そら]を",
-        "[見:み]る"
-      ],
-      "romaji": "sorawo miru",
-      "focus": "空・見",
-      "meaning": "空を見上げよう"
-    },
-    {
-      "id": "1-x02",
-      "stage": 1,
-      "sentence": "水を のむ",
-      "reading": "みずを のむ",
-      "ruby": [
-        "[水:みず]を",
-        "のむ"
-      ],
-      "romaji": "mizuwo nomu",
-      "focus": "水",
-      "meaning": "水を飲んでひと休み"
     },
     {
       "id": "1-x03",

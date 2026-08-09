@@ -39,4 +39,14 @@ describe('CourseClearModal', () => {
     expect(html).toContain('ステージ選択へ戻る')
     expect(html).not.toContain('次のステージへ')
   })
+
+  it('ステージ内コースのクリアでは物語を完結させず次のコースへ案内する', () => {
+    const html = renderToStaticMarkup(<CourseClearModal {...commonProps} segmentClear segmentNumber={2} segmentCount={5} />)
+
+    expect(html).toContain('COURSE CLEAR!')
+    expect(html).toContain('コース 2/5 クリア！')
+    expect(html).toContain('次のコースへ')
+    expect(html).not.toContain('物語のつづき')
+    expect(html).toContain('<kbd>Space</kbd> キーでも進める')
+  })
 })
