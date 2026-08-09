@@ -65,15 +65,15 @@ export function KanaPracticePage({ profileId, tutorial, onTutorialComplete, onBa
   }
 
   if (!course) return <main className="kana-page kana-course-page">
-    <header className="catalog-topbar"><button className="catalog-back" onClick={onBack}>‹ もどる</button><div className="brand"><span className="brand-mark">あ</span><div><strong>ローマ字の島</strong><small>文章のまえの 1文字れんしゅう</small></div></div><div className="catalog-overall"><b>{completedIds.length}</b> / {KANA_COURSES.length} コース</div></header>
+    <header className="catalog-topbar"><button className="catalog-back" onClick={onBack}>‹ もどる</button><div className="brand"><span className="brand-mark">あ</span><div><strong>ローマ字ステージ</strong><small>文章のまえの 1文字れんしゅう</small></div></div><div className="catalog-overall"><b>{completedIds.length}</b> / {KANA_COURSES.length} ステージ</div></header>
     <section className="kana-course-hero"><span>ABC</span><div><small>{tutorial ? 'はじめての ぼうけん準備！' : 'まずは ここから！'}</small><h1>ひらがなを見て、ローマ字を打とう</h1><p>{tutorial ? '最初の「母音の浜」をクリアすると、そのまま本編の冒険へ進めるよ。' : '音のなかまごとに、少しずつレベルアップ。表示とちがう打ちかたでも、正しいローマ字ならせいかいになるよ。'}</p></div></section>
     <section className="kana-course-grid">{KANA_COURSES.map((entry, courseIndex) => <button key={entry.id} style={{ '--course-color': entry.color } as React.CSSProperties} onClick={() => startCourse(entry)}><span>{entry.icon}</span><small>レベル {courseIndex + 1}</small><h2>{entry.name}</h2><p>{entry.subtitle}</p><b>{entry.items.length}もじ</b><em>{completedIds.includes(entry.id) ? 'クリア ✓' : 'はじめる　▶'}</em></button>)}</section>
     <section className="kana-before-sentences"><span>🌉</span><div><b>この島をれんしゅうしたら…</b><p>1年生の短い文章へ進んで、覚えたローマ字を使ってみよう！</p></div></section>
   </main>
 
   return <main className={`kana-page kana-play-page ${result}`} onClick={() => inputRef.current?.focus()}>
-    <header className="kana-play-header"><button onClick={() => { clearTimers(); setCourse(null) }}>‹ コースをえらぶ</button><div><small>{course.icon} {course.name}</small><b>{index + 1} / {course.items.length}</b><i><span style={{ width: `${((index + (finished ? 1 : 0)) / course.items.length) * 100}%` }} /></i></div><output>ミス {mistakes}</output></header>
-    {finished ? <section className="kana-finish"><span>🎉</span><small>ROMAJI COURSE CLEAR!</small><h1>{course.name} クリア！</h1><p>{course.items.length}この音を、さいごまで入力できたよ。</p><div><b>{course.items.length}<small>もじ</small></b><b>{mistakes}<small>ミス</small></b></div>{tutorial ? <button onClick={onStartAdventure}>本編の冒険へ しゅっぱつ　▶</button> : <button onClick={() => { clearTimers(); setCourse(null) }}>つぎのコースをえらぶ　▶</button>}</section> : item && <section className="kana-practice-card">
+    <header className="kana-play-header"><button onClick={() => { clearTimers(); setCourse(null) }}>‹ ステージをえらぶ</button><div><small>{course.icon} {course.name}</small><b>{index + 1} / {course.items.length}</b><i><span style={{ width: `${((index + (finished ? 1 : 0)) / course.items.length) * 100}%` }} /></i></div><output>ミス {mistakes}</output></header>
+    {finished ? <section className="kana-finish"><span>🎉</span><small>ROMAJI STAGE CLEAR!</small><h1>{course.name} クリア！</h1><p>{course.items.length}この音を、さいごまで入力できたよ。</p><div><b>{course.items.length}<small>もじ</small></b><b>{mistakes}<small>ミス</small></b></div>{tutorial ? <button onClick={onStartAdventure}>本編の冒険へ しゅっぱつ　▶</button> : <button onClick={() => { clearTimers(); setCourse(null) }}>つぎのステージをえらぶ　▶</button>}</section> : item && <section className="kana-practice-card">
       <div className="kana-level-label">{course.icon} {course.subtitle}</div>
       <p>この ひらがなを ローマ字で入力しよう</p>
       <div className="kana-target">{item.kana}</div>

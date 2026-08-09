@@ -1,14 +1,14 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { QUESTIONS, type Grade, type Question } from './questions'
-import { rollCourseCreature, rollCourseTreasure, type CollectionRecord, type Course } from './rewards'
+import { getReward, rollCourseCreature, rollCourseTreasure, type CollectionRecord, type Course } from './rewards'
 import { emptyProblemStat, emptyProfileData, type CharacterStyle, type DailyActivity, type KeyStats, type LearningGoals, type ProblemStats, type ProfileData, type ProfileRegistry, type ScoreBreakdown, type ScoreData, type UserProfile } from './domain'
 import { getAdventureRank } from './ranks'
 import { type AdventureEvent } from './game/gameRunReducer'
 import { useGameRunState } from './game/useGameRunState'
 import { mergeKeyStatBatch, mergeProblemBatch, useTypingEngine, type TypingProblemBatch } from './game/useTypingEngine'
 import { ProfileCreator, ProfileManagerPage, ProfileWelcomePage } from './pages/ProfilePages'
-import { GRADE_OPTIONS, LEARNING_STAGES } from './game/courseConfig'
+import { isCourseUnlocked, LEARNING_STAGES } from './game/courseConfig'
 import { TitlePage } from './pages/TitlePage'
 import { TypingCard } from './components/game/TypingCard'
 import { CourseMap } from './components/game/CourseMap'
@@ -18,6 +18,7 @@ import { CourseClearModal, KeyStatsModal, ReviewModal, RewardDiscoveryModal } fr
 import { createDebouncedProfileWriter, loadProfileData, loadProfileRegistry, saveProfileData, saveProfileRegistry } from './storage/profileStorage'
 import { adaptQuestions, addDailyActivity, getGoalProgress } from './learningProgress'
 import { ParentReportPage } from './pages/ParentReportPage'
+import { GRADE_STORIES, getCourseStory } from './game/storyConfig'
 import './App.css'
 
 const KanaPracticePage = lazy(() => import('./KanaPracticePage').then((module) => ({ default: module.KanaPracticePage })))
@@ -47,7 +48,7 @@ function App() {
   const setShowKanaPractice = useCallback((show: boolean) => navigate(show ? '/romaji-island' : '/'), [navigate])
   const setShowParentReport = useCallback((show: boolean) => navigate(show ? '/parent-report' : '/'), [navigate])
   const [profileRegistry, setProfileRegistry] = useState<ProfileRegistry>(loadProfileRegistry)
-  const [activeProfileId, setActiveProfileId] = useState<string | null>(profileRegistry.activeProfileId)
+  const [activeProfileId, setActiveProfileId] = useState<string | null>(null)
   const [initialProfileData] = useState<ProfileData>(() => loadProfileData(profileRegistry.activeProfileId))
   const initialProfile = profileRegistry.profiles.find((profile) => profile.id === profileRegistry.activeProfileId)
   const [newProfileName, setNewProfileName] = useState('')
@@ -74,9 +75,7 @@ function App() {
   const [goals, setGoals] = useState<LearningGoals>(initialProfileData.goals)
   const [tutorialCompletedAt, setTutorialCompletedAt] = useState(initialProfileData.tutorialCompletedAt)
   const [storageError, setStorageError] = useState(false)
-  const [titleTransition, setTitleTransition] = useState<'next' | 'prev' | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-  const titleTransitionTimer = useRef<number | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
   const [profileWriter] = useState(() => createDebouncedProfileWriter(750, localStorage, () => setStorageError(true)))
 
@@ -91,6 +90,8 @@ function App() {
       .map(({ item }) => item)
   }, [grade, practiceMode, reviewTargetKeys, selectedCourse, adaptiveKeyStats])
   const question = questions[questionIndex]
+  const gradeStory = GRADE_STORIES[grade]
+  const courseStory = getCourseStory(grade, selectedCourse)
   const stageIndex = question.stage - 1
   const { canonicalRomaji, displayProgress, currentChar, nextKeyOptions, enterCharacters, resetQuestion: resetTypingQuestion } = useTypingEngine({
     question,
@@ -213,11 +214,36 @@ function App() {
     })
   }, [soundOn])
 
+  useEffect(() => {
+    if (!started || !soundOn) return
+    const playPhrase = () => {
+      const context = audioContextRef.current
+      if (!context || context.state !== 'running') return
+      ;[261.6, 329.6, 392, 329.6].forEach((frequency, index) => {
+        const start = context.currentTime + index * .34
+        const oscillator = context.createOscillator()
+        const gain = context.createGain()
+        oscillator.type = 'sine'
+        oscillator.frequency.setValueAtTime(frequency, start)
+        gain.gain.setValueAtTime(.012, start)
+        gain.gain.exponentialRampToValueAtTime(.001, start + .28)
+        oscillator.connect(gain).connect(context.destination)
+        oscillator.start(start)
+        oscillator.stop(start + .3)
+      })
+    }
+    playPhrase()
+    const timer = window.setInterval(playPhrase, 2400)
+    return () => window.clearInterval(timer)
+  }, [started, soundOn])
+
   const advanceAfterEvent = useCallback(() => {
     if (questionIndex === questions.length - 1) {
       setCompleted(true)
       const courseId = `${grade}-${selectedCourse}`
       if (practiceMode === 'adventure') {
+        const storyTreasure = getReward(courseStory.featuredTreasureId)
+        if (storyTreasure) setCollection((items) => items.some((item) => item.id === storyTreasure.id) ? items : [...items, { id: storyTreasure.id, type: 'treasure', count: 1, firstFoundAt: new Date().toISOString() }])
         setScoreData((score) => ({
           ...score,
           courseBest: { ...score.courseBest, [courseId]: Math.max(score.courseBest[courseId] ?? 0, courseScore) },
@@ -229,7 +255,7 @@ function App() {
       }
     }
     dispatchGameRun({ type: 'advance-question', questionIndex: questionIndex === questions.length - 1 ? questionIndex : questionIndex + 1 })
-  }, [questionIndex, questions.length, practiceMode, grade, selectedCourse, selectedCourseFullyCompleted, courseScore, setCompleted, dispatchGameRun])
+  }, [questionIndex, questions.length, practiceMode, grade, selectedCourse, selectedCourseFullyCompleted, courseScore, courseStory.featuredTreasureId, setCompleted, dispatchGameRun])
 
   useEffect(() => { inputRef.current?.focus({ preventScroll: true }) }, [questionIndex, grade, showReview, showKeyStats, started])
 
@@ -336,15 +362,6 @@ function App() {
     setShowKeyStats(false)
   }
 
-  const selectTitleGrade = (nextGrade: Grade) => {
-    if (nextGrade === grade) return
-    if (titleTransitionTimer.current) window.clearTimeout(titleTransitionTimer.current)
-    setTitleTransition(nextGrade > grade ? 'next' : 'prev')
-    setGrade(nextGrade)
-    setSelectedCourse(1)
-    titleTransitionTimer.current = window.setTimeout(() => setTitleTransition(null), 720)
-  }
-
   const continueAfterCourseClear = () => {
     if (practiceMode === 'weak-keys') {
       reset(grade, selectedCourse)
@@ -365,6 +382,7 @@ function App() {
 
   const startCatalogProblem = (target: Question) => {
     const course = target.stage as Course
+    if (!isCourseUnlocked(catalogGrade, course, completedCourses)) return
     const courseQuestions = QUESTIONS[catalogGrade].filter((item) => item.stage === course)
     reset(catalogGrade, course)
     setQuestionIndex(Math.max(0, courseQuestions.findIndex((item) => item.id === target.id)))
@@ -392,6 +410,7 @@ function App() {
   }
 
   const switchProfile = (profile: UserProfile) => {
+    playSound('key')
     saveCurrentProfileNow()
     const data = loadProfileData(profile.id)
     setProfileLearningData(data)
@@ -433,6 +452,19 @@ function App() {
     setShowProfileManager(false)
   }
 
+  const updateActiveProfile = (settings: Pick<UserProfile, 'name' | 'lastGrade' | 'characterStyle'>) => {
+    const name = settings.name.trim().replace(/\s+/g, ' ')
+    if (!name) return 'なまえを入力してね'
+    if (name.length > 12) return 'なまえは12文字までにしてね'
+    if (profileRegistry.profiles.some((profile) => profile.id !== activeProfileId && profile.name.toLocaleLowerCase() === name.toLocaleLowerCase())) return '同じなまえのユーザーがいるよ'
+    setProfileRegistry((registry) => ({ ...registry, profiles: registry.profiles.map((profile) => profile.id === activeProfileId ? { ...profile, ...settings, name } : profile) }))
+    setGrade(settings.lastGrade)
+    setCatalogGrade(settings.lastGrade)
+    setCharacterStyle(settings.characterStyle)
+    setSelectedCourse(1)
+    return '保存しました'
+  }
+
   const profileCreator = <ProfileCreator name={newProfileName} grade={newProfileGrade} character={newProfileCharacter} error={profileError} onName={(value) => { setNewProfileName(value); setProfileError('') }} onGrade={setNewProfileGrade} onCharacter={setNewProfileCharacter} onCreate={createProfile} />
   const storageWarning = storageError && <div className="storage-warning" role="alert"><b>⚠️ きろくを保存できません</b><span>空き容量やブラウザの設定を確認して、このページを閉じずにおとなの人へ知らせてね。</span><button onClick={() => setStorageError(false)} aria-label="閉じる">×</button></div>
 
@@ -441,10 +473,10 @@ function App() {
     return <><ProfileWelcomePage entries={entries} creator={profileCreator} onSelect={switchProfile} />{storageWarning}</>
   }
 
-  if (showKanaPractice) return <><Suspense fallback={pageFallback}><KanaPracticePage profileId={activeProfile.id} tutorial={!tutorialCompletedAt} onTutorialComplete={() => setTutorialCompletedAt(new Date().toISOString())} onBack={() => setShowKanaPractice(false)} onStartAdventure={() => { setTutorialCompletedAt((value) => value || new Date().toISOString()); reset(1, 1); setStarted(true) }} /></Suspense>{storageWarning}</>
+  if (showKanaPractice) return <><Suspense fallback={pageFallback}><KanaPracticePage profileId={activeProfile.id} tutorial={!tutorialCompletedAt} onTutorialComplete={() => setTutorialCompletedAt(new Date().toISOString())} onBack={() => setShowKanaPractice(false)} onStartAdventure={() => { setTutorialCompletedAt((value) => value || new Date().toISOString()); reset(grade, 1); setStarted(true) }} /></Suspense>{storageWarning}</>
 
   if (showProfileManager) {
-    return <><ProfileManagerPage entries={deviceRanking} activeId={activeProfileId} creator={profileCreator} onBack={() => setShowProfileManager(false)} onSelect={switchProfile} />{storageWarning}</>
+    return <><ProfileManagerPage entries={deviceRanking} activeId={activeProfileId} onBack={() => setShowProfileManager(false)} onSelect={switchProfile} onUpdate={updateActiveProfile} />{storageWarning}</>
   }
 
   if (showRankGuide) {
@@ -458,21 +490,20 @@ function App() {
   }
 
   if (showCatalog) {
-    return <><Suspense fallback={pageFallback}><CatalogPage grade={catalogGrade} setGrade={setCatalogGrade} problemStats={problemStats} completedCourses={completedCourses} scoreData={scoreData} onBack={() => setShowCatalog(false)} onStart={startCatalogProblem} /></Suspense>{storageWarning}</>
+    return <><Suspense fallback={pageFallback}><CatalogPage grade={catalogGrade} problemStats={problemStats} completedCourses={completedCourses} scoreData={scoreData} onBack={() => setShowCatalog(false)} onStart={startCatalogProblem} /></Suspense>{storageWarning}</>
   }
 
   if (!started) {
-    return <><TitlePage profile={activeProfile} grade={grade} course={selectedCourse} character={characterStyle} points={scoreData.lifetime} rank={adventureRank} soundOn={soundOn} transition={titleTransition} completedCourses={completedCourses} goalProgress={goalProgress} tutorialComplete={Boolean(tutorialCompletedAt)} onSound={() => setSoundOn(!soundOn)} onProfiles={() => setShowProfileManager(true)} onRomaji={() => setShowKanaPractice(true)} onGrade={selectTitleGrade} onCourse={setSelectedCourse} onCharacter={setCharacterStyle} onStart={() => { if (!tutorialCompletedAt) { setShowKanaPractice(true); return }; reset(grade, selectedCourse); setProfileRegistry((registry) => ({ ...registry, profiles: registry.profiles.map((profile) => profile.id === activeProfileId ? { ...profile, lastPlayedAt: new Date().toISOString() } : profile) })); setStarted(true) }} onCatalog={() => { setCatalogGrade(grade); setShowCatalog(true) }} onCollection={() => setShowCollection(true)} onRankGuide={() => setShowRankGuide(true)} onReport={() => setShowParentReport(true)} />{storageWarning}</>
+    return <><TitlePage profile={activeProfile} grade={grade} course={selectedCourse} character={characterStyle} points={scoreData.lifetime} rank={adventureRank} soundOn={soundOn} completedCourses={completedCourses} goalProgress={goalProgress} tutorialComplete={Boolean(tutorialCompletedAt)} onSound={() => setSoundOn(!soundOn)} onProfiles={() => setShowProfileManager(true)} onRomaji={() => { playSound('key'); setShowKanaPractice(true) }} onCourse={(course) => { if (isCourseUnlocked(grade, course, completedCourses)) { playSound('key'); setSelectedCourse(course) } }} onStart={() => { if (!tutorialCompletedAt) { setShowKanaPractice(true); return }; if (!isCourseUnlocked(grade, selectedCourse, completedCourses)) return; playSound('complete'); reset(grade, selectedCourse); setProfileRegistry((registry) => ({ ...registry, profiles: registry.profiles.map((profile) => profile.id === activeProfileId ? { ...profile, lastPlayedAt: new Date().toISOString() } : profile) })); setStarted(true) }} onCatalog={() => { setCatalogGrade(grade); setShowCatalog(true) }} onCollection={() => setShowCollection(true)} onRankGuide={() => setShowRankGuide(true)} onReport={() => setShowParentReport(true)} />{storageWarning}</>
   }
 
   return (
     <main className="app-shell" onClick={() => inputRef.current?.focus()}>
       <header className="topbar">
         <div className="brand"><span className="brand-mark">⌨</span><div><strong>ことば島</strong><small>の 大ぼうけん</small></div></div>
-        <nav className="grade-switch" aria-label="学年を選ぶ">
-          {GRADE_OPTIONS.map((value) => <button key={value} className={grade === value ? 'active' : ''} onClick={(event) => { event.stopPropagation(); reset(value, 1) }}>{value}年生</button>)}
-        </nav>
+        <div className="header-grade-label">{grade}年生</div>
         <div className="player-stats">
+          <button className="exit-stage-button" onClick={(event) => { event.stopPropagation(); reset(grade, selectedCourse); saveCurrentProfileNow(); setStarted(false); setActiveProfileId(null) }}>ゲームを終了</button>
           <button className="header-profile-button" onClick={(event) => { event.stopPropagation(); reset(grade, selectedCourse); setStarted(false); setShowProfileManager(true) }}><span>{characterStyle === 'girl' ? '👧' : '👦'}</span><b>{activeProfile.name}</b></button>
           <button className="header-catalog-button" onClick={(event) => { event.stopPropagation(); setCatalogGrade(grade); setShowCatalog(true) }}>📚 問題一覧</button>
           <button className="header-catalog-button collection-button" onClick={(event) => { event.stopPropagation(); setShowCollection(true) }}>🗺️ 図鑑</button>
@@ -486,8 +517,8 @@ function App() {
         <CourseMap grade={grade} selectedCourse={selectedCourse} completedCourses={completedCourses} questionIndex={questionIndex} questionCount={questions.length} />
 
         <section className="game-area">
-          <div className={`stage-title ${practiceMode === 'weak-keys' ? 'practice-title' : ''}`}><div><span>{practiceMode === 'weak-keys' ? `🎯 苦手キー「${reviewTargetKeys.join('・')}」を特訓中` : `コース ${selectedCourse}・${LEARNING_STAGES[stageIndex].label}・${LEARNING_STAGES[stageIndex].habitat}`}</span><h1>{practiceMode === 'weak-keys' ? 'にがてキー特訓' : LEARNING_STAGES[stageIndex].name}</h1>{practiceMode === 'adventure' && <p className="stage-theme-description">{LEARNING_STAGES[stageIndex].description}</p>}</div><div className="xp-wrap">{practiceMode === 'weak-keys' && <button className="leave-practice" onClick={(event) => { event.stopPropagation(); reset(grade, selectedCourse) }}>通常モードへ</button>}<span>問題 {questionIndex + 1}/{questions.length}</span><div className="xp-bar"><i style={{ width: `${(questionIndex + 1) / questions.length * 100}%` }} /></div><b>{questionIndex + 1}/{questions.length}</b></div></div>
-          <div className="course-score-hud"><div><span>今回のコーススコア</span><b>{courseScore.toLocaleString()}<small> GP</small></b></div><div><span>コースベスト</span><b>{currentCourseBest.toLocaleString()}<small> GP</small></b></div><div><span>発見ボーナス</span><b>+{runBonus.toLocaleString()}<small> GP</small></b></div>{lastScore && <div className="last-score-chip"><span>直前の問題</span><b>+{lastScore.total.toLocaleString()}</b><small>正確さ {lastScore.accuracy}%・{lastScore.kpm} KPM</small></div>}</div>
+          <div className={`stage-title ${practiceMode === 'weak-keys' ? 'practice-title' : ''}`}><div><span>{practiceMode === 'weak-keys' ? `🎯 苦手キー「${reviewTargetKeys.join('・')}」を特訓中` : `${grade}年生の物語・第${selectedCourse}話　${gradeStory.chapterTitle}`}</span><h1>{practiceMode === 'weak-keys' ? 'にがてキー特訓' : courseStory.title}</h1>{practiceMode === 'adventure' && <p className="stage-theme-description">🎯 {courseStory.objective}　<span>{courseStory.intro}</span></p>}</div><div className="xp-wrap">{practiceMode === 'weak-keys' && <button className="leave-practice" onClick={(event) => { event.stopPropagation(); reset(grade, selectedCourse) }}>通常モードへ</button>}<span>問題 {questionIndex + 1}/{questions.length}</span><div className="xp-bar"><i style={{ width: `${(questionIndex + 1) / questions.length * 100}%` }} /></div><b>{questionIndex + 1}/{questions.length}</b></div></div>
+          <div className="course-score-hud"><div><span>今回のステージスコア</span><b>{courseScore.toLocaleString()}<small> GP</small></b></div><div><span>ステージベスト</span><b>{currentCourseBest.toLocaleString()}<small> GP</small></b></div><div><span>発見ボーナス</span><b>+{runBonus.toLocaleString()}<small> GP</small></b></div>{lastScore && <div className="last-score-chip"><span>直前の問題</span><b>+{lastScore.total.toLocaleString()}</b><small>正確さ {lastScore.accuracy}%・{lastScore.kpm} KPM</small></div>}</div>
           <AdventureScenes stageIndex={stageIndex} action={adventureAction} event={adventureEvent} reward={adventureReward} trailTreasure={trailTreasure} character={characterStyle} stageWalked={stageWalked} stepQueue={stepQueue} stepDelay={stepDelay} courseProgress={courseProgress} walkPercent={walkPercent} sentenceProgress={sentenceProgress} awaitingFinish={awaitingFinish} />
           <TypingCard question={question} practiceMode={practiceMode} reviewTargetKeys={reviewTargetKeys} typed={typed} displayProgress={displayProgress} canonicalRomaji={canonicalRomaji} notice={notice} awaitingFinish={awaitingFinish} combo={combo} currentChar={currentChar} nextKeyOptions={nextKeyOptions} inputRef={inputRef} onTyped={setTyped} onEnter={enterCharacters} />
           <div className="tip"><span>💡</span><p><b>ローマ字ヒント</b>　「し」は <kbd>s</kbd> <kbd>h</kbd> <kbd>i</kbd> の順に入力するよ</p></div>
@@ -499,7 +530,7 @@ function App() {
       {showReview && <ReviewModal mistakes={mistakes} onClose={() => setShowReview(false)} onRetry={() => { setShowReview(false); setTyped(''); setNotice(null) }} />}
       {showKeyStats && <KeyStatsModal grade={grade} totalAttempts={totalKeyAttempts} strongKeys={strongKeyStats} weakKeys={weakKeyStats} onClose={() => setShowKeyStats(false)} onPractice={startWeakKeyPractice} />}
       {rewardAwaitingConfirmation && adventureEvent && adventureReward && <RewardDiscoveryModal reward={adventureReward} score={lastScore} onConfirm={advanceAfterEvent} />}
-      {completed && <CourseClearModal practiceMode={practiceMode} reviewTargetKeys={reviewTargetKeys} fullyCompleted={selectedCourseFullyCompleted} grade={grade} course={selectedCourse} courseScore={courseScore} runBonus={runBonus} accuracy={accuracy} attempts={runAttempts} misses={runMisses} strongKeys={runStrongKeys} weakKeys={runWeakKeys} creatureCount={creatureCount} treasureCount={treasureCount} lifetimePoints={scoreData.lifetime} onContinue={continueAfterCourseClear} />}
+      {completed && <CourseClearModal practiceMode={practiceMode} reviewTargetKeys={reviewTargetKeys} fullyCompleted={selectedCourseFullyCompleted} grade={grade} course={selectedCourse} storyCompletion={courseStory.completion} chapterFinale={selectedCourse === 6 ? gradeStory.finale : ''} courseScore={courseScore} runBonus={runBonus} accuracy={accuracy} attempts={runAttempts} misses={runMisses} strongKeys={runStrongKeys} weakKeys={runWeakKeys} creatureCount={creatureCount} treasureCount={treasureCount} lifetimePoints={scoreData.lifetime} onContinue={continueAfterCourseClear} />}
       {storageWarning}
     </main>
   )

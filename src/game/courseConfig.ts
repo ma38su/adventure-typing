@@ -1,13 +1,13 @@
 import type { Grade } from '../questions'
-import { COURSE_THEMES } from '../rewards'
+import { COURSE_THEMES, type Course } from '../rewards'
 
 export const LEARNING_STAGES = [
-  { ...COURSE_THEMES[1], label: 'みじかい文', background: '/backgrounds/stage-beach.webp' },
-  { ...COURSE_THEMES[2], label: 'ふつうの文', background: '/backgrounds/stage-forest.webp' },
-  { ...COURSE_THEMES[3], label: 'ながい文', background: '/backgrounds/stage-mountain.webp' },
-  { ...COURSE_THEMES[4], label: 'おさらい文', background: '/backgrounds/stage-beach.webp' },
-  { ...COURSE_THEMES[5], label: '組み合わせ文', background: '/backgrounds/stage-forest.webp' },
-  { ...COURSE_THEMES[6], label: 'チャレンジ文', background: '/backgrounds/stage-mountain.webp' },
+  { ...COURSE_THEMES[1], label: 'みじかい文', background: '/backgrounds/stage-beach.webp', journeyBackground: '/backgrounds/course-1-meadow.webp' },
+  { ...COURSE_THEMES[2], label: 'ふつうの文', background: '/backgrounds/stage-forest.webp', journeyBackground: '/backgrounds/course-2-forest.webp' },
+  { ...COURSE_THEMES[3], label: 'ながい文', background: '/backgrounds/stage-mountain.webp', journeyBackground: '/backgrounds/course-3-mountain.webp' },
+  { ...COURSE_THEMES[4], label: 'おさらい文', background: '/backgrounds/stage-beach.webp', journeyBackground: '/backgrounds/course-4-cove.webp' },
+  { ...COURSE_THEMES[5], label: '組み合わせ文', background: '/backgrounds/stage-forest.webp', journeyBackground: '/backgrounds/course-5-ancient-forest.webp' },
+  { ...COURSE_THEMES[6], label: 'チャレンジ文', background: '/backgrounds/stage-mountain.webp', journeyBackground: '/backgrounds/course-6-sky-ruins.webp' },
 ]
 
 export const TITLE_ISLANDS: Record<Grade, { name: string; back: string; main: string; friend: string; treasure: string }> = {
@@ -20,3 +20,7 @@ export const TITLE_ISLANDS: Record<Grade, { name: string; back: string; main: st
 }
 
 export const GRADE_OPTIONS: Grade[] = [1, 2, 3, 4, 5, 6]
+
+export const isCourseUnlocked = (grade: Grade, course: Course, completedCourses: string[]) =>
+  Array.from({ length: course - 1 }, (_, index) => `${grade}-${index + 1}`)
+    .every((courseId) => completedCourses.includes(courseId))
