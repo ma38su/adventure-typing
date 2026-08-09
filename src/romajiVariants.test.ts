@@ -14,4 +14,12 @@ describe('buildRomajiCandidates', () => {
     expect(targets).toContain('minnnademori')
     expect(targets).not.toContain('miademori')
   })
+
+  it('keeps the canonical display marker aligned for shorter aliases', () => {
+    const si = buildRomajiCandidates('shi', 'し').find((candidate) => candidate.target === 'si')
+    expect(si?.displayProgress).toEqual([0, 1, 3])
+
+    const ti = buildRomajiCandidates('chi', 'ち').find((candidate) => candidate.target === 'ti')
+    expect(ti?.displayProgress).toEqual([0, 1, 3])
+  })
 })

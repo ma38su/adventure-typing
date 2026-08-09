@@ -10,10 +10,11 @@
 .sentence-progress-part.done{color:var(--teal-dark);background-color:rgba(78,205,175,.15)}
 .reading-progress-part.done{color:#3b9b8d}
 .typed{color:var(--teal-dark);background:#d9f5eb;border-radius:3px;box-shadow:inset 0 -3px #62c9b3}
-.cursor-char:after{inset:auto -1px -7px;height:3px;background:#ed9d3e;border-radius:3px;box-shadow:none}
+.cursor-char{margin:0 1px;padding:0 3px;border-radius:5px;background:#fff0bd;outline:2px solid rgba(224,145,40,.5);box-shadow:0 2px 0 rgba(190,112,23,.35)}.cursor-char:before{content:'';position:absolute;left:-2px;top:8%;bottom:8%;width:3px;border-radius:3px;background:#d97718;animation:typing-caret 1.15s ease-in-out infinite}.cursor-char:after{content:'';position:absolute;inset:auto 1px -6px;height:3px;background:#d97718;border-radius:3px;box-shadow:none}@keyframes typing-caret{0%,100%{opacity:1}50%{opacity:.42}}
 .type-progress-track{width:min(420px,88%);height:6px;margin:8px auto 14px;overflow:hidden;border-radius:10px;background:#e5ecea}
 .type-progress-track i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#19a89d,#65cfb8);transition:width .15s ease}
 .actual-input{min-height:30px;width:min(520px,96%);margin:-1px auto 0;display:flex;align-items:center;justify-content:center;gap:9px;color:#91a09f}.actual-input>span{font-size:8px;font-weight:800;letter-spacing:.06em}.actual-input code{min-width:42px;max-width:70%;overflow:hidden;text-overflow:ellipsis;color:#82908f;font:800 14px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.08em;white-space:nowrap}.actual-input.has-input code{color:#136f75}.actual-input b{padding:3px 7px;border-radius:9px;background:#fff2cc;color:#b36c19;font-size:8px;animation:alias-pop .22s cubic-bezier(.2,1.6,.5,1)}@keyframes alias-pop{from{transform:scale(.6);opacity:0}}
+@media(prefers-reduced-motion:reduce){.cursor-char:before,.kana-romaji span.current{animation:none}}
 
 /* 正解した文字を、少し遅れて歩数に変える冒険シーン */
 .adventure-scene{height:134px;margin-bottom:13px;position:relative;overflow:hidden;background:linear-gradient(#d9f4ec 0 57%,#a9d89e 57% 68%,#72bd79 68%);isolation:isolate}
