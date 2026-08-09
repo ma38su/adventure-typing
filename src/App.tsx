@@ -2,7 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } fro
 import { useLocation, useNavigate } from 'react-router-dom'
 import { getQuestionSection, groupQuestionsBySection, QUESTIONS, type Grade, type Question } from './questions'
 import { getReward, rollCourseCreature, rollCourseTreasure, type CollectionRecord, type Course } from './rewards'
-import { emptyProblemStat, emptyProfileData, type CharacterStyle, type DailyActivity, type KeyStats, type LearningGoals, type ProblemStats, type ProfileData, type ProfileRegistry, type ScoreBreakdown, type ScoreData, type UserProfile } from './domain'
+import { emptyProblemStat, emptyProfileData, type CharacterStyle, type DailyActivity, type KeyStats, type LearningGoals, type ProblemStats, type ProfileData, type ProfileRegistry, type ScoreBreakdown, type ScoreData, type TypingDisplayCase, type UserProfile } from './domain'
 import { getAdventureRank } from './ranks'
 import { type AdventureEvent } from './game/gameRunReducer'
 import { useGameRunState } from './game/useGameRunState'
@@ -10,6 +10,7 @@ import { mergeKeyStatBatch, mergeProblemBatch, useTypingEngine, type TypingProbl
 import { ProfileCreator, ProfileManagerPage, ProfileWelcomePage } from './pages/ProfilePages'
 import { isCourseUnlocked, LEARNING_STAGES } from './game/courseConfig'
 import { TitlePage } from './pages/TitlePage'
+import { FullscreenControl } from './components/FullscreenControl'
 import { TypingCard } from './components/game/TypingCard'
 import { AudioControls } from './components/AudioControls'
 import { CourseMap } from './components/game/CourseMap'
@@ -66,6 +67,7 @@ function App() {
   const [collectionTab, setCollectionTab] = useState<'treasure' | 'friend'>('treasure')
   const [bgmOn, setBgmOn] = useState(initialProfileData.audioSettings.bgmOn)
   const [soundEffectsOn, setSoundEffectsOn] = useState(initialProfileData.audioSettings.soundEffectsOn)
+  const [typingDisplayCase, setTypingDisplayCase] = useState<TypingDisplayCase>(initialProfileData.typingDisplayCase)
   const [characterStyle, setCharacterStyle] = useState<CharacterStyle>(initialProfile?.characterStyle ?? 'girl')
   const [keyStats, setKeyStats] = useState<KeyStats>(initialProfileData.keyStats)
   const [adaptiveKeyStats, setAdaptiveKeyStats] = useState<KeyStats>(initialProfileData.keyStats)
@@ -170,9 +172,9 @@ function App() {
   }, [profileRegistry])
   useEffect(() => {
     if (!activeProfileId) return
-    const data: ProfileData = { schemaVersion: 2, keyStats, collection, completedCourses, problemStats, scoreData, dailyActivity, goals, tutorialCompletedAt, audioSettings: { bgmOn, soundEffectsOn } }
+    const data: ProfileData = { schemaVersion: 2, keyStats, collection, completedCourses, problemStats, scoreData, dailyActivity, goals, tutorialCompletedAt, audioSettings: { bgmOn, soundEffectsOn }, typingDisplayCase }
     profileWriter.schedule(activeProfileId, data)
-  }, [activeProfileId, keyStats, collection, completedCourses, problemStats, scoreData, dailyActivity, goals, tutorialCompletedAt, bgmOn, soundEffectsOn, profileWriter])
+  }, [activeProfileId, keyStats, collection, completedCourses, problemStats, scoreData, dailyActivity, goals, tutorialCompletedAt, bgmOn, soundEffectsOn, typingDisplayCase, profileWriter])
   useEffect(() => {
     const flush = () => profileWriter.flush()
     window.addEventListener('pagehide', flush)
@@ -477,6 +479,7 @@ function App() {
     setTutorialCompletedAt(data.tutorialCompletedAt)
     setBgmOn(data.audioSettings.bgmOn)
     setSoundEffectsOn(data.audioSettings.soundEffectsOn)
+    setTypingDisplayCase(data.typingDisplayCase)
   }
 
   const changeBgm = (on: boolean) => {
@@ -491,7 +494,7 @@ function App() {
 
   const saveCurrentProfileNow = () => {
     if (!activeProfileId) return
-    const data: ProfileData = { schemaVersion: 2, keyStats, collection, completedCourses, problemStats, scoreData, dailyActivity, goals, tutorialCompletedAt, audioSettings: { bgmOn, soundEffectsOn } }
+    const data: ProfileData = { schemaVersion: 2, keyStats, collection, completedCourses, problemStats, scoreData, dailyActivity, goals, tutorialCompletedAt, audioSettings: { bgmOn, soundEffectsOn }, typingDisplayCase }
     profileWriter.cancel()
     if (!saveProfileData(activeProfileId, data)) setStorageError(true)
   }
@@ -525,7 +528,7 @@ function App() {
     const now = new Date().toISOString()
     const id = globalThis.crypto?.randomUUID?.() ?? `player-${Date.now()}-${Math.random().toString(36).slice(2)}`
     const profile: UserProfile = { id, name, createdAt: now, lastPlayedAt: now, lastGrade: newProfileGrade, characterStyle: newProfileCharacter }
-    const data = profileRegistry.profiles.length === 0 ? { schemaVersion: 2 as const, keyStats, collection, completedCourses, problemStats, scoreData, dailyActivity, goals, tutorialCompletedAt, audioSettings: { bgmOn, soundEffectsOn } } : emptyProfileData()
+    const data = profileRegistry.profiles.length === 0 ? { schemaVersion: 2 as const, keyStats, collection, completedCourses, problemStats, scoreData, dailyActivity, goals, tutorialCompletedAt, audioSettings: { bgmOn, soundEffectsOn }, typingDisplayCase } : emptyProfileData()
     if (!saveProfileData(id, data)) setStorageError(true)
     setProfileRegistry((registry) => ({ schemaVersion: 1, activeProfileId: id, profiles: [...registry.profiles, profile] }))
     setActiveProfileId(id)
@@ -565,10 +568,10 @@ function App() {
     return <><ProfileWelcomePage entries={entries} creator={profileCreator} onSelect={switchProfile} />{storageWarning}</>
   }
 
-  if (showKanaPractice) return <><Suspense fallback={pageFallback}><KanaPracticePage profileId={activeProfile.id} tutorial={!tutorialCompletedAt} onTutorialComplete={() => setTutorialCompletedAt(new Date().toISOString())} onBack={() => setShowKanaPractice(false)} onStartAdventure={() => { setTutorialCompletedAt((value) => value || new Date().toISOString()); reset(grade, 1); setStarted(true) }} /></Suspense>{storageWarning}</>
+  if (showKanaPractice) return <><Suspense fallback={pageFallback}><KanaPracticePage profileId={activeProfile.id} tutorial={!tutorialCompletedAt} displayCase={typingDisplayCase} onDisplayCase={setTypingDisplayCase} onTutorialComplete={() => setTutorialCompletedAt(new Date().toISOString())} onBack={() => setShowKanaPractice(false)} onStartAdventure={() => { setTutorialCompletedAt((value) => value || new Date().toISOString()); reset(grade, 1); setStarted(true) }} /></Suspense>{storageWarning}</>
 
   if (showProfileManager) {
-    return <><ProfileManagerPage entries={deviceRanking} activeId={activeProfileId} onBack={() => setShowProfileManager(false)} onSelect={switchProfile} onUpdate={updateActiveProfile} />{storageWarning}</>
+    return <><ProfileManagerPage entries={deviceRanking} activeId={activeProfileId} typingDisplayCase={typingDisplayCase} onTypingDisplayCase={setTypingDisplayCase} onBack={() => setShowProfileManager(false)} onSelect={switchProfile} onUpdate={updateActiveProfile} />{storageWarning}</>
   }
 
   if (showRankGuide) {
@@ -608,6 +611,7 @@ function App() {
           <button className="header-catalog-button collection-button" onClick={(event) => { event.stopPropagation(); setShowCollection(true) }}>🗺️ 図鑑</button>
           <span className="stat-pill points-pill">✨ <b>{scoreData.lifetime.toLocaleString()}</b><small> GP</small></span>
           <AudioControls className="topbar-audio-controls" bgmOn={bgmOn} soundEffectsOn={soundEffectsOn} onBgmChange={changeBgm} onSoundEffectsChange={setSoundEffectsOn} />
+          <FullscreenControl />
           <div className="avatar character-avatar" aria-label={`冒険者 ${characterStyle === 'girl' ? 'ミナ' : 'ソラ'}`}><img src={`/characters/${characterStyle === 'girl' ? 'mina' : 'sora'}.webp`} alt="" decoding="async" /></div>
         </div>
       </header>
@@ -621,7 +625,7 @@ function App() {
           <div className="course-score-hud"><div><span>今回のステージスコア</span><b>{courseScore.toLocaleString()}<small> GP</small></b></div><div><span>ステージベスト</span><b>{currentCourseBest.toLocaleString()}<small> GP</small></b></div><div><span>発見ボーナス</span><b>+{runBonus.toLocaleString()}<small> GP</small></b></div>{lastScore && <div className="last-score-chip"><span>直前の問題</span><b>+{lastScore.total.toLocaleString()}</b><small>正確さ {lastScore.accuracy}%・{lastScore.kpm} KPM</small></div>}</div>
           </div>
           <AdventureScenes stageIndex={stageIndex} action={adventureAction} event={adventureEvent} reward={adventureReward} trailTreasure={trailTreasure} character={characterStyle} stageWalked={stageWalked} stepQueue={stepQueue} stepDelay={stepDelay} courseProgress={courseProgress} walkPercent={walkPercent} sentenceProgress={sentenceProgress} awaitingFinish={awaitingFinish} />
-          <TypingCard question={question} practiceMode={practiceMode} reviewTargetKeys={reviewTargetKeys} typed={typed} displayProgress={displayProgress} inputDisplayProgress={inputDisplayProgress} canonicalRomaji={canonicalRomaji} notice={notice} awaitingFinish={awaitingFinish} combo={combo} currentChar={currentChar} nextKeyOptions={nextKeyOptions} inputRef={inputRef} onTyped={setTyped} onEnter={enterCharacters} />
+          <TypingCard question={question} practiceMode={practiceMode} reviewTargetKeys={reviewTargetKeys} typed={typed} displayProgress={displayProgress} inputDisplayProgress={inputDisplayProgress} canonicalRomaji={canonicalRomaji} notice={notice} awaitingFinish={awaitingFinish} combo={combo} currentChar={currentChar} nextKeyOptions={nextKeyOptions} displayCase={typingDisplayCase} inputRef={inputRef} onTyped={setTyped} onEnter={enterCharacters} onDisplayCase={setTypingDisplayCase} />
           <div className="tip"><span>💡</span><p><b>ローマ字ヒント</b>　「し」は <kbd>s</kbd> <kbd>h</kbd> <kbd>i</kbd> の順に入力するよ</p></div>
         </section>
 

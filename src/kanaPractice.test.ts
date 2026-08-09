@@ -38,4 +38,10 @@ describe('kana practice courses', () => {
     expect(getNextKanaCourse('symbols')).toBeUndefined()
     expect(getNextKanaCourse('unknown')).toBeUndefined()
   })
+
+  it('encourages position checks without requiring children to hide the keyboard', () => {
+    const guidance = KANA_COURSES.flatMap((course) => [course.focus, ...course.items.map((item) => item.instruction ?? '')]).join(' ')
+    expect(guidance).not.toMatch(/見ず|見ない|手元/)
+    expect(guidance).toContain('キーボードを見ながらでも大丈夫。正しい指でゆっくり打ってね')
+  })
 })

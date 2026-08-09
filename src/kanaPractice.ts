@@ -35,7 +35,7 @@ export const FINGER_KEYBOARD_ROWS = ['1234567890', 'qwertyuiop', 'asdfghjkl', 'z
 export const KANA_COURSES: KanaCourse[] = [
   {
     id: 'home-position', name: 'ホームポジション', subtitle: '指を正しい場所に置こう', icon: '🏠', color: '#45b99c', focus: 'FとJの突起を目印に、打ったら指をホームポジションへ戻そう', unlocksAdventure: true,
-    items: makeItems('あ:a さ:sa だ:da ふ:fu じ:ji く:ku る:ru', 'キーを見ずに、担当する指でゆっくり押そう'),
+    items: makeItems('あ:a さ:sa だ:da ふ:fu じ:ji く:ku る:ru', 'キーボードを見ながらでも大丈夫。正しい指でゆっくり打ってね'),
   },
   {
     id: 'index-fingers', name: '人差し指のキー', subtitle: 'F・G・R・T・V・B ／ J・H・Y・U・N・M', icon: '☝️', color: '#32a98f', focus: '左右の人差し指が担当するキーをまとめて練習',
@@ -55,10 +55,10 @@ export const KANA_COURSES: KanaCourse[] = [
   },
   {
     id: 'words', name: 'ことばの実践', subtitle: '正しい指のまま、よく使う言葉へ', icon: '⭐', color: '#9a74d5', focus: '速さより正確さ。ホームポジションへ戻る動きを続けよう',
-    items: makeItems('こんにちは:konnichiha ありがとう:arigatou ぼうけん:bouken きーぼーど:ki-bo-do たいぴんぐ:taipingu', '手元を見ず、迷ったら指ガイドを確認しよう'),
+    items: makeItems('こんにちは:konnichiha ありがとう:arigatou ぼうけん:bouken きーぼーど:ki-bo-do たいぴんぐ:taipingu', 'キーボードで位置を確認し、正しい指で正確に打とう'),
   },
   {
-    id: 'numbers', name: '数字キー', subtitle: '1〜0を担当する指で押そう', icon: '🔢', color: '#c98245', focus: '手元を見ず、ホームポジションから上へ指を伸ばそう', optional: true,
+    id: 'numbers', name: '数字キー', subtitle: '1〜0を担当する指で押そう', icon: '🔢', color: '#c98245', focus: 'キーボードで位置を確認し、正しい指を上へ伸ばそう', optional: true,
     items: [
       { kana: '123', romaji: '123' }, { kana: '456', romaji: '456' }, { kana: '7890', romaji: '7890' },
       { kana: '2026', romaji: '2026' }, { kana: '12345', romaji: '12345' }, { kana: '67890', romaji: '67890' },

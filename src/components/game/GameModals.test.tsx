@@ -29,7 +29,7 @@ describe('CourseClearModal', () => {
 
     expect(html).toContain('class="course-clear-actions"')
     expect(html).toContain('次のステージへ')
-    expect(html).toContain('<kbd>Space</kbd> キーでも進める')
+    expect(html).toContain('aria-label="進める"')
     expect(html).toContain('aria-keyshortcuts="Space"')
   })
 
@@ -47,6 +47,6 @@ describe('CourseClearModal', () => {
     expect(html).toContain('コース 2/5 クリア！')
     expect(html).toContain('次のコースへ')
     expect(html).not.toContain('物語のつづき')
-    expect(html).toContain('<kbd>Space</kbd> キーでも進める')
+    expect(html).toContain('aria-label="進める"')
   })
 })

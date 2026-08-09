@@ -4,6 +4,8 @@ import { FINGER_KEYS, getFingerGuide, getNextKanaCourse, HOME_KEYS, KANA_COURSES
 import { useConfirmShortcut } from './useConfirmShortcut'
 import { KEYBOARD_LAYOUTS, readKeyboardLayout, resolvePracticeKey, saveKeyboardLayout, type KeyboardLayoutId } from './keyboardLayouts'
 import { KeyboardLayoutCalibration } from './components/KeyboardLayoutCalibration'
+import { UIRuby } from './components/UIRuby'
+import type { TypingDisplayCase } from './domain'
 
 type Result = 'idle' | 'wrong' | 'correct'
 
@@ -30,7 +32,7 @@ function KeyboardLayoutSelector({ value, compact = false, onChange }: { value: K
   return <div className={`keyboard-layout-selector ${compact ? 'compact' : ''}`} role="group" aria-label="キーボード配列">{(['jis', 'us'] as const).map((layout) => <button key={layout} type="button" aria-pressed={value === layout} onClick={() => onChange(layout)}>{KEYBOARD_LAYOUTS[layout].name}</button>)}</div>
 }
 
-export function KanaPracticePage({ profileId, tutorial, onTutorialComplete, onBack, onStartAdventure }: { profileId: string; tutorial?: boolean; onTutorialComplete: () => void; onBack: () => void; onStartAdventure: () => void }) {
+export function KanaPracticePage({ profileId, tutorial, displayCase, onDisplayCase, onTutorialComplete, onBack, onStartAdventure }: { profileId: string; tutorial?: boolean; displayCase: TypingDisplayCase; onDisplayCase: (value: TypingDisplayCase) => void; onTutorialComplete: () => void; onBack: () => void; onStartAdventure: () => void }) {
   const storageKey = `kotobajima-profile:${profileId}:kana-practice`
   const [completedIds, setCompletedIds] = useState<string[]>(() => {
     try {
@@ -53,6 +55,7 @@ export function KanaPracticePage({ profileId, tutorial, onTutorialComplete, onBa
   const matchingCandidates = candidates.filter((candidate) => candidate.target.startsWith(typed))
   const displayProgress = matchingCandidates.length ? Math.min(...matchingCandidates.map((candidate) => candidate.displayProgress[typed.length] ?? 0)) : 0
   const shownRomaji = item ? typed + item.romaji.slice(displayProgress) : ''
+  const show = (value: string) => displayCase === 'upper' ? value.toUpperCase() : value.toLowerCase()
   const nextKeys = [...new Set(matchingCandidates.map((candidate) => candidate.target[typed.length]).filter(Boolean))]
   const primaryNextKey = nextKeys[0] ?? item?.romaji[displayProgress] ?? ''
   const fingerGuide = getFingerGuide(primaryNextKey)
@@ -119,16 +122,16 @@ export function KanaPracticePage({ profileId, tutorial, onTutorialComplete, onBa
   return <main className={`kana-page kana-play-page ${result}`} onClick={() => inputRef.current?.focus()}>
     <header className="kana-play-header"><button onClick={() => { clearTimers(); setCourse(null) }}>‹ ルートをえらぶ</button><div><small>{course.icon} {course.name}ルート</small><b>{index + 1} / {course.items.length}</b><i><span style={{ width: `${((index + (finished ? 1 : 0)) / course.items.length) * 100}%` }} /></i></div><output>ミス {mistakes}</output></header>
     {finished ? <section className="kana-finish"><span>🎉</span><small>ROUTE CLEAR!</small><h1>{course.name}ルート クリア！</h1><p>{course.items.length}この問題を、さいごまで入力できたよ。</p><div><b>{course.items.length}<small>問題</small></b><b>{mistakes}<small>ミス</small></b></div><button aria-keyshortcuts="Space" onClick={continueAfterFinish}>{tutorial && course.unlocksAdventure ? '本編の冒険へ しゅっぱつ　▶' : nextCourse ? `つぎの「${nextCourse.name}」へ　▶` : 'ルート一覧へ戻る'}</button><small className="confirm-shortcut-hint">Spaceキーでも進める</small></section> : item && <section className="kana-practice-card">
-      <div className="kana-level-label">{course.icon} {course.subtitle}</div>
+      <div className="kana-level-row"><div className="kana-level-label">{course.icon} {course.subtitle}</div><span className="typing-case-switch" onClick={(event) => event.stopPropagation()}><button type="button" className={displayCase === 'lower' ? 'active' : ''} onClick={() => onDisplayCase('lower')}>abc</button><button type="button" className={displayCase === 'upper' ? 'active' : ''} onClick={() => onDisplayCase('upper')}>ABC</button></span></div>
       <p>この ひらがなを ローマ字で入力しよう</p>
       <div className="kana-target">{item.kana}</div>
-      <div className="kana-romaji" aria-label={`入力するローマ字 ${item.romaji}`}>{[...shownRomaji].map((letter, letterIndex) => <span key={`${letter}-${letterIndex}`} className={letterIndex < typed.length ? 'done' : letterIndex === typed.length ? 'current' : ''}>{letter}</span>)}</div>
+      <div className="kana-romaji" aria-label={`入力するローマ字 ${show(item.romaji)}`}>{[...shownRomaji].map((letter, letterIndex) => <span key={`${letter}-${letterIndex}`} className={letterIndex < typed.length ? 'done' : letterIndex === typed.length ? 'current' : ''}>{show(letter)}</span>)}</div>
       {fingerGuide && <div className="finger-guidance" style={{ '--finger-color': fingerGuide.color } as React.CSSProperties}><div className={`guide-hand ${fingerGuide.hand}`}><span><RubyLabel text={handName[fingerGuide.hand]} /></span><b><RubyLabel text={fingerGuide.finger} /></b></div><p>つぎは <kbd>{primaryNextKey.toUpperCase()}</kbd> を <strong><RubyLabel text={handName[fingerGuide.hand]} />の<RubyLabel text={fingerGuide.finger} /></strong> で押そう</p></div>}
       <div className="practice-layout-switch"><span>この端末の表示配列</span><KeyboardLayoutSelector value={keyboardLayout} compact onChange={chooseKeyboardLayout} /><KeyboardLayoutCalibration profileId={profileId} compact onChange={chooseKeyboardLayout} /></div>
       <FingerKeyboard layoutId={keyboardLayout} nextKeys={nextKeys} />
       {layoutNotice && <div className="keyboard-layout-notice" role="status">入力できました。キーの位置が表示と違うときは、上のJIS／US配列を確認しよう。</div>}
-      <div className="kana-message">{result === 'wrong' ? 'ちがうキーだよ。もう一度！' : result === 'correct' ? 'せいかい！' : typed ? `「${typed}」まで入力したよ` : 'キーボードで入力してね'}</div>
-      <div className="kana-tip">💡 {item.instruction ?? course.focus}</div>
+      <div className="kana-message">{result === 'wrong' ? 'ちがうキーだよ。もう一度！' : result === 'correct' ? 'せいかい！' : typed ? `「${show(typed)}」まで入力したよ` : 'キーボードで入力してね'}</div>
+      <div className="kana-tip">💡 <UIRuby>{item.instruction ?? course.focus}</UIRuby></div>
       <input ref={inputRef} className="kana-hidden-input" inputMode="text" autoCapitalize="none" autoCorrect="off" onKeyDown={(event) => {
         const practiceKey = resolvePracticeKey(event.code, event.key, keyboardLayout)
         if (practiceKey) { event.preventDefault(); setLayoutNotice(!practiceKey.physicalMatch); enterKey(practiceKey.key) }

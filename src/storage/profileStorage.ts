@@ -64,7 +64,7 @@ export function loadProfileData(id: string | null, storage: StorageLike = localS
     completedCourses: [],
     problemStats,
     scoreData: emptyScoreData(),
-    dailyActivity: {}, goals: { dailyProblems: 5, weeklyProblems: 25 }, tutorialCompletedAt: Object.values(problemStats).some((stat) => stat.completions > 0) ? 'legacy' : '', audioSettings: { bgmOn: true, soundEffectsOn: true },
+    dailyActivity: {}, goals: { dailyProblems: 5, weeklyProblems: 25 }, tutorialCompletedAt: Object.values(problemStats).some((stat) => stat.completions > 0) ? 'legacy' : '', audioSettings: { bgmOn: true, soundEffectsOn: true }, typingDisplayCase: 'lower',
     }
   }
   return migrateProfileData(readStored<LegacyProfileData>(storage, profileDataKey(id), {}))
@@ -93,6 +93,7 @@ export function migrateProfileData(saved: LegacyProfileData): ProfileData {
       bgmOn: typeof saved.audioSettings?.bgmOn === 'boolean' ? saved.audioSettings.bgmOn : legacySoundOn,
       soundEffectsOn: typeof saved.audioSettings?.soundEffectsOn === 'boolean' ? saved.audioSettings.soundEffectsOn : legacySoundOn,
     },
+    typingDisplayCase: saved.typingDisplayCase === 'upper' ? 'upper' : 'lower',
     scoreData: {
       ...emptyScoreData(),
       lifetime: usesStageSectionSchema ? nonNegativeNumber(score.lifetime) : 0,

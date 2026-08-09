@@ -19,6 +19,12 @@ describe('profile storage', () => {
     expect(migrated.scoreData.lifetime).toBe(0)
     expect(migrated.problemStats).toEqual({})
     expect(migrated.audioSettings).toEqual({ bgmOn: true, soundEffectsOn: true })
+    expect(migrated.typingDisplayCase).toBe('lower')
+  })
+
+  it('preserves a valid profile typing display case', () => {
+    expect(migrateProfileData({ typingDisplayCase: 'upper' }).typingDisplayCase).toBe('upper')
+    expect(migrateProfileData({ typingDisplayCase: 'invalid' as never }).typingDisplayCase).toBe('lower')
   })
 
   it('migrates the old shared sound setting to both independent settings', () => {

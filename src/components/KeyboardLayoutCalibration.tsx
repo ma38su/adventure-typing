@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { detectKeyboardLayout, hasKeyboardLayoutPreference, KEYBOARD_LAYOUTS, readKeyboardLayout, saveKeyboardLayout, type KeyboardLayoutId } from '../keyboardLayouts'
+import { UIRuby } from './UIRuby'
 
 export function KeyboardLayoutCalibration({ profileId, compact = false, onChange }: { profileId: string; compact?: boolean; onChange?: (layout: KeyboardLayoutId) => void }) {
   const initial = useRef<{ layout: KeyboardLayoutId; confirmed: boolean } | null>(null)
@@ -8,33 +9,54 @@ export function KeyboardLayoutCalibration({ profileId, compact = false, onChange
     initial.current = { layout, confirmed: hasKeyboardLayoutPreference() }
   }
   const [layout, setLayout] = useState(initial.current.layout)
-  const [confirmed, setConfirmed] = useState(initial.current.confirmed)
-  const [calibrating, setCalibrating] = useState(!initial.current.confirmed)
-  const [detected, setDetected] = useState(false)
+  const [open, setOpen] = useState(!initial.current.confirmed)
+  const [pending, setPending] = useState<KeyboardLayoutId | null>(null)
+  const [calibrationCode, setCalibrationCode] = useState<string>()
   const [message, setMessage] = useState('')
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const dialogRef = useRef<HTMLElement>(null)
 
-  const choose = (next: KeyboardLayoutId, code?: string) => {
-    saveKeyboardLayout(next, code)
-    setLayout(next); setConfirmed(true); setCalibrating(false); setMessage(''); onChange?.(next)
+  const close = () => {
+    setOpen(false); setPending(null); setCalibrationCode(undefined); setMessage('')
+    window.setTimeout(() => triggerRef.current?.focus(), 0)
+  }
+  const start = () => { setPending(null); setCalibrationCode(undefined); setMessage(''); setOpen(true) }
+  const confirm = () => {
+    if (!pending) return
+    saveKeyboardLayout(pending, calibrationCode)
+    setLayout(pending); onChange?.(pending); close()
   }
 
+  useEffect(() => { if (open) dialogRef.current?.focus() }, [open])
   useEffect(() => {
-    if (!calibrating) return
+    if (!open) return
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.repeat || event.isComposing || event.shiftKey) return
+      if (event.key === 'Escape') { event.preventDefault(); close(); return }
+      if (event.key === 'Tab') {
+        const controls = [...(dialogRef.current?.querySelectorAll<HTMLElement>('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])') ?? [])].filter((control) => !control.hasAttribute('disabled'))
+        if (!controls.length) { event.preventDefault(); dialogRef.current?.focus(); return }
+        const first = controls[0]; const last = controls.at(-1)!
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus() }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus() }
+        return
+      }
+      if (pending || event.repeat || event.isComposing || event.shiftKey) return
       event.preventDefault(); event.stopImmediatePropagation()
       const result = detectKeyboardLayout(event)
       if (!result) { setMessage('判定できませんでした。Shiftを離して指定のキーを押すか、下から手動で選んでください。'); return }
-      setDetected(true); choose(result, event.code)
+      setPending(result); setCalibrationCode(event.code); setMessage('')
     }
     window.addEventListener('keydown', onKeyDown, { capture: true })
     return () => window.removeEventListener('keydown', onKeyDown, { capture: true })
-  })
+  }, [open, pending])
 
-  if (compact && !calibrating && !detected) return <button type="button" className="keyboard-recalibrate" onClick={() => { setCalibrating(true); setMessage('') }}>⌨ 再判定</button>
-  if (!compact && confirmed && !detected) return null
-
-  return <section className={`keyboard-calibration ${compact ? 'compact' : ''}`} aria-label="キーボード配列の判定">
-    {calibrating ? <><small>1キーで配列を判定</small><h2>Pのすぐ右隣のキーを、Shiftを押さずに1回押してください</h2><p>OSが受け取った文字から判定します。物理キーボードの刻印とOS設定が違う場合は、OS側の解釈が表示されます。</p>{message && <p className="calibration-error" role="status">{message}</p>}<div><button type="button" onClick={() => choose('jis')}>JIS配列を選ぶ</button><button type="button" onClick={() => choose('us')}>US配列を選ぶ</button><button type="button" className="skip" onClick={() => setCalibrating(false)}>あとで手動選択</button></div></> : <><small>判定結果</small><h2>{KEYBOARD_LAYOUTS[layout].name}として判定しました</h2><p>刻印と表示が合っていますか？ 違う場合はここで修正できます。</p><div><button type="button" aria-pressed={layout === 'jis'} onClick={() => choose('jis')}>JIS配列</button><button type="button" aria-pressed={layout === 'us'} onClick={() => choose('us')}>US配列</button><button type="button" className="skip" onClick={() => setDetected(false)}>合っています</button></div></>}
-  </section>
+  return <>
+    {compact
+      ? <button ref={triggerRef} type="button" className="keyboard-recalibrate" onClick={start}>⌨ <UIRuby>変更・再判定</UIRuby></button>
+      : <div className="keyboard-layout-summary"><span>⌨ <UIRuby>現在の配列</UIRuby>：<b>{KEYBOARD_LAYOUTS[layout].name}</b></span><button ref={triggerRef} type="button" onClick={start}><UIRuby>変更・再判定</UIRuby></button></div>}
+    {open && <div className="keyboard-calibration-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) close() }}><section ref={dialogRef} tabIndex={-1} className="keyboard-calibration" role="dialog" aria-modal="true" aria-labelledby="keyboard-calibration-title">
+      <button type="button" className="keyboard-calibration-close" aria-label="閉じる" onClick={close}>×</button>
+      {!pending ? <><small><UIRuby>1キーで配列を判定</UIRuby></small><h2 id="keyboard-calibration-title"><UIRuby>Pのすぐ右隣のキーを、Shiftを押さずに1回押してください</UIRuby></h2><p><UIRuby>OSが受け取った文字から判定します。物理キーボードの刻印とOS設定が違う場合は、OS側の解釈が表示されます。</UIRuby></p>{message && <p className="calibration-error" role="status"><UIRuby>{message}</UIRuby></p>}<div><button type="button" onClick={() => setPending('jis')}>JIS<UIRuby>配列</UIRuby></button><button type="button" onClick={() => setPending('us')}>US<UIRuby>配列</UIRuby></button><button type="button" className="skip" onClick={close}>あとで<UIRuby>手動選択</UIRuby></button></div></> : <><small><UIRuby>判定結果</UIRuby></small><h2 id="keyboard-calibration-title">{KEYBOARD_LAYOUTS[pending].name}と<UIRuby>判定しました</UIRuby></h2><p><UIRuby>刻印と表示が合っていますか？ 違う場合はここで修正できます。</UIRuby></p><div><button type="button" aria-pressed={pending === 'jis'} onClick={() => { setPending('jis'); setCalibrationCode(undefined) }}>JIS<UIRuby>配列</UIRuby></button><button type="button" aria-pressed={pending === 'us'} onClick={() => { setPending('us'); setCalibrationCode(undefined) }}>US<UIRuby>配列</UIRuby></button></div><button type="button" className="keyboard-calibration-confirm" onClick={confirm}><UIRuby>これで使う</UIRuby></button></>}
+    </section></div>}
+  </>
 }

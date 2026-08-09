@@ -7,5 +7,6 @@
 @import './styles/rank.css';
 @import './styles/kana.css';
 .header-grade-label{padding:8px 16px;border-radius:12px;background:#edf5f3;color:#176f68;font-size:13px;font-weight:900}
+.typing-case-switch{display:inline-flex;margin-left:auto;padding:2px;border:1px solid #b9d5d0;border-radius:999px;background:#f2faf8;vertical-align:middle}.typing-case-switch button{min-width:36px;padding:3px 7px;border:0;border-radius:999px;background:transparent;color:#52706c;font:800 10px/1.2 ui-monospace,monospace;cursor:pointer}.typing-case-switch button.active{background:#287d73;color:#fff;box-shadow:0 1px 3px #174c4638}.mission-label{display:flex;align-items:center;gap:8px}
 .exit-stage-button{padding:8px 11px;border:1px solid #e5c9c2;border-radius:10px;background:#fff7f4;color:#a65345;font-size:9px;font-weight:900;white-space:nowrap;cursor:pointer}.profile-save-success{margin:8px 0;color:#16866f;font-size:10px;font-weight:900;text-align:center}.profile-settings-card{margin-bottom:14px}
 .profile-new-user-button{width:100%;margin-top:16px;padding:13px;border:2px dashed #8fcfc0;border-radius:13px;background:#effbf6;color:#18786d;font-weight:900;cursor:pointer}.profile-create-back{margin-bottom:12px;padding:8px 12px;border:1px solid #d5e4e0;border-radius:10px;background:white;color:#4d706c;font-size:10px;font-weight:800;cursor:pointer}
