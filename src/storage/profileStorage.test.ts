@@ -18,6 +18,17 @@ describe('profile storage', () => {
     expect(migrated.schemaVersion).toBe(1)
     expect(migrated.scoreData.lifetime).toBe(123)
     expect(migrated.problemStats).toEqual({})
+    expect(migrated.audioSettings).toEqual({ bgmOn: true, soundEffectsOn: true })
+  })
+
+  it('migrates the old shared sound setting to both independent settings', () => {
+    expect(migrateProfileData({ soundOn: false }).audioSettings).toEqual({ bgmOn: false, soundEffectsOn: false })
+    expect(migrateProfileData({ soundOn: true }).audioSettings).toEqual({ bgmOn: true, soundEffectsOn: true })
+  })
+
+  it('keeps independently saved BGM and sound-effect settings', () => {
+    expect(migrateProfileData({ soundOn: false, audioSettings: { bgmOn: true, soundEffectsOn: false } }).audioSettings)
+      .toEqual({ bgmOn: true, soundEffectsOn: false })
   })
 
   it('keeps known data from a future schema and repairs incomplete score data', () => {

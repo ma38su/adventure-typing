@@ -5,13 +5,14 @@ import type { Grade } from '../questions'
 import type { Course } from '../rewards'
 import type { getAdventureRank } from '../ranks'
 import type { ReturnTypeOfGoalProgress } from '../types'
+import { AudioControls } from '../components/AudioControls'
 
-export function TitlePage({ profile, grade, character, points, rank, soundOn, completedCourses, goalProgress, tutorialComplete, onSound, onProfiles, onRomaji, onCourse, onCatalog, onCollection, onRankGuide, onReport }: { profile: UserProfile; grade: Grade; character: CharacterStyle; points: number; rank: ReturnType<typeof getAdventureRank>; soundOn: boolean; completedCourses: string[]; goalProgress: ReturnTypeOfGoalProgress; tutorialComplete: boolean; onSound: () => void; onProfiles: () => void; onRomaji: () => void; onCourse: (course: Course) => void; onCatalog: () => void; onCollection: () => void; onRankGuide: () => void; onReport: () => void }) {
+export function TitlePage({ profile, grade, character, points, rank, bgmOn, soundEffectsOn, completedCourses, goalProgress, tutorialComplete, onBgmChange, onSoundEffectsChange, onProfiles, onRomaji, onCourse, onCatalog, onCollection, onRankGuide, onReport }: { profile: UserProfile; grade: Grade; character: CharacterStyle; points: number; rank: ReturnType<typeof getAdventureRank>; bgmOn: boolean; soundEffectsOn: boolean; completedCourses: string[]; goalProgress: ReturnTypeOfGoalProgress; tutorialComplete: boolean; onBgmChange: (on: boolean) => void; onSoundEffectsChange: (on: boolean) => void; onProfiles: () => void; onRomaji: () => void; onCourse: (course: Course) => void; onCatalog: () => void; onCollection: () => void; onRankGuide: () => void; onReport: () => void }) {
   return <main className={`stage-select-screen title-grade-${grade}`}>
     <header className="stage-select-header">
       <button className="stage-user-chip" onClick={onProfiles}><span>{character === 'girl' ? '👧' : '👦'}</span><div><b>{profile.name}</b><small>{grade}年生・{rank.icon} {rank.name}</small></div><em>設定 ›</em></button>
       <div className="stage-brand"><span>⌨</span><div><small>ことば島の大ぼうけん</small><b>ステージを えらぼう</b></div></div>
-      <button className="title-sound stage-sound" onClick={onSound} aria-label={soundOn ? '音を消す' : '音を出す'}>{soundOn ? '♪' : '×'}</button>
+      <AudioControls className="stage-audio-controls" bgmOn={bgmOn} soundEffectsOn={soundEffectsOn} onBgmChange={onBgmChange} onSoundEffectsChange={onSoundEffectsChange} />
     </header>
     <section className="stage-select-main">
       <div className="stage-select-heading"><span>ADVENTURE MAP</span><h1>{grade}年生の ステージ</h1><p>挑戦するステージを選ぶと、すぐに冒険が始まるよ</p></div>

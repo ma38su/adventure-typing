@@ -9,7 +9,7 @@ export const PROFILE_REGISTRY_STORAGE = 'kotobajima-profiles'
 export const profileDataKey = (id: string) => `kotobajima-profile:${id}:data`
 
 export type StorageLike = Pick<Storage, 'getItem' | 'setItem'>
-type LegacyProfileData = Omit<Partial<ProfileData>, 'schemaVersion'> & { schemaVersion?: number }
+type LegacyProfileData = Omit<Partial<ProfileData>, 'schemaVersion'> & { schemaVersion?: number; soundOn?: boolean }
 
 const isRecord = (value: unknown): value is Record<string, unknown> => Boolean(value) && typeof value === 'object' && !Array.isArray(value)
 const nonNegativeNumber = (value: unknown, fallback = 0) => typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : fallback
@@ -64,7 +64,7 @@ export function loadProfileData(id: string | null, storage: StorageLike = localS
     completedCourses: readStored(storage, LEGACY_KEYS.completedCourses, []),
     problemStats,
     scoreData: { ...emptyScoreData(), ...readStored(storage, LEGACY_KEYS.scoreData, emptyScoreData()) },
-    dailyActivity: {}, goals: { dailyProblems: 5, weeklyProblems: 25 }, tutorialCompletedAt: Object.values(problemStats).some((stat) => stat.completions > 0) ? 'legacy' : '',
+    dailyActivity: {}, goals: { dailyProblems: 5, weeklyProblems: 25 }, tutorialCompletedAt: Object.values(problemStats).some((stat) => stat.completions > 0) ? 'legacy' : '', audioSettings: { bgmOn: true, soundEffectsOn: true },
     }
   }
   return migrateProfileData(readStored<LegacyProfileData>(storage, profileDataKey(id), {}))
@@ -74,6 +74,7 @@ export function loadProfileData(id: string | null, storage: StorageLike = localS
 export function migrateProfileData(saved: LegacyProfileData): ProfileData {
   const score: Record<string, unknown> = isRecord(saved.scoreData) ? saved.scoreData : {}
   const problemStats = isRecord(saved.problemStats) ? saved.problemStats as ProfileData['problemStats'] : {}
+  const legacySoundOn = typeof saved.soundOn === 'boolean' ? saved.soundOn : true
   // 新しい版を古いクライアントで開いても、既知の項目は捨てずに読み取る。
   return {
     schemaVersion: 1,
@@ -87,6 +88,10 @@ export function migrateProfileData(saved: LegacyProfileData): ProfileData {
       weeklyProblems: Math.max(1, Math.floor(nonNegativeNumber(saved.goals?.weeklyProblems, 25))),
     },
     tutorialCompletedAt: typeof saved.tutorialCompletedAt === 'string' ? saved.tutorialCompletedAt : Object.values(problemStats).some((stat) => stat.completions > 0) ? 'legacy' : '',
+    audioSettings: {
+      bgmOn: typeof saved.audioSettings?.bgmOn === 'boolean' ? saved.audioSettings.bgmOn : legacySoundOn,
+      soundEffectsOn: typeof saved.audioSettings?.soundEffectsOn === 'boolean' ? saved.audioSettings.soundEffectsOn : legacySoundOn,
+    },
     scoreData: {
       ...emptyScoreData(),
       lifetime: nonNegativeNumber(score.lifetime),

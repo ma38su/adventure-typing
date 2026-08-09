@@ -11,6 +11,7 @@ import { ProfileCreator, ProfileManagerPage, ProfileWelcomePage } from './pages/
 import { isCourseUnlocked, LEARNING_STAGES } from './game/courseConfig'
 import { TitlePage } from './pages/TitlePage'
 import { TypingCard } from './components/game/TypingCard'
+import { AudioControls } from './components/AudioControls'
 import { CourseMap } from './components/game/CourseMap'
 import { AdventureScenes } from './components/game/AdventureScenes'
 import { GameSidePanel } from './components/game/GameSidePanel'
@@ -63,7 +64,8 @@ function App() {
   const [showReview, setShowReview] = useState(false)
   const [showKeyStats, setShowKeyStats] = useState(false)
   const [collectionTab, setCollectionTab] = useState<'treasure' | 'friend'>('treasure')
-  const [soundOn, setSoundOn] = useState(true)
+  const [bgmOn, setBgmOn] = useState(initialProfileData.audioSettings.bgmOn)
+  const [soundEffectsOn, setSoundEffectsOn] = useState(initialProfileData.audioSettings.soundEffectsOn)
   const [characterStyle, setCharacterStyle] = useState<CharacterStyle>(initialProfile?.characterStyle ?? 'girl')
   const [keyStats, setKeyStats] = useState<KeyStats>(initialProfileData.keyStats)
   const [adaptiveKeyStats, setAdaptiveKeyStats] = useState<KeyStats>(initialProfileData.keyStats)
@@ -77,6 +79,7 @@ function App() {
   const [storageError, setStorageError] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
+  const bgmMasterRef = useRef<GainNode | null>(null)
   const [profileWriter] = useState(() => createDebouncedProfileWriter(750, localStorage, () => setStorageError(true)))
 
   const questions = useMemo(() => {
@@ -157,9 +160,9 @@ function App() {
   }, [profileRegistry])
   useEffect(() => {
     if (!activeProfileId) return
-    const data: ProfileData = { schemaVersion: 1, keyStats, collection, completedCourses, problemStats, scoreData, dailyActivity, goals, tutorialCompletedAt }
+    const data: ProfileData = { schemaVersion: 1, keyStats, collection, completedCourses, problemStats, scoreData, dailyActivity, goals, tutorialCompletedAt, audioSettings: { bgmOn, soundEffectsOn } }
     profileWriter.schedule(activeProfileId, data)
-  }, [activeProfileId, keyStats, collection, completedCourses, problemStats, scoreData, dailyActivity, goals, tutorialCompletedAt, profileWriter])
+  }, [activeProfileId, keyStats, collection, completedCourses, problemStats, scoreData, dailyActivity, goals, tutorialCompletedAt, bgmOn, soundEffectsOn, profileWriter])
   useEffect(() => {
     const flush = () => profileWriter.flush()
     window.addEventListener('pagehide', flush)
@@ -183,7 +186,7 @@ function App() {
   }, [question.id, grade, selectedCourse, practiceMode, dispatchGameRun])
 
   const playSound = useCallback((effect: SoundEffect, comboValue = 0) => {
-    if (!soundOn) return
+    if (!soundEffectsOn) return
     const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext
     if (!AudioContextClass) return
     const context = audioContextRef.current ?? new AudioContextClass()
@@ -212,10 +215,10 @@ function App() {
       oscillator.start(start)
       oscillator.stop(start + duration)
     })
-  }, [soundOn])
+  }, [soundEffectsOn])
 
   useEffect(() => {
-    if (!started || !soundOn) return
+    if (!started || !bgmOn) return
     const bpm = 92
     const beat = 60 / bpm
     const loopDuration = beat * 32
@@ -233,10 +236,15 @@ function App() {
     const melody = [74, 77, 76, 72, 69, 72, 74, 81, 79, 76, 77, 72, 74, 69, 73, 76]
 
     const playPhrase = () => {
-      const context = audioContextRef.current
-      if (!context || context.state !== 'running') return
+      const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+      if (!AudioContextClass) return
+      const context = audioContextRef.current ?? new AudioContextClass()
+      audioContextRef.current = context
+      void context.resume()
       const phraseStart = context.currentTime + .06
       const master = context.createGain()
+      bgmMasterRef.current?.disconnect()
+      bgmMasterRef.current = master
       master.gain.setValueAtTime(.48, phraseStart)
       master.connect(context.destination)
 
@@ -270,12 +278,19 @@ function App() {
         playNote(note + 12, start + .018, held * .72, .0035, 'triangle', -6)
       })
 
-      window.setTimeout(() => master.disconnect(), (loopDuration + .5) * 1000)
+      window.setTimeout(() => {
+        master.disconnect()
+        if (bgmMasterRef.current === master) bgmMasterRef.current = null
+      }, (loopDuration + .5) * 1000)
     }
     playPhrase()
     const timer = window.setInterval(playPhrase, loopDuration * 1000)
-    return () => window.clearInterval(timer)
-  }, [started, soundOn])
+    return () => {
+      window.clearInterval(timer)
+      bgmMasterRef.current?.disconnect()
+      bgmMasterRef.current = null
+    }
+  }, [started, bgmOn])
 
   const advanceAfterEvent = useCallback(() => {
     if (questionIndex === questions.length - 1) {
@@ -440,11 +455,23 @@ function App() {
     setDailyActivity(data.dailyActivity)
     setGoals(data.goals)
     setTutorialCompletedAt(data.tutorialCompletedAt)
+    setBgmOn(data.audioSettings.bgmOn)
+    setSoundEffectsOn(data.audioSettings.soundEffectsOn)
+  }
+
+  const changeBgm = (on: boolean) => {
+    setBgmOn(on)
+    if (!on) return
+    const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+    if (!AudioContextClass) return
+    const context = audioContextRef.current ?? new AudioContextClass()
+    audioContextRef.current = context
+    void context.resume()
   }
 
   const saveCurrentProfileNow = () => {
     if (!activeProfileId) return
-    const data: ProfileData = { schemaVersion: 1, keyStats, collection, completedCourses, problemStats, scoreData, dailyActivity, goals, tutorialCompletedAt }
+    const data: ProfileData = { schemaVersion: 1, keyStats, collection, completedCourses, problemStats, scoreData, dailyActivity, goals, tutorialCompletedAt, audioSettings: { bgmOn, soundEffectsOn } }
     profileWriter.cancel()
     if (!saveProfileData(activeProfileId, data)) setStorageError(true)
   }
@@ -478,7 +505,7 @@ function App() {
     const now = new Date().toISOString()
     const id = globalThis.crypto?.randomUUID?.() ?? `player-${Date.now()}-${Math.random().toString(36).slice(2)}`
     const profile: UserProfile = { id, name, createdAt: now, lastPlayedAt: now, lastGrade: newProfileGrade, characterStyle: newProfileCharacter }
-    const data = profileRegistry.profiles.length === 0 ? { schemaVersion: 1 as const, keyStats, collection, completedCourses, problemStats, scoreData, dailyActivity, goals, tutorialCompletedAt } : emptyProfileData()
+    const data = profileRegistry.profiles.length === 0 ? { schemaVersion: 1 as const, keyStats, collection, completedCourses, problemStats, scoreData, dailyActivity, goals, tutorialCompletedAt, audioSettings: { bgmOn, soundEffectsOn } } : emptyProfileData()
     if (!saveProfileData(id, data)) setStorageError(true)
     setProfileRegistry((registry) => ({ schemaVersion: 1, activeProfileId: id, profiles: [...registry.profiles, profile] }))
     setActiveProfileId(id)
@@ -497,7 +524,12 @@ function App() {
     if (!name) return 'なまえを入力してね'
     if (name.length > 12) return 'なまえは12文字までにしてね'
     if (profileRegistry.profiles.some((profile) => profile.id !== activeProfileId && profile.name.toLocaleLowerCase() === name.toLocaleLowerCase())) return '同じなまえのユーザーがいるよ'
-    setProfileRegistry((registry) => ({ ...registry, profiles: registry.profiles.map((profile) => profile.id === activeProfileId ? { ...profile, ...settings, name } : profile) }))
+    const nextRegistry = { ...profileRegistry, profiles: profileRegistry.profiles.map((profile) => profile.id === activeProfileId ? { ...profile, ...settings, name } : profile) }
+    if (!saveProfileRegistry(nextRegistry)) {
+      setStorageError(true)
+      return '設定を保存できませんでした。もう一度ためしてね'
+    }
+    setProfileRegistry(nextRegistry)
     setGrade(settings.lastGrade)
     setCatalogGrade(settings.lastGrade)
     setCharacterStyle(settings.characterStyle)
@@ -534,7 +566,7 @@ function App() {
   }
 
   if (!started) {
-    return <><TitlePage profile={activeProfile} grade={grade} character={characterStyle} points={scoreData.lifetime} rank={adventureRank} soundOn={soundOn} completedCourses={completedCourses} goalProgress={goalProgress} tutorialComplete={Boolean(tutorialCompletedAt)} onSound={() => setSoundOn(!soundOn)} onProfiles={() => setShowProfileManager(true)} onRomaji={() => { playSound('key'); setShowKanaPractice(true) }} onCourse={(course) => {
+    return <><TitlePage profile={activeProfile} grade={grade} character={characterStyle} points={scoreData.lifetime} rank={adventureRank} bgmOn={bgmOn} soundEffectsOn={soundEffectsOn} completedCourses={completedCourses} goalProgress={goalProgress} tutorialComplete={Boolean(tutorialCompletedAt)} onBgmChange={changeBgm} onSoundEffectsChange={setSoundEffectsOn} onProfiles={() => setShowProfileManager(true)} onRomaji={() => { playSound('key'); setShowKanaPractice(true) }} onCourse={(course) => {
       if (!tutorialCompletedAt) { setShowKanaPractice(true); return }
       if (!isCourseUnlocked(grade, course, completedCourses)) return
       playSound('complete')
@@ -555,7 +587,7 @@ function App() {
           <button className="header-catalog-button" onClick={(event) => { event.stopPropagation(); setCatalogGrade(grade); setShowCatalog(true) }}>📚 問題一覧</button>
           <button className="header-catalog-button collection-button" onClick={(event) => { event.stopPropagation(); setShowCollection(true) }}>🗺️ 図鑑</button>
           <span className="stat-pill points-pill">✨ <b>{scoreData.lifetime.toLocaleString()}</b><small> GP</small></span>
-          <button className="round-button" onClick={(event) => { event.stopPropagation(); setSoundOn(!soundOn) }} aria-label={soundOn ? '音を消す' : '音を出す'}>{soundOn ? '♪' : '×'}</button>
+          <AudioControls className="topbar-audio-controls" bgmOn={bgmOn} soundEffectsOn={soundEffectsOn} onBgmChange={changeBgm} onSoundEffectsChange={setSoundEffectsOn} />
           <div className="avatar character-avatar" aria-label={`冒険者 ${characterStyle === 'girl' ? 'ミナ' : 'ソラ'}`}><img src={`/characters/${characterStyle === 'girl' ? 'mina' : 'sora'}.webp`} alt="" decoding="async" /></div>
         </div>
       </header>
