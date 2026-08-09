@@ -1,0 +1,22 @@
+import type { ReactNode } from 'react'
+import type { CharacterStyle, UserProfile } from '../domain'
+import type { Grade } from '../questions'
+import { ADVENTURE_RANKS, type getAdventureRank } from '../ranks'
+import { Explorer } from '../components/game/GameVisuals'
+
+export function ProfileCreator({ name, grade, character, error, onName, onGrade, onCharacter, onCreate }: { name: string; grade: Grade; character: CharacterStyle; error: string; onName: (value: string) => void; onGrade: (value: Grade) => void; onCharacter: (value: CharacterStyle) => void; onCreate: () => void }) {
+  const grades: Grade[] = [1, 2, 3, 4, 5, 6]
+  return <div className="profile-create-card"><span>あたらしい冒険者</span><h2>なまえを とうろく</h2><label><span>なまえ</span><input value={name} maxLength={12} onChange={(event) => onName(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') onCreate() }} placeholder="なまえを入力" autoComplete="off" /></label><div className="profile-grade-picker"><span>学年</span><div>{grades.map((value) => <button key={value} className={grade === value ? 'active' : ''} onClick={() => onGrade(value)}>{value}年</button>)}</div></div><div className="profile-character-picker"><span>冒険者</span><div><button className={character === 'girl' ? 'active' : ''} onClick={() => onCharacter('girl')}><span><Explorer variant="girl" /></span><b>ミナ</b></button><button className={character === 'boy' ? 'active' : ''} onClick={() => onCharacter('boy')}><span><Explorer variant="boy" /></span><b>ソラ</b></button></div></div>{error && <p className="profile-error">{error}</p>}<button className="profile-register-button" onClick={onCreate}>このなまえで はじめる　▶</button><small>パスワードは不要です。この端末の中だけに保存されます。</small></div>
+}
+
+type ReturningEntry = { profile: UserProfile; points: number; rank: ReturnType<typeof getAdventureRank> }
+
+export function ProfileWelcomePage({ entries, creator, onSelect }: { entries: ReturningEntry[]; creator: ReactNode; onSelect: (profile: UserProfile) => void }) {
+  return <main className="profile-welcome"><div className="profile-welcome-sky" aria-hidden="true">☁️　　☀️　　☁️</div><section><div className="profile-welcome-brand"><span>⌨</span><div><small>ことば島の</small><h1>冒険者とうろく</h1><p>じぶんの記録を作って、冒険へ出発しよう！</p></div></div>{entries.length > 0 && <div className="returning-profiles"><h2>つづきから遊ぶ</h2><div>{entries.map(({ profile, points, rank }) => <button key={profile.id} onClick={() => onSelect(profile)}><span>{profile.characterStyle === 'girl' ? '👧' : '👦'}</span><div><b>{profile.name}</b><small>{rank.icon} {rank.name}・{points.toLocaleString()} GP</small></div><em>▶</em></button>)}</div></div>}{creator}</section></main>
+}
+
+export type RankingEntry = { profile: UserProfile; points: number; rank: ReturnType<typeof getAdventureRank>; completed: number; discoveries: number }
+
+export function ProfileManagerPage({ entries, activeId, creator, onBack, onSelect }: { entries: RankingEntry[]; activeId: string | null; creator: ReactNode; onBack: () => void; onSelect: (profile: UserProfile) => void }) {
+  return <main className="profile-manager-page"><header className="catalog-topbar"><button className="catalog-back" onClick={onBack}>‹ 戻る</button><div className="brand"><span className="brand-mark">👥</span><div><strong>冒険者きりかえ</strong><small>この端末のユーザー</small></div></div><div className="catalog-overall"><b>{entries.length}</b>人登録</div></header><section className="profile-manager-layout"><div className="profile-ranking"><div className="profile-ranking-title"><span>🏆</span><div><h1>がんばりランキング</h1><p>この端末で遊んでいる冒険者の記録</p></div></div><div className="profile-ranking-list">{entries.map((entry, index) => <button className={entry.profile.id === activeId ? 'active' : ''} key={entry.profile.id} onClick={() => onSelect(entry.profile)}><strong>{index + 1}</strong><span>{entry.profile.characterStyle === 'girl' ? '👧' : '👦'}</span><div><b>{entry.profile.name}{entry.profile.id === activeId && <em>プレイ中</em>}</b><small>{entry.rank.icon} {entry.rank.name}・{entry.profile.lastGrade}年生</small><small>コース達成 {entry.completed}・図鑑 {entry.discoveries}種類</small><i><span style={{ width: `${entry.rank.progress}%` }} /></i></div><output>{entry.points.toLocaleString()}<small> GP</small></output></button>)}</div><div className="rank-guide">{ADVENTURE_RANKS.map((rank) => <span key={rank.name}>{rank.icon}<b>{rank.name}</b><small>{rank.min.toLocaleString()} GP〜</small></span>)}</div></div>{creator}</section></main>
+}

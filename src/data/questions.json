@@ -1,0 +1,2504 @@
+{
+  "1": [
+    {
+      "id": "1-000a",
+      "stage": 1,
+      "sentence": "山へ 行く",
+      "reading": "やまへ いく",
+      "ruby": [
+        "[山:やま]へ",
+        "[行:い]く"
+      ],
+      "romaji": "yamahe iku",
+      "focus": "山・行",
+      "meaning": "山へ しゅっぱつ"
+    },
+    {
+      "id": "1-000b",
+      "stage": 1,
+      "sentence": "赤い 花",
+      "reading": "あかい はな",
+      "ruby": [
+        "[赤:あか]い",
+        "[花:はな]"
+      ],
+      "romaji": "akai hana",
+      "focus": "赤・花",
+      "meaning": "赤い花を はっけん"
+    },
+    {
+      "id": "1-000c",
+      "stage": 1,
+      "sentence": "犬と 走る",
+      "reading": "いぬと はしる",
+      "ruby": [
+        "[犬:いぬ]と",
+        "[走:はし]る"
+      ],
+      "romaji": "inuto hashiru",
+      "focus": "犬・走",
+      "meaning": "犬と かけっこ"
+    },
+    {
+      "id": "1-001",
+      "stage": 2,
+      "sentence": "大きな 木の 下で 休みます",
+      "reading": "おおきな きの したで やすみます",
+      "ruby": [
+        "[大:おお]きな",
+        "[木:き]の",
+        "[下:した]で",
+        "[休:やす]みます"
+      ],
+      "romaji": "ookina kino shitade yasumimasu",
+      "focus": "木・下・休",
+      "meaning": "木かげで ひとやすみ"
+    },
+    {
+      "id": "1-002",
+      "stage": 2,
+      "sentence": "白い 犬と 山へ 行きます",
+      "reading": "しろい いぬと やまへ いきます",
+      "ruby": [
+        "[白:しろ]い",
+        "[犬:いぬ]と",
+        "[山:やま]へ",
+        "[行:い]きます"
+      ],
+      "romaji": "shiroi inuto yamahe ikimasu",
+      "focus": "白・犬・山・行",
+      "meaning": "しろい犬と ぼうけん！"
+    },
+    {
+      "id": "1-003",
+      "stage": 3,
+      "sentence": "青い 空に 月が 出ました",
+      "reading": "あおい そらに つきが でました",
+      "ruby": [
+        "[青:あお]い",
+        "[空:そら]に",
+        "[月:つき]が",
+        "[出:で]ました"
+      ],
+      "romaji": "aoi sorani tsukiga demashita",
+      "focus": "青・空・月・出",
+      "meaning": "夜の島を てらす月"
+    },
+    {
+      "id": "1-004",
+      "stage": 3,
+      "sentence": "川で 小さな 貝を 見つけた",
+      "reading": "かわで ちいさな かいを みつけた",
+      "ruby": [
+        "[川:かわ]で",
+        "[小:ちい]さな",
+        "[貝:かい]を",
+        "[見:み]つけた"
+      ],
+      "romaji": "kawade chiisana kaiwo mitsuketa",
+      "focus": "川・小・貝・見",
+      "meaning": "きらきらの貝を はっけん"
+    },
+    {
+      "id": "1-005",
+      "stage": 3,
+      "sentence": "赤い 花が 七つ さきました",
+      "reading": "あかい はなが ななつ さきました",
+      "ruby": [
+        "[赤:あか]い",
+        "[花:はな]が",
+        "[七:なな]つ",
+        "さきました"
+      ],
+      "romaji": "akai hanaga nanatsu sakimashita",
+      "focus": "赤・花・七",
+      "meaning": "花ばたけに とうちゃく"
+    },
+    {
+      "id": "1-x01",
+      "stage": 1,
+      "sentence": "空を 見る",
+      "reading": "そらを みる",
+      "ruby": [
+        "[空:そら]を",
+        "[見:み]る"
+      ],
+      "romaji": "sorawo miru",
+      "focus": "空・見",
+      "meaning": "空を見上げよう"
+    },
+    {
+      "id": "1-x02",
+      "stage": 1,
+      "sentence": "水を のむ",
+      "reading": "みずを のむ",
+      "ruby": [
+        "[水:みず]を",
+        "のむ"
+      ],
+      "romaji": "mizuwo nomu",
+      "focus": "水",
+      "meaning": "水を飲んでひと休み"
+    },
+    {
+      "id": "1-x03",
+      "stage": 2,
+      "sentence": "青い 空を とりが とぶ",
+      "reading": "あおい そらを とりが とぶ",
+      "ruby": [
+        "[青:あお]い",
+        "[空:そら]を",
+        "とりが",
+        "とぶ"
+      ],
+      "romaji": "aoi sorawo toriga tobu",
+      "focus": "青・空",
+      "meaning": "鳥が空を進んでいく"
+    },
+    {
+      "id": "1-x04",
+      "stage": 2,
+      "sentence": "森で 虫の 音を きく",
+      "reading": "もりで むしの おとを きく",
+      "ruby": [
+        "[森:もり]で",
+        "[虫:むし]の",
+        "[音:おと]を",
+        "きく"
+      ],
+      "romaji": "moride mushino otowo kiku",
+      "focus": "森・虫・音",
+      "meaning": "森の音に耳をすまそう"
+    },
+    {
+      "id": "1-x05",
+      "stage": 3,
+      "sentence": "夕日が 赤く 山を そめます",
+      "reading": "ゆうひが あかく やまを そめます",
+      "ruby": [
+        "[夕日:ゆうひ]が",
+        "[赤:あか]く",
+        "[山:やま]を",
+        "そめます"
+      ],
+      "romaji": "yuuhiga akaku yamawo somemasu",
+      "focus": "夕日・赤・山",
+      "meaning": "山が夕日の色になる"
+    },
+    {
+      "id": "1-x06",
+      "stage": 3,
+      "sentence": "林の 中で ことりが うたいます",
+      "reading": "はやしの なかで ことりが うたいます",
+      "ruby": [
+        "[林:はやし]の",
+        "[中:なか]で",
+        "ことりが",
+        "うたいます"
+      ],
+      "romaji": "hayashino nakade kotoriga utaimasu",
+      "focus": "林・中",
+      "meaning": "小鳥の歌が聞こえる"
+    },
+    {
+      "id": "1-y01",
+      "stage": 4,
+      "sentence": "雨が やむ",
+      "reading": "あめが やむ",
+      "ruby": [
+        "[雨:あめ]が",
+        "やむ"
+      ],
+      "romaji": "amega yamu",
+      "focus": "雨",
+      "meaning": "雨上がりの道へ出よう"
+    },
+    {
+      "id": "1-y02",
+      "stage": 4,
+      "sentence": "月を 見る",
+      "reading": "つきを みる",
+      "ruby": [
+        "[月:つき]を",
+        "[見:み]る"
+      ],
+      "romaji": "tsukiwo miru",
+      "focus": "月・見",
+      "meaning": "夜空の月を見つけた"
+    },
+    {
+      "id": "1-y03",
+      "stage": 4,
+      "sentence": "白い 石",
+      "reading": "しろい いし",
+      "ruby": [
+        "[白:しろ]い",
+        "[石:いし]"
+      ],
+      "romaji": "shiroi ishi",
+      "focus": "白・石",
+      "meaning": "白い石がきらり"
+    },
+    {
+      "id": "1-y04",
+      "stage": 4,
+      "sentence": "田の 中を あるく",
+      "reading": "たの なかを あるく",
+      "ruby": [
+        "[田:た]の",
+        "[中:なか]を",
+        "あるく"
+      ],
+      "romaji": "tano nakawo aruku",
+      "focus": "田・中",
+      "meaning": "田んぼの道を進む"
+    },
+    {
+      "id": "1-y05",
+      "stage": 4,
+      "sentence": "花に 水を あげる",
+      "reading": "はなに みずを あげる",
+      "ruby": [
+        "[花:はな]に",
+        "[水:みず]を",
+        "あげる"
+      ],
+      "romaji": "hanani mizuwo ageru",
+      "focus": "花・水",
+      "meaning": "花が元気になった"
+    },
+    {
+      "id": "1-y06",
+      "stage": 5,
+      "sentence": "大きな 円を かきます",
+      "reading": "おおきな えんを かきます",
+      "ruby": [
+        "[大:おお]きな",
+        "[円:えん]を",
+        "かきます"
+      ],
+      "romaji": "ookina enwo kakimasu",
+      "focus": "大・円",
+      "meaning": "大きな丸い地図をかく"
+    },
+    {
+      "id": "1-y07",
+      "stage": 5,
+      "sentence": "右の 山へ むかいます",
+      "reading": "みぎの やまへ むかいます",
+      "ruby": [
+        "[右:みぎ]の",
+        "[山:やま]へ",
+        "むかいます"
+      ],
+      "romaji": "migino yamahe mukaimasu",
+      "focus": "右・山",
+      "meaning": "右手の山へ進もう"
+    },
+    {
+      "id": "1-y08",
+      "stage": 5,
+      "sentence": "学校で 本を よみます",
+      "reading": "がっこうで ほんを よみます",
+      "ruby": [
+        "[学校:がっこう]で",
+        "[本:ほん]を",
+        "よみます"
+      ],
+      "romaji": "gakkoude honwo yomimasu",
+      "focus": "学校・本",
+      "meaning": "本から島の話を知る"
+    },
+    {
+      "id": "1-y09",
+      "stage": 5,
+      "sentence": "早い 川を わたります",
+      "reading": "はやい かわを わたります",
+      "ruby": [
+        "[早:はや]い",
+        "[川:かわ]を",
+        "わたります"
+      ],
+      "romaji": "hayai kawawo watarimasu",
+      "focus": "早・川",
+      "meaning": "流れを見て川を渡る"
+    },
+    {
+      "id": "1-y10",
+      "stage": 6,
+      "sentence": "林を 出ると 夕日が 見えます",
+      "reading": "はやしを でると ゆうひが みえます",
+      "ruby": [
+        "[林:はやし]を",
+        "[出:で]ると",
+        "[夕日:ゆうひ]が",
+        "[見:み]えます"
+      ],
+      "romaji": "hayashiwo deruto yuuhiga miemasu",
+      "focus": "林・出・夕日・見",
+      "meaning": "林の先で夕日を発見"
+    },
+    {
+      "id": "1-y11",
+      "stage": 6,
+      "sentence": "村の 人と 力を あわせます",
+      "reading": "むらの ひとと ちからを あわせます",
+      "ruby": [
+        "[村:むら]の",
+        "[人:ひと]と",
+        "[力:ちから]を",
+        "あわせます"
+      ],
+      "romaji": "murano hitoto chikarawo awasemasu",
+      "focus": "村・人・力",
+      "meaning": "みんなで力を合わせる"
+    },
+    {
+      "id": "1-y12",
+      "stage": 6,
+      "sentence": "青い うみで 大きな 魚を 見つけます",
+      "reading": "あおい うみで おおきな さかなを みつけます",
+      "ruby": [
+        "[青:あお]い",
+        "うみで",
+        "[大:おお]きな",
+        "[魚:さかな]を",
+        "[見:み]つけます"
+      ],
+      "romaji": "aoi umide ookina sakanawo mitsukemasu",
+      "focus": "青・大・魚・見",
+      "meaning": "海の仲間を見つけた"
+    },
+    {
+      "id": "1-y13",
+      "stage": 6,
+      "sentence": "あさひが 草の つゆを てらします",
+      "reading": "あさひが くさの つゆを てらします",
+      "ruby": [
+        "あさひが",
+        "[草:くさ]の",
+        "つゆを",
+        "てらします"
+      ],
+      "romaji": "asahiga kusano tsuyuwo terashimasu",
+      "focus": "草",
+      "meaning": "朝の草原がきらきら"
+    },
+    {
+      "id": "1-y14",
+      "stage": 6,
+      "sentence": "王さまへ 金の 貝を とどけます",
+      "reading": "おうさまへ きんの かいを とどけます",
+      "ruby": [
+        "[王:おう]さまへ",
+        "[金:きん]の",
+        "[貝:かい]を",
+        "とどけます"
+      ],
+      "romaji": "ousamahe kinno kaiwo todokemasu",
+      "focus": "王・金・貝",
+      "meaning": "金の貝を届けよう"
+    }
+  ],
+  "2": [
+    {
+      "id": "2-000a",
+      "stage": 1,
+      "sentence": "春が 来た",
+      "reading": "はるが きた",
+      "ruby": [
+        "[春:はる]が",
+        "[来:き]た"
+      ],
+      "romaji": "haruga kita",
+      "focus": "春・来",
+      "meaning": "あたたかい春が きた"
+    },
+    {
+      "id": "2-000b",
+      "stage": 1,
+      "sentence": "海を 見る",
+      "reading": "うみを みる",
+      "ruby": [
+        "[海:うみ]を",
+        "[見:み]る"
+      ],
+      "romaji": "umiwo miru",
+      "focus": "海・見",
+      "meaning": "広い海を ながめよう"
+    },
+    {
+      "id": "2-000c",
+      "stage": 1,
+      "sentence": "風が 強い",
+      "reading": "かぜが つよい",
+      "ruby": [
+        "[風:かぜ]が",
+        "[強:つよ]い"
+      ],
+      "romaji": "kazega tsuyoi",
+      "focus": "風・強",
+      "meaning": "ぼうしに 気をつけて"
+    },
+    {
+      "id": "2-001",
+      "stage": 2,
+      "sentence": "春の 池で 小さな 魚を 見つけた",
+      "reading": "はるの いけで ちいさな さかなを みつけた",
+      "ruby": [
+        "[春:はる]の",
+        "[池:いけ]で",
+        "[小:ちい]さな",
+        "[魚:さかな]を",
+        "[見:み]つけた"
+      ],
+      "romaji": "haruno ikede chiisana sakanawo mitsuketa",
+      "focus": "春・池・魚・見",
+      "meaning": "池の中に だれかいるよ"
+    },
+    {
+      "id": "2-002",
+      "stage": 2,
+      "sentence": "風に のって 船が 島へ 進みます",
+      "reading": "かぜに のって ふねが しまへ すすみます",
+      "ruby": [
+        "[風:かぜ]に",
+        "のって",
+        "[船:ふね]が",
+        "[島:しま]へ",
+        "[進:すす]みます"
+      ],
+      "romaji": "kazeni notte funega shimahe susumimasu",
+      "focus": "風・船・島・進",
+      "meaning": "つぎの島へ しゅっぱつ"
+    },
+    {
+      "id": "2-003",
+      "stage": 3,
+      "sentence": "朝日が 海を 金色に そめました",
+      "reading": "あさひが うみを きんいろに そめました",
+      "ruby": [
+        "[朝日:あさひ]が",
+        "[海:うみ]を",
+        "[金色:きんいろ]に",
+        "そめました"
+      ],
+      "romaji": "asahiga umiwo kinironi somemashita",
+      "focus": "朝・海・金・色",
+      "meaning": "まぶしい朝の海"
+    },
+    {
+      "id": "2-004",
+      "stage": 3,
+      "sentence": "広い 野原を 元気に 走ります",
+      "reading": "ひろい のはらを げんきに はしります",
+      "ruby": [
+        "[広:ひろ]い",
+        "[野原:のはら]を",
+        "[元気:げんき]に",
+        "[走:はし]ります"
+      ],
+      "romaji": "hiroi noharawo genkini hashirimasu",
+      "focus": "広・野・元・気・走",
+      "meaning": "風といっしょに かけぬけよう"
+    },
+    {
+      "id": "2-005",
+      "stage": 3,
+      "sentence": "古い 地図に 宝の 印が あります",
+      "reading": "ふるい ちずに たからの しるしが あります",
+      "ruby": [
+        "[古:ふる]い",
+        "[地図:ちず]に",
+        "[宝:たから]の",
+        "[印:しるし]が",
+        "あります"
+      ],
+      "romaji": "furui chizuni takarano shirushiga arimasu",
+      "focus": "古・地・図・宝・印",
+      "meaning": "ひみつの場所は どこかな？"
+    },
+    {
+      "id": "2-x01",
+      "stage": 1,
+      "sentence": "雲が ながれる",
+      "reading": "くもが ながれる",
+      "ruby": [
+        "[雲:くも]が",
+        "ながれる"
+      ],
+      "romaji": "kumoga nagareru",
+      "focus": "雲",
+      "meaning": "雲が風に乗って進む"
+    },
+    {
+      "id": "2-x02",
+      "stage": 1,
+      "sentence": "雪が 光る",
+      "reading": "ゆきが ひかる",
+      "ruby": [
+        "[雪:ゆき]が",
+        "[光:ひか]る"
+      ],
+      "romaji": "yukiga hikaru",
+      "focus": "雪・光",
+      "meaning": "雪がきらきら光る"
+    },
+    {
+      "id": "2-x03",
+      "stage": 2,
+      "sentence": "公園で 友だちと あそびます",
+      "reading": "こうえんで ともだちと あそびます",
+      "ruby": [
+        "[公園:こうえん]で",
+        "[友:とも]だちと",
+        "あそびます"
+      ],
+      "romaji": "kouende tomodachito asobimasu",
+      "focus": "公園・友",
+      "meaning": "友だちと元気に遊ぶ"
+    },
+    {
+      "id": "2-x04",
+      "stage": 2,
+      "sentence": "黄色い 鳥が 池に 来ました",
+      "reading": "きいろい とりが いけに きました",
+      "ruby": [
+        "[黄色:きいろ]い",
+        "[鳥:とり]が",
+        "[池:いけ]に",
+        "[来:き]ました"
+      ],
+      "romaji": "kiiroi toriga ikeni kimashita",
+      "focus": "黄・色・鳥・池・来",
+      "meaning": "池に鳥がやってきた"
+    },
+    {
+      "id": "2-x05",
+      "stage": 3,
+      "sentence": "朝の 光が 谷まで とどきます",
+      "reading": "あさの ひかりが たにまで とどきます",
+      "ruby": [
+        "[朝:あさ]の",
+        "[光:ひかり]が",
+        "[谷:たに]まで",
+        "とどきます"
+      ],
+      "romaji": "asano hikariga tanimade todokimasu",
+      "focus": "朝・光・谷",
+      "meaning": "谷に朝日が差しこむ"
+    },
+    {
+      "id": "2-x06",
+      "stage": 3,
+      "sentence": "岩の 間から 水が ながれます",
+      "reading": "いわの あいだから みずが ながれます",
+      "ruby": [
+        "[岩:いわ]の",
+        "[間:あいだ]から",
+        "[水:みず]が",
+        "ながれます"
+      ],
+      "romaji": "iwano aidakara mizuga nagaremasu",
+      "focus": "岩・間・水",
+      "meaning": "きれいな水を見つけた"
+    },
+    {
+      "id": "2-y01",
+      "stage": 4,
+      "sentence": "夏の 星を 数える",
+      "reading": "なつの ほしを かぞえる",
+      "ruby": [
+        "[夏:なつ]の",
+        "[星:ほし]を",
+        "[数:かぞ]える"
+      ],
+      "romaji": "natsuno hoshiwo kazoeru",
+      "focus": "夏・星・数",
+      "meaning": "夏の星を数えよう"
+    },
+    {
+      "id": "2-y02",
+      "stage": 4,
+      "sentence": "電車を 待つ",
+      "reading": "でんしゃを まつ",
+      "ruby": [
+        "[電車:でんしゃ]を",
+        "[待:ま]つ"
+      ],
+      "romaji": "denshawo matsu",
+      "focus": "電車・待",
+      "meaning": "電車で次の町へ"
+    },
+    {
+      "id": "2-y03",
+      "stage": 4,
+      "sentence": "弟と 歩く",
+      "reading": "おとうとと あるく",
+      "ruby": [
+        "[弟:おとうと]と",
+        "[歩:ある]く"
+      ],
+      "romaji": "otoutoto aruku",
+      "focus": "弟・歩",
+      "meaning": "弟といっしょに歩く"
+    },
+    {
+      "id": "2-y04",
+      "stage": 4,
+      "sentence": "紙で 船を 作る",
+      "reading": "かみで ふねを つくる",
+      "ruby": [
+        "[紙:かみ]で",
+        "[船:ふね]を",
+        "[作:つく]る"
+      ],
+      "romaji": "kamide funewo tsukuru",
+      "focus": "紙・船・作",
+      "meaning": "紙の船を浮かべる"
+    },
+    {
+      "id": "2-y05",
+      "stage": 4,
+      "sentence": "家の 前を そうじする",
+      "reading": "いえの まえを そうじする",
+      "ruby": [
+        "[家:いえ]の",
+        "[前:まえ]を",
+        "そうじする"
+      ],
+      "romaji": "ieno maewo soujisuru",
+      "focus": "家・前",
+      "meaning": "道をきれいにしよう"
+    },
+    {
+      "id": "2-y06",
+      "stage": 5,
+      "sentence": "近い 道を 教えます",
+      "reading": "ちかい みちを おしえます",
+      "ruby": [
+        "[近:ちか]い",
+        "[道:みち]を",
+        "[教:おし]えます"
+      ],
+      "romaji": "chikai michiwo oshiemasu",
+      "focus": "近・道・教",
+      "meaning": "近道を教えてもらう"
+    },
+    {
+      "id": "2-y07",
+      "stage": 5,
+      "sentence": "夜の 雪道を 歩きます",
+      "reading": "よるの ゆきみちを あるきます",
+      "ruby": [
+        "[夜:よる]の",
+        "[雪道:ゆきみち]を",
+        "[歩:ある]きます"
+      ],
+      "romaji": "yoruno yukimichiwo arukimasu",
+      "focus": "夜・雪・道・歩",
+      "meaning": "足元に気をつけよう"
+    },
+    {
+      "id": "2-y08",
+      "stage": 5,
+      "sentence": "牛が 麦を 食べます",
+      "reading": "うしが むぎを たべます",
+      "ruby": [
+        "[牛:うし]が",
+        "[麦:むぎ]を",
+        "[食:た]べます"
+      ],
+      "romaji": "ushiga mugiwo tabemasu",
+      "focus": "牛・麦・食",
+      "meaning": "牧場で牛に会った"
+    },
+    {
+      "id": "2-y09",
+      "stage": 5,
+      "sentence": "声を 合わせて 歌います",
+      "reading": "こえを あわせて うたいます",
+      "ruby": [
+        "[声:こえ]を",
+        "[合:あ]わせて",
+        "[歌:うた]います"
+      ],
+      "romaji": "koewo awasete utaimasu",
+      "focus": "声・合・歌",
+      "meaning": "仲間と歌を歌う"
+    },
+    {
+      "id": "2-y10",
+      "stage": 6,
+      "sentence": "海べで 夏の ほしを さがします",
+      "reading": "うみべで なつの ほしを さがします",
+      "ruby": [
+        "[海:うみ]べで",
+        "[夏:なつ]の",
+        "ほしを",
+        "さがします"
+      ],
+      "romaji": "umibede natsuno hoshiwo sagashimasu",
+      "focus": "海・夏",
+      "meaning": "海辺で星探し"
+    },
+    {
+      "id": "2-y11",
+      "stage": 6,
+      "sentence": "強い 風でも 船は 前へ 進みます",
+      "reading": "つよい かぜでも ふねは まえへ すすみます",
+      "ruby": [
+        "[強:つよ]い",
+        "[風:かぜ]でも",
+        "[船:ふね]は",
+        "[前:まえ]へ",
+        "[進:すす]みます"
+      ],
+      "romaji": "tsuyoi kazedemo funewa maehe susumimasu",
+      "focus": "強・風・船・前・進",
+      "meaning": "風を受けて進もう"
+    },
+    {
+      "id": "2-y12",
+      "stage": 6,
+      "sentence": "春の 朝に 野原で 鳥を 見ました",
+      "reading": "はるの あさに のはらで とりを みました",
+      "ruby": [
+        "[春:はる]の",
+        "[朝:あさ]に",
+        "[野原:のはら]で",
+        "[鳥:とり]を",
+        "[見:み]ました"
+      ],
+      "romaji": "haruno asani noharade toriwo mimashita",
+      "focus": "春・朝・野原・鳥・見",
+      "meaning": "朝の野原で鳥に会う"
+    },
+    {
+      "id": "2-y13",
+      "stage": 6,
+      "sentence": "古い 岩の 間に 光る 石が あります",
+      "reading": "ふるい いわの あいだに ひかる いしが あります",
+      "ruby": [
+        "[古:ふる]い",
+        "[岩:いわ]の",
+        "[間:あいだ]に",
+        "[光:ひか]る",
+        "[石:いし]が",
+        "あります"
+      ],
+      "romaji": "furui iwano aidani hikaru ishiga arimasu",
+      "focus": "古・岩・間・光・石",
+      "meaning": "光る石を見つけた"
+    },
+    {
+      "id": "2-y14",
+      "stage": 6,
+      "sentence": "友だちと 地図を 見て 方角を 決めます",
+      "reading": "ともだちと ちずを みて ほうがくを きめます",
+      "ruby": [
+        "[友:とも]だちと",
+        "[地図:ちず]を",
+        "[見:み]て",
+        "[方角:ほうがく]を",
+        "[決:き]めます"
+      ],
+      "romaji": "tomodachito chizuwo mite hougakuwo kimemasu",
+      "focus": "友・地図・見・方角・決",
+      "meaning": "地図を見て出発"
+    }
+  ],
+  "3": [
+    {
+      "id": "3-000a",
+      "stage": 1,
+      "sentence": "星が 光る",
+      "reading": "ほしが ひかる",
+      "ruby": [
+        "[星:ほし]が",
+        "[光:ひか]る"
+      ],
+      "romaji": "hoshiga hikaru",
+      "focus": "星・光",
+      "meaning": "夜空に 星がきらり"
+    },
+    {
+      "id": "3-000b",
+      "stage": 1,
+      "sentence": "橋を 渡る",
+      "reading": "はしを わたる",
+      "ruby": [
+        "[橋:はし]を",
+        "[渡:わた]る"
+      ],
+      "romaji": "hashiwo wataru",
+      "focus": "橋・渡",
+      "meaning": "川のむこうへ 進もう"
+    },
+    {
+      "id": "3-000c",
+      "stage": 1,
+      "sentence": "鳥が 飛び立つ",
+      "reading": "とりが とびたつ",
+      "ruby": [
+        "[鳥:とり]が",
+        "[飛:と]び[立:た]つ"
+      ],
+      "romaji": "toriga tobitatsu",
+      "focus": "鳥・飛・立",
+      "meaning": "鳥が空へ まい上がる"
+    },
+    {
+      "id": "3-001",
+      "stage": 2,
+      "sentence": "森の 奥で 美しい 湖を 発見した",
+      "reading": "もりの おくで うつくしい みずうみを はっけんした",
+      "ruby": [
+        "[森:もり]の",
+        "[奥:おく]で",
+        "[美:うつく]しい",
+        "[湖:みずうみ]を",
+        "[発見:はっけん]した"
+      ],
+      "romaji": "morino okude utsukushii mizuumiwo hakkenshita",
+      "focus": "森・奥・美・湖・発見",
+      "meaning": "しずかな湖を はっけん"
+    },
+    {
+      "id": "3-002",
+      "stage": 2,
+      "sentence": "急な 坂道を 登って 頂上を 目指す",
+      "reading": "きゅうな さかみちを のぼって ちょうじょうを めざす",
+      "ruby": [
+        "[急:きゅう]な",
+        "[坂道:さかみち]を",
+        "[登:のぼ]って",
+        "[頂上:ちょうじょう]を",
+        "[目指:めざ]す"
+      ],
+      "romaji": "kyuuna sakamichiwo nobotte choujouwo mezasu",
+      "focus": "急・坂・登・頂上・目指",
+      "meaning": "山のてっぺんへ！"
+    },
+    {
+      "id": "3-003",
+      "stage": 3,
+      "sentence": "島の 港に 大きな 客船が 着いた",
+      "reading": "しまの みなとに おおきな きゃくせんが ついた",
+      "ruby": [
+        "[島:しま]の",
+        "[港:みなと]に",
+        "[大:おお]きな",
+        "[客船:きゃくせん]が",
+        "[着:つ]いた"
+      ],
+      "romaji": "shimano minatoni ookina kyakusenga tsuita",
+      "focus": "島・港・客船・着",
+      "meaning": "遠くから船が やってきた"
+    },
+    {
+      "id": "3-004",
+      "stage": 3,
+      "sentence": "暗い 洞窟で 不思議な 石を 拾った",
+      "reading": "くらい どうくつで ふしぎな いしを ひろった",
+      "ruby": [
+        "[暗:くら]い",
+        "[洞窟:どうくつ]で",
+        "[不思議:ふしぎ]な",
+        "[石:いし]を",
+        "[拾:ひろ]った"
+      ],
+      "romaji": "kurai doukutsude fushigina ishiwo hirotta",
+      "focus": "暗・洞窟・不思議・石・拾",
+      "meaning": "石が かすかに光っている"
+    },
+    {
+      "id": "3-005",
+      "stage": 3,
+      "sentence": "太陽の 光が 氷を 静かに 溶かす",
+      "reading": "たいようの ひかりが こおりを しずかに とかす",
+      "ruby": [
+        "[太陽:たいよう]の",
+        "[光:ひかり]が",
+        "[氷:こおり]を",
+        "[静:しず]かに",
+        "[溶:と]かす"
+      ],
+      "romaji": "taiyouno hikariga kooriwo shizukani tokasu",
+      "focus": "太陽・光・氷・静・溶",
+      "meaning": "春へのとびらが ひらく"
+    },
+    {
+      "id": "3-x01",
+      "stage": 1,
+      "sentence": "島を 守る",
+      "reading": "しまを まもる",
+      "ruby": [
+        "[島:しま]を",
+        "[守:まも]る"
+      ],
+      "romaji": "shimawo mamoru",
+      "focus": "島・守",
+      "meaning": "大切な島を守ろう"
+    },
+    {
+      "id": "3-x02",
+      "stage": 1,
+      "sentence": "笛を ふく",
+      "reading": "ふえを ふく",
+      "ruby": [
+        "[笛:ふえ]を",
+        "ふく"
+      ],
+      "romaji": "fuewo fuku",
+      "focus": "笛",
+      "meaning": "遠くまで音を届ける"
+    },
+    {
+      "id": "3-x03",
+      "stage": 2,
+      "sentence": "畑で 新しい やさいを 育てます",
+      "reading": "はたけで あたらしい やさいを そだてます",
+      "ruby": [
+        "[畑:はたけ]で",
+        "[新:あたら]しい",
+        "やさいを",
+        "[育:そだ]てます"
+      ],
+      "romaji": "hatakede atarashii yasaiwo sodatemasu",
+      "focus": "畑・新・育",
+      "meaning": "畑に小さな芽が出る"
+    },
+    {
+      "id": "3-x04",
+      "stage": 2,
+      "sentence": "汽笛の 音が 港に ひびきます",
+      "reading": "きてきの おとが みなとに ひびきます",
+      "ruby": [
+        "[汽笛:きてき]の",
+        "[音:おと]が",
+        "[港:みなと]に",
+        "ひびきます"
+      ],
+      "romaji": "kitekino otoga minatoni hibikimasu",
+      "focus": "汽笛・音・港",
+      "meaning": "船の出発を知らせる音"
+    },
+    {
+      "id": "3-x05",
+      "stage": 3,
+      "sentence": "深い 森を ぬけて 海岸へ 向かう",
+      "reading": "ふかい もりを ぬけて かいがんへ むかう",
+      "ruby": [
+        "[深:ふか]い",
+        "[森:もり]を",
+        "ぬけて",
+        "[海岸:かいがん]へ",
+        "[向:む]かう"
+      ],
+      "romaji": "fukai moriwo nukete kaiganhe mukau",
+      "focus": "深・森・海岸・向",
+      "meaning": "森の先に海が見える"
+    },
+    {
+      "id": "3-x06",
+      "stage": 3,
+      "sentence": "昔の 道具を 集めて 島を 調べる",
+      "reading": "むかしの どうぐを あつめて しまを しらべる",
+      "ruby": [
+        "[昔:むかし]の",
+        "[道具:どうぐ]を",
+        "[集:あつ]めて",
+        "[島:しま]を",
+        "[調:しら]べる"
+      ],
+      "romaji": "mukashino douguwo atsumete shimawo shiraberu",
+      "focus": "昔・道具・集・島・調",
+      "meaning": "島の昔を知る手がかり"
+    },
+    {
+      "id": "3-y01",
+      "stage": 4,
+      "sentence": "写真を 送る",
+      "reading": "しゃしんを おくる",
+      "ruby": [
+        "[写真:しゃしん]を",
+        "[送:おく]る"
+      ],
+      "romaji": "shashinwo okuru",
+      "focus": "写真・送",
+      "meaning": "島の写真を送ろう"
+    },
+    {
+      "id": "3-y02",
+      "stage": 4,
+      "sentence": "荷物を 運ぶ",
+      "reading": "にもつを はこぶ",
+      "ruby": [
+        "[荷物:にもつ]を",
+        "[運:はこ]ぶ"
+      ],
+      "romaji": "nimotsuwo hakobu",
+      "focus": "荷物・運",
+      "meaning": "船まで荷物を運ぶ"
+    },
+    {
+      "id": "3-y03",
+      "stage": 4,
+      "sentence": "庭に 花を 植える",
+      "reading": "にわに はなを うえる",
+      "ruby": [
+        "[庭:にわ]に",
+        "[花:はな]を",
+        "[植:う]える"
+      ],
+      "romaji": "niwani hanawo ueru",
+      "focus": "庭・花・植",
+      "meaning": "庭を花でいっぱいに"
+    },
+    {
+      "id": "3-y04",
+      "stage": 4,
+      "sentence": "温かい お茶を 飲む",
+      "reading": "あたたかい おちゃを のむ",
+      "ruby": [
+        "[温:あたた]かい",
+        "お[茶:ちゃ]を",
+        "[飲:の]む"
+      ],
+      "romaji": "atatakai ochawo nomu",
+      "focus": "温・茶・飲",
+      "meaning": "お茶でひと休み"
+    },
+    {
+      "id": "3-y05",
+      "stage": 4,
+      "sentence": "笛の 音が 聞こえる",
+      "reading": "ふえの おとが きこえる",
+      "ruby": [
+        "[笛:ふえ]の",
+        "[音:おと]が",
+        "[聞:き]こえる"
+      ],
+      "romaji": "fueno otoga kikoeru",
+      "focus": "笛・音・聞",
+      "meaning": "遠くから合図が聞こえる"
+    },
+    {
+      "id": "3-y06",
+      "stage": 5,
+      "sentence": "駅で 集合して 港へ 向かいます",
+      "reading": "えきで しゅうごうして みなとへ むかいます",
+      "ruby": [
+        "[駅:えき]で",
+        "[集合:しゅうごう]して",
+        "[港:みなと]へ",
+        "[向:む]かいます"
+      ],
+      "romaji": "ekide shuugoushite minatohe mukaimasu",
+      "focus": "駅・集合・港・向",
+      "meaning": "仲間と港へ出発"
+    },
+    {
+      "id": "3-y07",
+      "stage": 5,
+      "sentence": "氷が 解けて 水に なります",
+      "reading": "こおりが とけて みずに なります",
+      "ruby": [
+        "[氷:こおり]が",
+        "[解:と]けて",
+        "[水:みず]に",
+        "なります"
+      ],
+      "romaji": "kooriga tokete mizuni narimasu",
+      "focus": "氷・解・水",
+      "meaning": "春の変化を見つける"
+    },
+    {
+      "id": "3-y08",
+      "stage": 5,
+      "sentence": "農家の 人が 畑を 育てます",
+      "reading": "のうかの ひとが はたけを そだてます",
+      "ruby": [
+        "[農家:のうか]の",
+        "[人:ひと]が",
+        "[畑:はたけ]を",
+        "[育:そだ]てます"
+      ],
+      "romaji": "noukano hitoga hatakewo sodatemasu",
+      "focus": "農家・人・畑・育",
+      "meaning": "畑で野菜を育てる"
+    },
+    {
+      "id": "3-y09",
+      "stage": 5,
+      "sentence": "短い 文章を 丁寧に 読みます",
+      "reading": "みじかい ぶんしょうを ていねいに よみます",
+      "ruby": [
+        "[短:みじか]い",
+        "[文章:ぶんしょう]を",
+        "[丁寧:ていねい]に",
+        "[読:よ]みます"
+      ],
+      "romaji": "mijikai bunshouwo teineini yomimasu",
+      "focus": "短・文章・読",
+      "meaning": "言葉を確かめて読む"
+    },
+    {
+      "id": "3-y10",
+      "stage": 6,
+      "sentence": "島の 祭りで 太鼓の 音が ひびきます",
+      "reading": "しまの まつりで たいこの おとが ひびきます",
+      "ruby": [
+        "[島:しま]の",
+        "[祭:まつ]りで",
+        "[太鼓:たいこ]の",
+        "[音:おと]が",
+        "ひびきます"
+      ],
+      "romaji": "shimano matsuride taikono otoga hibikimasu",
+      "focus": "島・祭・太鼓・音",
+      "meaning": "島のお祭りが始まる"
+    },
+    {
+      "id": "3-y11",
+      "stage": 6,
+      "sentence": "深い 谷に 美しい 花が さいています",
+      "reading": "ふかい たにに うつくしい はなが さいています",
+      "ruby": [
+        "[深:ふか]い",
+        "[谷:たに]に",
+        "[美:うつく]しい",
+        "[花:はな]が",
+        "さいています"
+      ],
+      "romaji": "fukai tanini utsukushii hanaga saiteimasu",
+      "focus": "深・谷・美・花",
+      "meaning": "谷の花を見つけた"
+    },
+    {
+      "id": "3-y12",
+      "stage": 6,
+      "sentence": "昔の 道具から 人々の 生活を 考えます",
+      "reading": "むかしの どうぐから ひとびとの せいかつを かんがえます",
+      "ruby": [
+        "[昔:むかし]の",
+        "[道具:どうぐ]から",
+        "[人々:ひとびと]の",
+        "[生活:せいかつ]を",
+        "[考:かんが]えます"
+      ],
+      "romaji": "mukashino dougukara hitobitono seikatsuwo kangaemasu",
+      "focus": "昔・道具・人々・生活・考",
+      "meaning": "昔の暮らしを想像する"
+    },
+    {
+      "id": "3-y13",
+      "stage": 6,
+      "sentence": "急な 坂を 登ると 海が 広く 見えます",
+      "reading": "きゅうな さかを のぼると うみが ひろく みえます",
+      "ruby": [
+        "[急:きゅう]な",
+        "[坂:さか]を",
+        "[登:のぼ]ると",
+        "[海:うみ]が",
+        "[広:ひろ]く",
+        "[見:み]えます"
+      ],
+      "romaji": "kyuuna sakawo noboruto umiga hiroku miemasu",
+      "focus": "急・坂・登・海・広・見",
+      "meaning": "坂の上から海を見る"
+    },
+    {
+      "id": "3-y14",
+      "stage": 6,
+      "sentence": "仲間へ 感謝の 手紙を 書きました",
+      "reading": "なかまへ かんしゃの てがみを かきました",
+      "ruby": [
+        "[仲間:なかま]へ",
+        "[感謝:かんしゃ]の",
+        "[手紙:てがみ]を",
+        "[書:か]きました"
+      ],
+      "romaji": "nakamahe kanshano tegamiwo kakimashita",
+      "focus": "仲間・感謝・手紙・書",
+      "meaning": "ありがとうを伝えよう"
+    }
+  ],
+  "4": [
+    {
+      "id": "4-001",
+      "stage": 1,
+      "sentence": "旗が 風に なびく",
+      "reading": "はたが かぜに なびく",
+      "ruby": [
+        "[旗:はた]が",
+        "[風:かぜ]に",
+        "なびく"
+      ],
+      "romaji": "hataga kazeni nabiku",
+      "focus": "旗",
+      "meaning": "風を受けて 旗がゆれる"
+    },
+    {
+      "id": "4-002",
+      "stage": 1,
+      "sentence": "季節が 変わる",
+      "reading": "きせつが かわる",
+      "ruby": [
+        "[季節:きせつ]が",
+        "[変:か]わる"
+      ],
+      "romaji": "kisetsuga kawaru",
+      "focus": "季節・変",
+      "meaning": "島にも 新しい季節がくる"
+    },
+    {
+      "id": "4-003",
+      "stage": 1,
+      "sentence": "星を 観察する",
+      "reading": "ほしを かんさつする",
+      "ruby": [
+        "[星:ほし]を",
+        "[観察:かんさつ]する"
+      ],
+      "romaji": "hoshiwo kansatsusuru",
+      "focus": "観察",
+      "meaning": "星の形を よく見よう"
+    },
+    {
+      "id": "4-004",
+      "stage": 2,
+      "sentence": "島の 周りを 船で 回ります",
+      "reading": "しまの まわりを ふねで まわります",
+      "ruby": [
+        "[島:しま]の",
+        "[周:まわ]りを",
+        "[船:ふね]で",
+        "[回:まわ]ります"
+      ],
+      "romaji": "shimano mawariwo funede mawarimasu",
+      "focus": "周",
+      "meaning": "船で島を 一周しよう"
+    },
+    {
+      "id": "4-005",
+      "stage": 2,
+      "sentence": "友だちと 協力して 宝を 探す",
+      "reading": "ともだちと きょうりょくして たからを さがす",
+      "ruby": [
+        "[友:とも]だちと",
+        "[協力:きょうりょく]して",
+        "[宝:たから]を",
+        "[探:さが]す"
+      ],
+      "romaji": "tomodachito kyouryokushite takarawo sagasu",
+      "focus": "協力",
+      "meaning": "力を合わせて 宝探し"
+    },
+    {
+      "id": "4-006",
+      "stage": 2,
+      "sentence": "海辺で 美しい 景色を 写します",
+      "reading": "うみべで うつくしい けしきを うつします",
+      "ruby": [
+        "[海辺:うみべ]で",
+        "[美:うつく]しい",
+        "[景色:けしき]を",
+        "[写:うつ]します"
+      ],
+      "romaji": "umibede utsukushii keshikiwo utsushimasu",
+      "focus": "景・写",
+      "meaning": "きれいな景色を 記録しよう"
+    },
+    {
+      "id": "4-007",
+      "stage": 3,
+      "sentence": "冒険の 記録を 地図に 残しました",
+      "reading": "ぼうけんの きろくを ちずに のこしました",
+      "ruby": [
+        "[冒険:ぼうけん]の",
+        "[記録:きろく]を",
+        "[地図:ちず]に",
+        "[残:のこ]しました"
+      ],
+      "romaji": "boukenno kirokuwo chizuni nokoshimashita",
+      "focus": "記録・残",
+      "meaning": "歩いた道を 地図に書こう"
+    },
+    {
+      "id": "4-008",
+      "stage": 3,
+      "sentence": "鳥たちは 季節に 合わせて 南へ 飛びます",
+      "reading": "とりたちは きせつに あわせて みなみへ とびます",
+      "ruby": [
+        "[鳥:とり]たちは",
+        "[季節:きせつ]に",
+        "[合:あ]わせて",
+        "[南:みなみ]へ",
+        "[飛:と]びます"
+      ],
+      "romaji": "toritachiwa kisetsuni awasete minamihe tobimasu",
+      "focus": "季節",
+      "meaning": "鳥たちの 長い旅"
+    },
+    {
+      "id": "4-x01",
+      "stage": 1,
+      "sentence": "景色を 写す",
+      "reading": "けしきを うつす",
+      "ruby": [
+        "[景色:けしき]を",
+        "[写:うつ]す"
+      ],
+      "romaji": "keshikiwo utsusu",
+      "focus": "景・写",
+      "meaning": "心に残る景色を記録する"
+    },
+    {
+      "id": "4-x02",
+      "stage": 1,
+      "sentence": "方角を 確かめる",
+      "reading": "ほうがくを たしかめる",
+      "ruby": [
+        "[方角:ほうがく]を",
+        "[確:たし]かめる"
+      ],
+      "romaji": "hougakuwo tashikameru",
+      "focus": "方・角・確",
+      "meaning": "進む方向を確認する"
+    },
+    {
+      "id": "4-x03",
+      "stage": 2,
+      "sentence": "望遠鏡で 遠くの 灯台を 見ます",
+      "reading": "ぼうえんきょうで とおくの とうだいを みます",
+      "ruby": [
+        "[望遠鏡:ぼうえんきょう]で",
+        "[遠:とお]くの",
+        "[灯台:とうだい]を",
+        "[見:み]ます"
+      ],
+      "romaji": "bouenkyoude tookuno toudaiwo mimasu",
+      "focus": "望遠鏡・遠・灯台",
+      "meaning": "海の向こうを観察する"
+    },
+    {
+      "id": "4-x04",
+      "stage": 2,
+      "sentence": "天気の 変化を 毎日 記録します",
+      "reading": "てんきの へんかを まいにち きろくします",
+      "ruby": [
+        "[天気:てんき]の",
+        "[変化:へんか]を",
+        "[毎日:まいにち]",
+        "[記録:きろく]します"
+      ],
+      "romaji": "tenkino henkawo mainichi kirokushimasu",
+      "focus": "天気・変化・毎・記録",
+      "meaning": "空の様子を記録する"
+    },
+    {
+      "id": "4-x05",
+      "stage": 3,
+      "sentence": "海流を 調べて 安全な 航路を 選びます",
+      "reading": "かいりゅうを しらべて あんぜんな こうろを えらびます",
+      "ruby": [
+        "[海流:かいりゅう]を",
+        "[調:しら]べて",
+        "[安全:あんぜん]な",
+        "[航路:こうろ]を",
+        "[選:えら]びます"
+      ],
+      "romaji": "kairyuuwo shirabete anzenna kourowo erabimasu",
+      "focus": "海流・調・安全・航路・選",
+      "meaning": "安全に進める道を探す"
+    },
+    {
+      "id": "4-x06",
+      "stage": 3,
+      "sentence": "満天の 星から 北の 方角を 見つける",
+      "reading": "まんてんの ほしから きたの ほうがくを みつける",
+      "ruby": [
+        "[満天:まんてん]の",
+        "[星:ほし]から",
+        "[北:きた]の",
+        "[方角:ほうがく]を",
+        "[見:み]つける"
+      ],
+      "romaji": "mantenno hoshikara kitano hougakuwo mitsukeru",
+      "focus": "満天・星・北・方角・見",
+      "meaning": "星を目印に進む"
+    },
+    {
+      "id": "4-y01",
+      "stage": 4,
+      "sentence": "季節の 変化を 記録する",
+      "reading": "きせつの へんかを きろくする",
+      "ruby": [
+        "[季節:きせつ]の",
+        "[変化:へんか]を",
+        "[記録:きろく]する"
+      ],
+      "romaji": "kisetsuno henkawo kirokusuru",
+      "focus": "季節・変化・記録",
+      "meaning": "島の変化を残そう"
+    },
+    {
+      "id": "4-y02",
+      "stage": 4,
+      "sentence": "必要な 道具を 用意する",
+      "reading": "ひつような どうぐを よういする",
+      "ruby": [
+        "[必要:ひつよう]な",
+        "[道具:どうぐ]を",
+        "[用意:ようい]する"
+      ],
+      "romaji": "hitsuyouna douguwo youisuru",
+      "focus": "必要・道具・用意",
+      "meaning": "冒険の準備を整える"
+    },
+    {
+      "id": "4-y03",
+      "stage": 4,
+      "sentence": "安全な 場所を 選ぶ",
+      "reading": "あんぜんな ばしょを えらぶ",
+      "ruby": [
+        "[安全:あんぜん]な",
+        "[場所:ばしょ]を",
+        "[選:えら]ぶ"
+      ],
+      "romaji": "anzenna bashowo erabu",
+      "focus": "安全・場所・選",
+      "meaning": "休める場所を探す"
+    },
+    {
+      "id": "4-y04",
+      "stage": 4,
+      "sentence": "植物を 分類する",
+      "reading": "しょくぶつを ぶんるいする",
+      "ruby": [
+        "[植物:しょくぶつ]を",
+        "[分類:ぶんるい]する"
+      ],
+      "romaji": "shokubutsuwo bunruisuru",
+      "focus": "植物・分類",
+      "meaning": "植物を仲間分けする"
+    },
+    {
+      "id": "4-y05",
+      "stage": 4,
+      "sentence": "勇気を 出して 進む",
+      "reading": "ゆうきを だして すすむ",
+      "ruby": [
+        "[勇気:ゆうき]を",
+        "[出:だ]して",
+        "[進:すす]む"
+      ],
+      "romaji": "yuukiwo dashite susumu",
+      "focus": "勇気・出・進",
+      "meaning": "一歩前へ進もう"
+    },
+    {
+      "id": "4-y06",
+      "stage": 5,
+      "sentence": "天気図を 見て 明日の 空を 予想する",
+      "reading": "てんきずを みて あしたの そらを よそうする",
+      "ruby": [
+        "[天気図:てんきず]を",
+        "[見:み]て",
+        "[明日:あした]の",
+        "[空:そら]を",
+        "[予想:よそう]する"
+      ],
+      "romaji": "tenkizuwo mite ashitano sorawo yosousuru",
+      "focus": "天気図・見・明日・空・予想",
+      "meaning": "明日の天気を考える"
+    },
+    {
+      "id": "4-y07",
+      "stage": 5,
+      "sentence": "各地の 特産品を 地図に まとめます",
+      "reading": "かくちの とくさんひんを ちずに まとめます",
+      "ruby": [
+        "[各地:かくち]の",
+        "[特産品:とくさんひん]を",
+        "[地図:ちず]に",
+        "まとめます"
+      ],
+      "romaji": "kakuchino tokusanhinwo chizuni matomemasu",
+      "focus": "各地・特産品・地図",
+      "meaning": "島の自慢を集める"
+    },
+    {
+      "id": "4-y08",
+      "stage": 5,
+      "sentence": "仲間と 役割を 分担して 調査します",
+      "reading": "なかまと やくわりを ぶんたんして ちょうさします",
+      "ruby": [
+        "[仲間:なかま]と",
+        "[役割:やくわり]を",
+        "[分担:ぶんたん]して",
+        "[調査:ちょうさ]します"
+      ],
+      "romaji": "nakamato yakuwariwo buntanshite chousashimasu",
+      "focus": "仲間・役割・分担・調査",
+      "meaning": "力を合わせて調べる"
+    },
+    {
+      "id": "4-y09",
+      "stage": 5,
+      "sentence": "川の 流れと 土地の 形を 観察する",
+      "reading": "かわの ながれと とちの かたちを かんさつする",
+      "ruby": [
+        "[川:かわ]の",
+        "[流:なが]れと",
+        "[土地:とち]の",
+        "[形:かたち]を",
+        "[観察:かんさつ]する"
+      ],
+      "romaji": "kawano nagareto tochino katachiwo kansatsusuru",
+      "focus": "川・流・土地・形・観察",
+      "meaning": "川が作った地形を見る"
+    },
+    {
+      "id": "4-y10",
+      "stage": 6,
+      "sentence": "満天の 星を 頼りに 北の 港を 目指します",
+      "reading": "まんてんの ほしを たよりに きたの みなとを めざします",
+      "ruby": [
+        "[満天:まんてん]の",
+        "[星:ほし]を",
+        "[頼:たよ]りに",
+        "[北:きた]の",
+        "[港:みなと]を",
+        "[目指:めざ]します"
+      ],
+      "romaji": "mantenno hoshiwo tayorini kitano minatowo mezashimasu",
+      "focus": "満天・星・頼・北・港・目指",
+      "meaning": "星を目印に進む"
+    },
+    {
+      "id": "4-y11",
+      "stage": 6,
+      "sentence": "伝統の 祭りを 写真と 文で 紹介します",
+      "reading": "でんとうの まつりを しゃしんと ぶんで しょうかいします",
+      "ruby": [
+        "[伝統:でんとう]の",
+        "[祭:まつ]りを",
+        "[写真:しゃしん]と",
+        "[文:ぶん]で",
+        "[紹介:しょうかい]します"
+      ],
+      "romaji": "dentouno matsuriwo shashinto bunde shoukaishimasu",
+      "focus": "伝統・祭・写真・文・紹介",
+      "meaning": "島の祭りを伝える"
+    },
+    {
+      "id": "4-y12",
+      "stage": 6,
+      "sentence": "自然を 守る 約束を 全員で 確かめます",
+      "reading": "しぜんを まもる やくそくを ぜんいんで たしかめます",
+      "ruby": [
+        "[自然:しぜん]を",
+        "[守:まも]る",
+        "[約束:やくそく]を",
+        "[全員:ぜんいん]で",
+        "[確:たし]かめます"
+      ],
+      "romaji": "shizenwo mamoru yakusokuwo zeninde tashikamemasu",
+      "focus": "自然・守・約束・全員・確",
+      "meaning": "大切な自然を守ろう"
+    },
+    {
+      "id": "4-y13",
+      "stage": 6,
+      "sentence": "目的地までの 距離を 地図から 計算します",
+      "reading": "もくてきちまでの きょりを ちずから けいさんします",
+      "ruby": [
+        "[目的地:もくてきち]までの",
+        "[距離:きょり]を",
+        "[地図:ちず]から",
+        "[計算:けいさん]します"
+      ],
+      "romaji": "mokutekichimadeno kyoriwo chizukara keisanshimasu",
+      "focus": "目的地・距離・地図・計算",
+      "meaning": "残りの道のりを調べる"
+    },
+    {
+      "id": "4-y14",
+      "stage": 6,
+      "sentence": "成功の 理由を 振り返って 次に 生かします",
+      "reading": "せいこうの りゆうを ふりかえって つぎに いかします",
+      "ruby": [
+        "[成功:せいこう]の",
+        "[理由:りゆう]を",
+        "[振:ふ]り[返:かえ]って",
+        "[次:つぎ]に",
+        "[生:い]かします"
+      ],
+      "romaji": "seikouno riyuuwo furikaette tsugini ikashimasu",
+      "focus": "成功・理由・振返・次・生",
+      "meaning": "冒険から学びを見つける"
+    }
+  ],
+  "5": [
+    {
+      "id": "5-001",
+      "stage": 1,
+      "sentence": "桜の 枝が 揺れる",
+      "reading": "さくらの えだが ゆれる",
+      "ruby": [
+        "[桜:さくら]の",
+        "[枝:えだ]が",
+        "[揺:ゆ]れる"
+      ],
+      "romaji": "sakurano edaga yureru",
+      "focus": "桜・枝",
+      "meaning": "春の風が 枝をゆらす"
+    },
+    {
+      "id": "5-002",
+      "stage": 1,
+      "sentence": "海の 深さを 測る",
+      "reading": "うみの ふかさを はかる",
+      "ruby": [
+        "[海:うみ]の",
+        "[深:ふか]さを",
+        "[測:はか]る"
+      ],
+      "romaji": "umino fukasawo hakaru",
+      "focus": "測",
+      "meaning": "海の深さを 調べよう"
+    },
+    {
+      "id": "5-003",
+      "stage": 1,
+      "sentence": "夢への 準備を 始める",
+      "reading": "ゆめへの じゅんびを はじめる",
+      "ruby": [
+        "[夢:ゆめ]への",
+        "[準備:じゅんび]を",
+        "[始:はじ]める"
+      ],
+      "romaji": "yumeheno junbiwo hajimeru",
+      "focus": "夢・準備",
+      "meaning": "次の冒険を 用意しよう"
+    },
+    {
+      "id": "5-004",
+      "stage": 2,
+      "sentence": "森の 植物を 図鑑で 調べます",
+      "reading": "もりの しょくぶつを ずかんで しらべます",
+      "ruby": [
+        "[森:もり]の",
+        "[植物:しょくぶつ]を",
+        "[図鑑:ずかん]で",
+        "[調:しら]べます"
+      ],
+      "romaji": "morino shokubutsuwo zukande shirabemasu",
+      "focus": "植物・調",
+      "meaning": "知らない植物を 発見"
+    },
+    {
+      "id": "5-005",
+      "stage": 2,
+      "sentence": "船は 安全な 航路を 確かめた",
+      "reading": "ふねは あんぜんな こうろを たしかめた",
+      "ruby": [
+        "[船:ふね]は",
+        "[安全:あんぜん]な",
+        "[航路:こうろ]を",
+        "[確:たし]かめた"
+      ],
+      "romaji": "funewa anzenna kourowo tashikameta",
+      "focus": "航・確",
+      "meaning": "安全な道を 選んで進む"
+    },
+    {
+      "id": "5-006",
+      "stage": 2,
+      "sentence": "島の 面積を 地図から 求めます",
+      "reading": "しまの めんせきを ちずから もとめます",
+      "ruby": [
+        "[島:しま]の",
+        "[面積:めんせき]を",
+        "[地図:ちず]から",
+        "[求:もと]めます"
+      ],
+      "romaji": "shimano mensekiwo chizukara motomemasu",
+      "focus": "面積・求",
+      "meaning": "地図を使って 計算しよう"
+    },
+    {
+      "id": "5-007",
+      "stage": 3,
+      "sentence": "仲間と 意見を 交わして 計画を 決めた",
+      "reading": "なかまと いけんを かわして けいかくを きめた",
+      "ruby": [
+        "[仲間:なかま]と",
+        "[意見:いけん]を",
+        "[交:か]わして",
+        "[計画:けいかく]を",
+        "[決:き]めた"
+      ],
+      "romaji": "nakamato ikenwo kawashite keikakuwo kimeta",
+      "focus": "意見・計画",
+      "meaning": "みんなで作戦会議"
+    },
+    {
+      "id": "5-008",
+      "stage": 3,
+      "sentence": "豊かな 自然を 未来まで 守り続けます",
+      "reading": "ゆたかな しぜんを みらいまで まもりつづけます",
+      "ruby": [
+        "[豊:ゆた]かな",
+        "[自然:しぜん]を",
+        "[未来:みらい]まで",
+        "[守:まも]り[続:つづ]けます"
+      ],
+      "romaji": "yutakana shizenwo miraimade mamoritsuzukemasu",
+      "focus": "豊・未来",
+      "meaning": "島の自然を 大切にしよう"
+    },
+    {
+      "id": "5-x01",
+      "stage": 1,
+      "sentence": "資料を 比べる",
+      "reading": "しりょうを くらべる",
+      "ruby": [
+        "[資料:しりょう]を",
+        "[比:くら]べる"
+      ],
+      "romaji": "shiryouwo kuraberu",
+      "focus": "資料・比",
+      "meaning": "二つの資料を見比べる"
+    },
+    {
+      "id": "5-x02",
+      "stage": 1,
+      "sentence": "原因を 考える",
+      "reading": "げんいんを かんがえる",
+      "ruby": [
+        "[原因:げんいん]を",
+        "[考:かんが]える"
+      ],
+      "romaji": "geninwo kangaeru",
+      "focus": "原因・考",
+      "meaning": "なぜ起きたかを考える"
+    },
+    {
+      "id": "5-x03",
+      "stage": 2,
+      "sentence": "島の 人口と 面積を 表に まとめます",
+      "reading": "しまの じんこうと めんせきを ひょうに まとめます",
+      "ruby": [
+        "[島:しま]の",
+        "[人口:じんこう]と",
+        "[面積:めんせき]を",
+        "[表:ひょう]に",
+        "まとめます"
+      ],
+      "romaji": "shimano jinkouto mensekiwo hyouni matomemasu",
+      "focus": "人口・面積・表",
+      "meaning": "数字を分かりやすく整理する"
+    },
+    {
+      "id": "5-x04",
+      "stage": 2,
+      "sentence": "植物の 成長を 写真で 比べます",
+      "reading": "しょくぶつの せいちょうを しゃしんで くらべます",
+      "ruby": [
+        "[植物:しょくぶつ]の",
+        "[成長:せいちょう]を",
+        "[写真:しゃしん]で",
+        "[比:くら]べます"
+      ],
+      "romaji": "shokubutsuno seichouwo shashinde kurabemasu",
+      "focus": "植物・成長・写真・比",
+      "meaning": "毎日の変化を観察する"
+    },
+    {
+      "id": "5-x05",
+      "stage": 3,
+      "sentence": "複数の 意見を 整理して 結論を 出します",
+      "reading": "ふくすうの いけんを せいりして けつろんを だします",
+      "ruby": [
+        "[複数:ふくすう]の",
+        "[意見:いけん]を",
+        "[整理:せいり]して",
+        "[結論:けつろん]を",
+        "[出:だ]します"
+      ],
+      "romaji": "fukusuuno ikenwo seirishite ketsuronwo dashimasu",
+      "focus": "複数・意見・整理・結論・出",
+      "meaning": "考えをまとめて答えを出す"
+    },
+    {
+      "id": "5-x06",
+      "stage": 3,
+      "sentence": "環境を 守る 方法を 仲間と 提案する",
+      "reading": "かんきょうを まもる ほうほうを なかまと ていあんする",
+      "ruby": [
+        "[環境:かんきょう]を",
+        "[守:まも]る",
+        "[方法:ほうほう]を",
+        "[仲間:なかま]と",
+        "[提案:ていあん]する"
+      ],
+      "romaji": "kankyouwo mamoru houhouwo nakamato teiansuru",
+      "focus": "環境・守・方法・仲間・提案",
+      "meaning": "島の未来を考える"
+    },
+    {
+      "id": "5-y01",
+      "stage": 4,
+      "sentence": "資料の 特徴を 読み取る",
+      "reading": "しりょうの とくちょうを よみとる",
+      "ruby": [
+        "[資料:しりょう]の",
+        "[特徴:とくちょう]を",
+        "[読:よ]み[取:と]る"
+      ],
+      "romaji": "shiryouno tokuchouwo yomitoru",
+      "focus": "資料・特徴・読取",
+      "meaning": "資料の大事な点を探す"
+    },
+    {
+      "id": "5-y02",
+      "stage": 4,
+      "sentence": "条件に 合う 方法を 選ぶ",
+      "reading": "じょうけんに あう ほうほうを えらぶ",
+      "ruby": [
+        "[条件:じょうけん]に",
+        "[合:あ]う",
+        "[方法:ほうほう]を",
+        "[選:えら]ぶ"
+      ],
+      "romaji": "joukenni au houhouwo erabu",
+      "focus": "条件・合・方法・選",
+      "meaning": "ぴったりの方法を選ぶ"
+    },
+    {
+      "id": "5-y03",
+      "stage": 4,
+      "sentence": "結果から 原因を 考える",
+      "reading": "けっかから げんいんを かんがえる",
+      "ruby": [
+        "[結果:けっか]から",
+        "[原因:げんいん]を",
+        "[考:かんが]える"
+      ],
+      "romaji": "kekkakara geninwo kangaeru",
+      "focus": "結果・原因・考",
+      "meaning": "なぜ起きたか考える"
+    },
+    {
+      "id": "5-y04",
+      "stage": 4,
+      "sentence": "責任を 持って 行動する",
+      "reading": "せきにんを もって こうどうする",
+      "ruby": [
+        "[責任:せきにん]を",
+        "[持:も]って",
+        "[行動:こうどう]する"
+      ],
+      "romaji": "sekininwo motte koudousuru",
+      "focus": "責任・持・行動",
+      "meaning": "自分の役目を果たす"
+    },
+    {
+      "id": "5-y05",
+      "stage": 4,
+      "sentence": "河口の 様子を 観察する",
+      "reading": "かこうの ようすを かんさつする",
+      "ruby": [
+        "[河口:かこう]の",
+        "[様子:ようす]を",
+        "[観察:かんさつ]する"
+      ],
+      "romaji": "kakouno yousuwo kansatsusuru",
+      "focus": "河口・様子・観察",
+      "meaning": "川と海の境目を調べる"
+    },
+    {
+      "id": "5-y06",
+      "stage": 5,
+      "sentence": "複数の 記録を 比較して 傾向を 探します",
+      "reading": "ふくすうの きろくを ひかくして けいこうを さがします",
+      "ruby": [
+        "[複数:ふくすう]の",
+        "[記録:きろく]を",
+        "[比較:ひかく]して",
+        "[傾向:けいこう]を",
+        "[探:さが]します"
+      ],
+      "romaji": "fukusuuno kirokuwo hikakushite keikouwo sagashimasu",
+      "focus": "複数・記録・比較・傾向・探",
+      "meaning": "記録の共通点を見つける"
+    },
+    {
+      "id": "5-y07",
+      "stage": 5,
+      "sentence": "島の 産業が 発達した 理由を 調べます",
+      "reading": "しまの さんぎょうが はったつした りゆうを しらべます",
+      "ruby": [
+        "[島:しま]の",
+        "[産業:さんぎょう]が",
+        "[発達:はったつ]した",
+        "[理由:りゆう]を",
+        "[調:しら]べます"
+      ],
+      "romaji": "shimano sangyouga hattatsushita riyuuwo shirabemasu",
+      "focus": "島・産業・発達・理由・調",
+      "meaning": "島の仕事の歴史を知る"
+    },
+    {
+      "id": "5-y08",
+      "stage": 5,
+      "sentence": "限られた 水を 効率よく 分けて 使います",
+      "reading": "かぎられた みずを こうりつよく わけて つかいます",
+      "ruby": [
+        "[限:かぎ]られた",
+        "[水:みず]を",
+        "[効率:こうりつ]よく",
+        "[分:わ]けて",
+        "[使:つか]います"
+      ],
+      "romaji": "kagirareta mizuwo kouritsuyoku wakete tsukaimasu",
+      "focus": "限・水・効率・分・使",
+      "meaning": "大切な水を分け合う"
+    },
+    {
+      "id": "5-y09",
+      "stage": 5,
+      "sentence": "相手の 立場を 想像して 意見を 伝えます",
+      "reading": "あいての たちばを そうぞうして いけんを つたえます",
+      "ruby": [
+        "[相手:あいて]の",
+        "[立場:たちば]を",
+        "[想像:そうぞう]して",
+        "[意見:いけん]を",
+        "[伝:つた]えます"
+      ],
+      "romaji": "aiteno tachibawo souzoushite ikenwo tsutaemasu",
+      "focus": "相手・立場・想像・意見・伝",
+      "meaning": "伝わる話し方を考える"
+    },
+    {
+      "id": "5-y10",
+      "stage": 6,
+      "sentence": "環境への 影響を 調べて 改善案を 発表します",
+      "reading": "かんきょうへの えいきょうを しらべて かいぜんあんを はっぴょうします",
+      "ruby": [
+        "[環境:かんきょう]への",
+        "[影響:えいきょう]を",
+        "[調:しら]べて",
+        "[改善案:かいぜんあん]を",
+        "[発表:はっぴょう]します"
+      ],
+      "romaji": "kankyouheno eikyouwo shirabete kaizenanwo happyoushimasu",
+      "focus": "環境・影響・調・改善案・発表",
+      "meaning": "島を守る案を伝える"
+    },
+    {
+      "id": "5-y11",
+      "stage": 6,
+      "sentence": "予想と 結果の 違いから 新しい 疑問が 生まれます",
+      "reading": "よそうと けっかの ちがいから あたらしい ぎもんが うまれます",
+      "ruby": [
+        "[予想:よそう]と",
+        "[結果:けっか]の",
+        "[違:ちが]いから",
+        "[新:あたら]しい",
+        "[疑問:ぎもん]が",
+        "[生:う]まれます"
+      ],
+      "romaji": "yosouto kekkano chigaikara atarashii gimonga umaremasu",
+      "focus": "予想・結果・違・新・疑問・生",
+      "meaning": "次の調査へつなげる"
+    },
+    {
+      "id": "5-y12",
+      "stage": 6,
+      "sentence": "伝統を 受け継ぐ 人の 思いを 文章に まとめます",
+      "reading": "でんとうを うけつぐ ひとの おもいを ぶんしょうに まとめます",
+      "ruby": [
+        "[伝統:でんとう]を",
+        "[受:う]け[継:つ]ぐ",
+        "[人:ひと]の",
+        "[思:おも]いを",
+        "[文章:ぶんしょう]に",
+        "まとめます"
+      ],
+      "romaji": "dentouwo uketsugu hitono omoiwo bunshouni matomemasu",
+      "focus": "伝統・受継・人・思・文章",
+      "meaning": "大切な思いを記録する"
+    },
+    {
+      "id": "5-y13",
+      "stage": 6,
+      "sentence": "仲間と 議論して 最も 良い 計画を 決めます",
+      "reading": "なかまと ぎろんして もっとも よい けいかくを きめます",
+      "ruby": [
+        "[仲間:なかま]と",
+        "[議論:ぎろん]して",
+        "[最:もっと]も",
+        "[良:よ]い",
+        "[計画:けいかく]を",
+        "[決:き]めます"
+      ],
+      "romaji": "nakamato gironshite mottomo yoi keikakuwo kimemasu",
+      "focus": "仲間・議論・最・良・計画・決",
+      "meaning": "みんなで作戦を決める"
+    },
+    {
+      "id": "5-y14",
+      "stage": 6,
+      "sentence": "豊かな 自然と 暮らしが 続く 未来を 描きます",
+      "reading": "ゆたかな しぜんと くらしが つづく みらいを えがきます",
+      "ruby": [
+        "[豊:ゆた]かな",
+        "[自然:しぜん]と",
+        "[暮:く]らしが",
+        "[続:つづ]く",
+        "[未来:みらい]を",
+        "[描:えが]きます"
+      ],
+      "romaji": "yutakana shizento kurashiga tsuzuku miraiwo egakimasu",
+      "focus": "豊・自然・暮・続・未来・描",
+      "meaning": "島の未来を思い描く"
+    }
+  ],
+  "6": [
+    {
+      "id": "6-001",
+      "stage": 1,
+      "sentence": "宇宙を 想像する",
+      "reading": "うちゅうを そうぞうする",
+      "ruby": [
+        "[宇宙:うちゅう]を",
+        "[想像:そうぞう]する"
+      ],
+      "romaji": "uchuuwo souzousuru",
+      "focus": "宇宙・想像",
+      "meaning": "遠い星へ 思いを広げる"
+    },
+    {
+      "id": "6-002",
+      "stage": 1,
+      "sentence": "山頂から 展望を 楽しむ",
+      "reading": "さんちょうから てんぼうを たのしむ",
+      "ruby": [
+        "[山頂:さんちょう]から",
+        "[展望:てんぼう]を",
+        "[楽:たの]しむ"
+      ],
+      "romaji": "sanchoukara tenbouwo tanoshimu",
+      "focus": "頂・展望",
+      "meaning": "山の上から 島を見渡す"
+    },
+    {
+      "id": "6-003",
+      "stage": 1,
+      "sentence": "疑問の 答えを 探す",
+      "reading": "ぎもんの こたえを さがす",
+      "ruby": [
+        "[疑問:ぎもん]の",
+        "[答:こた]えを",
+        "[探:さが]す"
+      ],
+      "romaji": "gimonno kotaewo sagasu",
+      "focus": "疑問",
+      "meaning": "なぜだろうを 調べよう"
+    },
+    {
+      "id": "6-004",
+      "stage": 2,
+      "sentence": "地域の 歴史を 資料で 調べます",
+      "reading": "ちいきの れきしを しりょうで しらべます",
+      "ruby": [
+        "[地域:ちいき]の",
+        "[歴史:れきし]を",
+        "[資料:しりょう]で",
+        "[調:しら]べます"
+      ],
+      "romaji": "chiikino rekishiwo shiryoude shirabemasu",
+      "focus": "地域・資料",
+      "meaning": "島の昔を 調査しよう"
+    },
+    {
+      "id": "6-005",
+      "stage": 2,
+      "sentence": "海岸の 様子を 写真に 記録した",
+      "reading": "かいがんの ようすを しゃしんに きろくした",
+      "ruby": [
+        "[海岸:かいがん]の",
+        "[様子:ようす]を",
+        "[写真:しゃしん]に",
+        "[記録:きろく]した"
+      ],
+      "romaji": "kaiganno yousuwo shashinni kirokushita",
+      "focus": "岸・様子",
+      "meaning": "海岸の変化を 記録する"
+    },
+    {
+      "id": "6-006",
+      "stage": 2,
+      "sentence": "仲間の 意見を 尊重して 話し合う",
+      "reading": "なかまの いけんを そんちょうして はなしあう",
+      "ruby": [
+        "[仲間:なかま]の",
+        "[意見:いけん]を",
+        "[尊重:そんちょう]して",
+        "[話:はな]し[合:あ]う"
+      ],
+      "romaji": "nakamano ikenwo sonchoushite hanashiau",
+      "focus": "尊重",
+      "meaning": "相手の考えも 大切にする"
+    },
+    {
+      "id": "6-007",
+      "stage": 3,
+      "sentence": "困難な 道でも 仲間と 協力すれば 前へ 進めます",
+      "reading": "こんなんな みちでも なかまと きょうりょくすれば まえへ すすめます",
+      "ruby": [
+        "[困難:こんなん]な",
+        "[道:みち]でも",
+        "[仲間:なかま]と",
+        "[協力:きょうりょく]すれば",
+        "[前:まえ]へ",
+        "[進:すす]めます"
+      ],
+      "romaji": "konnanna michidemo nakamato kyouryokusureba maehe susumemasu",
+      "focus": "困難",
+      "meaning": "力を合わせれば 乗りこえられる"
+    },
+    {
+      "id": "6-008",
+      "stage": 3,
+      "sentence": "貴重な 自然を 次の 世代へ 受け継ぎます",
+      "reading": "きちょうな しぜんを つぎの せだいへ うけつぎます",
+      "ruby": [
+        "[貴重:きちょう]な",
+        "[自然:しぜん]を",
+        "[次:つぎ]の",
+        "[世代:せだい]へ",
+        "[受:う]け[継:つ]ぎます"
+      ],
+      "romaji": "kichouna shizenwo tsugino sedaihe uketsugimasu",
+      "focus": "貴重・世代",
+      "meaning": "大切な島を 未来へつなぐ"
+    },
+    {
+      "id": "6-x01",
+      "stage": 1,
+      "sentence": "仮説を 立てる",
+      "reading": "かせつを たてる",
+      "ruby": [
+        "[仮説:かせつ]を",
+        "[立:た]てる"
+      ],
+      "romaji": "kasetsuwo tateru",
+      "focus": "仮説・立",
+      "meaning": "予想を立てて調べ始める"
+    },
+    {
+      "id": "6-x02",
+      "stage": 1,
+      "sentence": "情報を 分析する",
+      "reading": "じょうほうを ぶんせきする",
+      "ruby": [
+        "[情報:じょうほう]を",
+        "[分析:ぶんせき]する"
+      ],
+      "romaji": "jouhouwo bunsekisuru",
+      "focus": "情報・分析",
+      "meaning": "集めた情報から特徴を探す"
+    },
+    {
+      "id": "6-x03",
+      "stage": 2,
+      "sentence": "複数の 資料から 共通点を 見つけます",
+      "reading": "ふくすうの しりょうから きょうつうてんを みつけます",
+      "ruby": [
+        "[複数:ふくすう]の",
+        "[資料:しりょう]から",
+        "[共通点:きょうつうてん]を",
+        "[見:み]つけます"
+      ],
+      "romaji": "fukusuuno shiryoukara kyoutsuutenwo mitsukemasu",
+      "focus": "複数・資料・共通点・見",
+      "meaning": "資料の似ている所を探す"
+    },
+    {
+      "id": "6-x04",
+      "stage": 2,
+      "sentence": "実験の 結果を 図と 表で 説明します",
+      "reading": "じっけんの けっかを ずと ひょうで せつめいします",
+      "ruby": [
+        "[実験:じっけん]の",
+        "[結果:けっか]を",
+        "[図:ず]と",
+        "[表:ひょう]で",
+        "[説明:せつめい]します"
+      ],
+      "romaji": "jikkenno kekkawo zuto hyoude setsumeishimasu",
+      "focus": "実験・結果・図・表・説明",
+      "meaning": "結果を分かりやすく伝える"
+    },
+    {
+      "id": "6-x05",
+      "stage": 3,
+      "sentence": "地域の 課題を 調査して 解決策を 提案する",
+      "reading": "ちいきの かだいを ちょうさして かいけつさくを ていあんする",
+      "ruby": [
+        "[地域:ちいき]の",
+        "[課題:かだい]を",
+        "[調査:ちょうさ]して",
+        "[解決策:かいけつさく]を",
+        "[提案:ていあん]する"
+      ],
+      "romaji": "chiikino kadaiwo chousashite kaiketsusakuwo teiansuru",
+      "focus": "地域・課題・調査・解決策・提案",
+      "meaning": "地域をより良くする方法を考える"
+    },
+    {
+      "id": "6-x06",
+      "stage": 3,
+      "sentence": "未来の 社会を 想像して 自分の 考えを 伝える",
+      "reading": "みらいの しゃかいを そうぞうして じぶんの かんがえを つたえる",
+      "ruby": [
+        "[未来:みらい]の",
+        "[社会:しゃかい]を",
+        "[想像:そうぞう]して",
+        "[自分:じぶん]の",
+        "[考:かんが]えを",
+        "[伝:つた]える"
+      ],
+      "romaji": "miraino shakaiwo souzoushite jibunno kangaewo tsutaeru",
+      "focus": "未来・社会・想像・自分・考・伝",
+      "meaning": "未来への思いを言葉にする"
+    },
+    {
+      "id": "6-y01",
+      "stage": 4,
+      "sentence": "根拠を 示して 説明する",
+      "reading": "こんきょを しめして せつめいする",
+      "ruby": [
+        "[根拠:こんきょ]を",
+        "[示:しめ]して",
+        "[説明:せつめい]する"
+      ],
+      "romaji": "konkyowo shimeshite setsumeisuru",
+      "focus": "根拠・示・説明",
+      "meaning": "理由が伝わる説明をする"
+    },
+    {
+      "id": "6-y02",
+      "stage": 4,
+      "sentence": "異なる 視点から 考える",
+      "reading": "ことなる してんから かんがえる",
+      "ruby": [
+        "[異:こと]なる",
+        "[視点:してん]から",
+        "[考:かんが]える"
+      ],
+      "romaji": "kotonaru shitenkara kangaeru",
+      "focus": "異・視点・考",
+      "meaning": "見方を変えて考える"
+    },
+    {
+      "id": "6-y03",
+      "stage": 4,
+      "sentence": "課題の 優先順位を 決める",
+      "reading": "かだいの ゆうせんじゅんいを きめる",
+      "ruby": [
+        "[課題:かだい]の",
+        "[優先順位:ゆうせんじゅんい]を",
+        "[決:き]める"
+      ],
+      "romaji": "kadaino yuusenjunniwo kimeru",
+      "focus": "課題・優先順位・決",
+      "meaning": "大切な課題から進める"
+    },
+    {
+      "id": "6-y04",
+      "stage": 4,
+      "sentence": "貴重な 資料を 保存する",
+      "reading": "きちょうな しりょうを ほぞんする",
+      "ruby": [
+        "[貴重:きちょう]な",
+        "[資料:しりょう]を",
+        "[保存:ほぞん]する"
+      ],
+      "romaji": "kichouna shiryouwo hozonsuru",
+      "focus": "貴重・資料・保存",
+      "meaning": "島の記録を未来へ残す"
+    },
+    {
+      "id": "6-y05",
+      "stage": 4,
+      "sentence": "著者の 主張を 要約する",
+      "reading": "ちょしゃの しゅちょうを ようやくする",
+      "ruby": [
+        "[著者:ちょしゃ]の",
+        "[主張:しゅちょう]を",
+        "[要約:ようやく]する"
+      ],
+      "romaji": "choshano shuchouwo youyakusuru",
+      "focus": "著者・主張・要約",
+      "meaning": "文章の中心をまとめる"
+    },
+    {
+      "id": "6-y06",
+      "stage": 5,
+      "sentence": "調査の 目的に 合わせて 適切な 方法を 選びます",
+      "reading": "ちょうさの もくてきに あわせて てきせつな ほうほうを えらびます",
+      "ruby": [
+        "[調査:ちょうさ]の",
+        "[目的:もくてき]に",
+        "[合:あ]わせて",
+        "[適切:てきせつ]な",
+        "[方法:ほうほう]を",
+        "[選:えら]びます"
+      ],
+      "romaji": "chousano mokutekini awasete tekisetsuna houhouwo erabimasu",
+      "focus": "調査・目的・合・適切・方法・選",
+      "meaning": "目的に合う調べ方を選ぶ"
+    },
+    {
+      "id": "6-y07",
+      "stage": 5,
+      "sentence": "歴史的な 背景を 知ると 出来事が 深く 分かります",
+      "reading": "れきしてきな はいけいを しると できごとが ふかく わかります",
+      "ruby": [
+        "[歴史的:れきしてき]な",
+        "[背景:はいけい]を",
+        "[知:し]ると",
+        "[出来事:できごと]が",
+        "[深:ふか]く",
+        "[分:わ]かります"
+      ],
+      "romaji": "rekishitekina haikeiwo shiruto dekigotoga fukaku wakarimasu",
+      "focus": "歴史的・背景・知・出来事・深・分",
+      "meaning": "歴史をつなげて考える"
+    },
+    {
+      "id": "6-y08",
+      "stage": 5,
+      "sentence": "互いの 意見を 尊重して 合意を 目指します",
+      "reading": "たがいの いけんを そんちょうして ごういを めざします",
+      "ruby": [
+        "[互:たが]いの",
+        "[意見:いけん]を",
+        "[尊重:そんちょう]して",
+        "[合意:ごうい]を",
+        "[目指:めざ]します"
+      ],
+      "romaji": "tagaino ikenwo sonchoushite gouiwo mezashimasu",
+      "focus": "互・意見・尊重・合意・目指",
+      "meaning": "納得できる答えを探す"
+    },
+    {
+      "id": "6-y09",
+      "stage": 5,
+      "sentence": "観測した 数値を グラフに 表して 分析します",
+      "reading": "かんそくした すうちを ぐらふに あらわして ぶんせきします",
+      "ruby": [
+        "[観測:かんそく]した",
+        "[数値:すうち]を",
+        "グラフに",
+        "[表:あらわ]して",
+        "[分析:ぶんせき]します"
+      ],
+      "romaji": "kansokushita suuchiwo gurafuni arawashite bunsekishimasu",
+      "focus": "観測・数値・表・分析",
+      "meaning": "変化を見える形にする"
+    },
+    {
+      "id": "6-y10",
+      "stage": 6,
+      "sentence": "地域の 現状を 多角的に 調べて 解決策を 提案します",
+      "reading": "ちいきの げんじょうを たかくてきに しらべて かいけつさくを ていあんします",
+      "ruby": [
+        "[地域:ちいき]の",
+        "[現状:げんじょう]を",
+        "[多角的:たかくてき]に",
+        "[調:しら]べて",
+        "[解決策:かいけつさく]を",
+        "[提案:ていあん]します"
+      ],
+      "romaji": "chiikino genjouwo takakutekini shirabete kaiketsusakuwo teianshimasu",
+      "focus": "地域・現状・多角的・調・解決策・提案",
+      "meaning": "地域の未来を考える"
+    },
+    {
+      "id": "6-y11",
+      "stage": 6,
+      "sentence": "限られた 情報から 仮説を 立てて 検証します",
+      "reading": "かぎられた じょうほうから かせつを たてて けんしょうします",
+      "ruby": [
+        "[限:かぎ]られた",
+        "[情報:じょうほう]から",
+        "[仮説:かせつ]を",
+        "[立:た]てて",
+        "[検証:けんしょう]します"
+      ],
+      "romaji": "kagirareta jouhoukara kasetsuwo tatete kenshoushimasu",
+      "focus": "限・情報・仮説・立・検証",
+      "meaning": "予想を確かめる冒険"
+    },
+    {
+      "id": "6-y12",
+      "stage": 6,
+      "sentence": "経験から 学んだ ことを 次の 世代へ 伝えます",
+      "reading": "けいけんから まなんだ ことを つぎの せだいへ つたえます",
+      "ruby": [
+        "[経験:けいけん]から",
+        "[学:まな]んだ",
+        "ことを",
+        "[次:つぎ]の",
+        "[世代:せだい]へ",
+        "[伝:つた]えます"
+      ],
+      "romaji": "keikenkara mananda kotowo tsugino sedaihe tsutaemasu",
+      "focus": "経験・学・次・世代・伝",
+      "meaning": "冒険の知恵を受け継ぐ"
+    },
+    {
+      "id": "6-y13",
+      "stage": 6,
+      "sentence": "対話を 重ねることで 新しい 価値が 生まれます",
+      "reading": "たいわを かさねることで あたらしい かちが うまれます",
+      "ruby": [
+        "[対話:たいわ]を",
+        "[重:かさ]ねることで",
+        "[新:あたら]しい",
+        "[価値:かち]が",
+        "[生:う]まれます"
+      ],
+      "romaji": "taiwawo kasanerukotode atarashii kachiga umaremasu",
+      "focus": "対話・重・新・価値・生",
+      "meaning": "話し合いから答えを作る"
+    },
+    {
+      "id": "6-y14",
+      "stage": 6,
+      "sentence": "世界と 島の 未来を 結び付けて 自分の 役割を 考えます",
+      "reading": "せかいと しまの みらいを むすびつけて じぶんの やくわりを かんがえます",
+      "ruby": [
+        "[世界:せかい]と",
+        "[島:しま]の",
+        "[未来:みらい]を",
+        "[結:むす]び[付:つ]けて",
+        "[自分:じぶん]の",
+        "[役割:やくわり]を",
+        "[考:かんが]えます"
+      ],
+      "romaji": "sekaito shimano miraiwo musubitsukete jibunno yakuwariwo kangaemasu",
+      "focus": "世界・島・未来・結付・自分・役割・考",
+      "meaning": "冒険の先の未来を考える"
+    }
+  ]
+}
