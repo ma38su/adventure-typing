@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { buildRomajiCandidates } from './romajiVariants'
-import { FINGER_KEYS, FINGER_KEYBOARD_ROWS, getFingerGuide, getNextKanaCourse, HOME_KEYS, KANA_COURSES, type KanaCourse } from './kanaPractice'
+import { FINGER_KEYS, getFingerGuide, getNextKanaCourse, HOME_KEYS, KANA_COURSES, type KanaCourse } from './kanaPractice'
 import { useConfirmShortcut } from './useConfirmShortcut'
+import { KEYBOARD_LAYOUTS, readKeyboardLayout, resolvePracticeKey, saveKeyboardLayout, type KeyboardLayoutId } from './keyboardLayouts'
 
 type Result = 'idle' | 'wrong' | 'correct'
 
@@ -13,11 +14,14 @@ function RubyLabel({ text }: { text: keyof typeof reading }) {
   return <ruby>{text}<rt>{reading[text]}</rt></ruby>
 }
 
-function FingerKeyboard({ nextKeys = [], overview = false }: { nextKeys?: string[]; overview?: boolean }) {
-  return <div className={`finger-keyboard ${overview ? 'overview' : ''}`} aria-label={overview ? 'キーと担当する指の一覧' : '指使いキーボード'}>{FINGER_KEYBOARD_ROWS.map((row, rowIndex) => <div key={row} className="finger-keyboard-row" data-row={rowIndex}>{[...row].map((key) => {
-    const guide = getFingerGuide(key)
-    const label = guide ? `${key.toUpperCase()}キー、${handName[guide.hand]}の${guide.finger}` : `${key.toUpperCase()}キー`
-    return <kbd key={key} aria-label={`${label}${key === 'f' || key === 'j' ? '、ホームポジションの突起' : ''}`} data-hand={guide?.hand} className={`${nextKeys.includes(key) ? 'next' : ''} ${HOME_KEYS.includes(key) ? 'home' : ''} ${key === 'f' || key === 'j' ? 'tactile' : ''}`} style={{ '--key-color': guide?.color } as React.CSSProperties}>{key.toUpperCase()}{HOME_KEYS.includes(key) && <i aria-hidden="true" />}</kbd>
+function FingerKeyboard({ layoutId, nextKeys = [], overview = false }: { layoutId: KeyboardLayoutId; nextKeys?: string[]; overview?: boolean }) {
+  const layout = KEYBOARD_LAYOUTS[layoutId]
+  return <div className={`finger-keyboard ${overview ? 'overview' : ''}`} style={{ '--keyboard-columns': layout.maxKeys } as React.CSSProperties} aria-label={`${layout.name}の${overview ? 'キーと担当する指の一覧' : '指使いキーボード'}`}>{layout.rows.map((row, rowIndex) => <div key={`${layout.id}-${rowIndex}`} className="finger-keyboard-row" data-row={rowIndex}>{row.map((key) => {
+    const guide = getFingerGuide(key.fingerKey)
+    const label = guide ? `${key.label}キー、${handName[guide.hand]}の${guide.finger}` : `${key.label}キー`
+    const isHome = HOME_KEYS.includes(key.fingerKey)
+    const isTactile = key.code === 'KeyF' || key.code === 'KeyJ'
+    return <kbd key={key.code} aria-label={`${label}${isTactile ? '、ホームポジションの突起' : ''}`} data-hand={guide?.hand} className={`${key.input && nextKeys.includes(key.input) ? 'next' : ''} ${isHome ? 'home' : ''} ${isTactile ? 'tactile' : ''}`} style={{ '--key-color': guide?.color } as React.CSSProperties}>{key.label}{isHome && <i aria-hidden="true" />}</kbd>
   })}</div>)}</div>
 }
 
@@ -35,6 +39,7 @@ export function KanaPracticePage({ profileId, tutorial, onTutorialComplete, onBa
   const [result, setResult] = useState<Result>('idle')
   const [mistakes, setMistakes] = useState(0)
   const [finished, setFinished] = useState(false)
+  const [keyboardLayout, setKeyboardLayout] = useState<KeyboardLayoutId>(() => readKeyboardLayout(profileId))
   const inputRef = useRef<HTMLInputElement>(null)
   const timersRef = useRef<number[]>([])
   const item = course?.items[index]
@@ -45,6 +50,9 @@ export function KanaPracticePage({ profileId, tutorial, onTutorialComplete, onBa
   const nextKeys = [...new Set(matchingCandidates.map((candidate) => candidate.target[typed.length]).filter(Boolean))]
   const primaryNextKey = nextKeys[0] ?? item?.romaji[displayProgress] ?? ''
   const fingerGuide = getFingerGuide(primaryNextKey)
+  const requiredCourses = KANA_COURSES.filter((entry) => !entry.optional)
+  const optionalCourses = KANA_COURSES.filter((entry) => entry.optional)
+  const requiredRemaining = requiredCourses.filter((entry) => !completedIds.includes(entry.id)).length
 
   useEffect(() => { inputRef.current?.focus({ preventScroll: true }) }, [course, index, finished])
   useEffect(() => { try { localStorage.setItem(storageKey, JSON.stringify(completedIds)) } catch { /* 文章練習は保存失敗でも続けられる */ } }, [completedIds, storageKey])
@@ -60,6 +68,7 @@ export function KanaPracticePage({ profileId, tutorial, onTutorialComplete, onBa
     clearTimers()
     setCourse(selected); setIndex(0); setTyped(''); setResult('idle'); setMistakes(0); setFinished(false)
   }
+  const chooseKeyboardLayout = (layout: KeyboardLayoutId) => { setKeyboardLayout(layout); saveKeyboardLayout(profileId, layout) }
   const nextCourse = course ? getNextKanaCourse(course.id) : undefined
   const continueAfterFinish = () => {
     if (tutorial && course?.unlocksAdventure) onStartAdventure()
@@ -67,6 +76,7 @@ export function KanaPracticePage({ profileId, tutorial, onTutorialComplete, onBa
     else { clearTimers(); setCourse(null) }
   }
   useConfirmShortcut(finished, continueAfterFinish)
+  useConfirmShortcut(!course && requiredRemaining === 0, onStartAdventure)
 
   const enterKey = (key: string) => {
     if (!course || !item || finished || result === 'correct' || !/^[a-z0-9,./-]$/.test(key)) return
@@ -94,9 +104,10 @@ export function KanaPracticePage({ profileId, tutorial, onTutorialComplete, onBa
   if (!course) return <main className="kana-page kana-course-page">
     <header className="catalog-topbar"><button className="catalog-back" onClick={onBack}>‹ もどる</button><div className="brand"><span className="brand-mark">あ</span><div><strong>タイピング基礎ステージ</strong><small>挑戦するルートを選ぼう</small></div></div><div className="catalog-overall"><b>{completedIds.length}</b> / {KANA_COURSES.length} ルート</div></header>
     <section className="kana-course-hero"><span>⌨</span><div><small>{tutorial ? 'はじめての ぼうけん準備！' : '正しい指使いを身につけよう'}</small><h1>指の場所から、タイピングを覚えよう</h1><p>{tutorial ? '最初の「ホームポジション」をクリアすると、そのまま本編の冒険へ進めるよ。' : '五十音順ではなく、同じ指で押すキーや左右の手の動きごとに練習するよ。速さより正しい指を大切にしよう。'}</p></div></section>
-    <section className="finger-map-intro" aria-labelledby="finger-map-title"><div className="finger-map-copy"><small>はじめに見てみよう</small><h2 id="finger-map-title">どの指で押す？</h2><p><strong>FとJの出っぱり</strong>に<RubyLabel text="人差し指" />を置こう。<br /><b>ASDF ／ JKL…</b>を基準に、押したら元の場所へ戻るよ。</p></div><div className="finger-map-board"><FingerKeyboard overview /><div className="finger-legend" aria-label="指の色分け">{fingerLegend.map((guide) => <span key={`${guide.hand}-${guide.finger}`}><i style={{ background: guide.color }} aria-hidden="true" /><b><RubyLabel text={handName[guide.hand]} /></b> <RubyLabel text={guide.finger} /></span>)}</div></div></section>
-    <section className="kana-course-grid">{KANA_COURSES.map((entry, courseIndex) => <button key={entry.id} className={entry.optional ? 'optional' : ''} style={{ '--course-color': entry.color } as React.CSSProperties} onClick={() => startCourse(entry)}><span>{entry.icon}</span><small>{entry.optional ? 'オプションルート' : `ルート ${courseIndex + 1}`}</small><h2>{entry.name}</h2><p>{entry.subtitle}</p><b>{entry.focus}</b><em>{completedIds.includes(entry.id) ? 'クリア ✓' : 'すすむ　▶'}</em></button>)}</section>
-    <section className="kana-before-sentences"><span>🌉</span><div><b>この島をれんしゅうしたら…</b><p>1年生の短い文章へ進んで、覚えたローマ字を使ってみよう！</p></div></section>
+    <section className="finger-map-intro" aria-labelledby="finger-map-title"><div className="finger-map-copy"><small>はじめに見てみよう</small><h2 id="finger-map-title">どの指で押す？</h2><p><strong>FとJの出っぱり</strong>に<RubyLabel text="人差し指" />を置こう。<br /><b>ASDF ／ JKL…</b>を基準に、押したら元の場所へ戻るよ。</p><div className="keyboard-layout-setting"><span>キーボード配列</span><div role="group" aria-label="キーボード配列">{(['jis', 'us'] as const).map((layout) => <button key={layout} type="button" aria-pressed={keyboardLayout === layout} onClick={() => chooseKeyboardLayout(layout)}>{KEYBOARD_LAYOUTS[layout].name}</button>)}</div><small>接続キーボードの刻印に合わせて選択。日本語入力の切り替えとは別です。{keyboardLayout === 'jis' && <><br />「^・¥・@・[・:・]・ろ」は位置の案内だけで、今のコースでは出題しません。</>}</small></div></div><div className="finger-map-board"><FingerKeyboard layoutId={keyboardLayout} overview /><div className="finger-legend" aria-label="指の色分け">{fingerLegend.map((guide) => <span key={`${guide.hand}-${guide.finger}`}><i style={{ background: guide.color }} aria-hidden="true" /><b><RubyLabel text={handName[guide.hand]} /></b> <RubyLabel text={guide.finger} /></span>)}</div></div></section>
+    <section className="kana-course-grid">{requiredCourses.map((entry, courseIndex) => <button key={entry.id} style={{ '--course-color': entry.color } as React.CSSProperties} onClick={() => startCourse(entry)}><span>{entry.icon}</span><small>ルート {courseIndex + 1}</small><h2>{entry.name}</h2><p>{entry.subtitle}</p><b>{entry.focus}</b><em>{completedIds.includes(entry.id) ? 'クリア ✓' : 'すすむ　▶'}</em></button>)}</section>
+    <section className={`kana-adventure-ready ${requiredRemaining === 0 ? 'ready' : ''}`} aria-label="次のステージへの入口"><span>🌉</span><div><small>{requiredRemaining === 0 ? '準備完了！' : `あと ${requiredRemaining} コース`}</small><h2>次のステージへ進む</h2><p>覚えたローマ字を使って、1年生の短い文章に挑戦しよう。</p></div><button type="button" disabled={requiredRemaining > 0} aria-keyshortcuts="Space Enter" onClick={onStartAdventure}>{requiredRemaining === 0 ? '冒険へ進む　▶' : `あと ${requiredRemaining} コース`}<small>{requiredRemaining === 0 ? 'Space / Enterでも進める' : '通常ルートをクリアしよう'}</small></button></section>
+    <section className="kana-optional-routes"><div className="kana-optional-heading"><span>＋</span><div><h2>もっと練習したい人向け</h2><p>数字や記号は、いつでも好きなときに練習できます。</p></div></div><div className="kana-course-grid">{optionalCourses.map((entry) => <button key={entry.id} className="optional" style={{ '--course-color': entry.color } as React.CSSProperties} onClick={() => startCourse(entry)}><span>{entry.icon}</span><small>オプションルート</small><h2>{entry.name}</h2><p>{entry.subtitle}</p><b>{entry.focus}</b><em>{completedIds.includes(entry.id) ? 'クリア ✓' : 'すすむ　▶'}</em></button>)}</div></section>
   </main>
 
   return <main className={`kana-page kana-play-page ${result}`} onClick={() => inputRef.current?.focus()}>
@@ -107,12 +118,12 @@ export function KanaPracticePage({ profileId, tutorial, onTutorialComplete, onBa
       <div className="kana-target">{item.kana}</div>
       <div className="kana-romaji" aria-label={`入力するローマ字 ${item.romaji}`}>{[...shownRomaji].map((letter, letterIndex) => <span key={`${letter}-${letterIndex}`} className={letterIndex < typed.length ? 'done' : letterIndex === typed.length ? 'current' : ''}>{letter}</span>)}</div>
       {fingerGuide && <div className="finger-guidance" style={{ '--finger-color': fingerGuide.color } as React.CSSProperties}><div className={`guide-hand ${fingerGuide.hand}`}><span><RubyLabel text={handName[fingerGuide.hand]} /></span><b><RubyLabel text={fingerGuide.finger} /></b></div><p>つぎは <kbd>{primaryNextKey.toUpperCase()}</kbd> を <strong><RubyLabel text={handName[fingerGuide.hand]} />の<RubyLabel text={fingerGuide.finger} /></strong> で押そう</p></div>}
-      <FingerKeyboard nextKeys={nextKeys} />
+      <FingerKeyboard layoutId={keyboardLayout} nextKeys={nextKeys} />
       <div className="kana-message">{result === 'wrong' ? 'ちがうキーだよ。もう一度！' : result === 'correct' ? 'せいかい！' : typed ? `「${typed}」まで入力したよ` : 'キーボードで入力してね'}</div>
       <div className="kana-tip">💡 {item.instruction ?? course.focus}</div>
       <input ref={inputRef} className="kana-hidden-input" inputMode="text" autoCapitalize="none" autoCorrect="off" onKeyDown={(event) => {
-        if (event.code.startsWith('Key')) { event.preventDefault(); enterKey(event.code.slice(3).toLowerCase()) }
-        else if (/^[0-9,./-]$/.test(event.key)) { event.preventDefault(); enterKey(event.key) }
+        const practiceKey = resolvePracticeKey(event.code, event.key)
+        if (practiceKey) { event.preventDefault(); enterKey(practiceKey) }
         else if (event.key === 'Backspace') { event.preventDefault(); setTyped((value) => value.slice(0, -1)); setResult('idle') }
       }} />
     </section>}
