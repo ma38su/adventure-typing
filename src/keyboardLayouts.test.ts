@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { getFingerGuide } from './kanaPractice'
-import { KEYBOARD_LAYOUTS, readKeyboardLayout, resolvePracticeKey, saveKeyboardLayout } from './keyboardLayouts'
+import { detectKeyboardLayout, KEYBOARD_LAYOUTS, readKeyboardLayout, resolvePracticeKey, saveKeyboardLayout } from './keyboardLayouts'
 
 describe('keyboard layouts', () => {
   it('represents the distinct right-side keys of JIS and US keyboards', () => {
@@ -9,13 +9,16 @@ describe('keyboard layouts', () => {
   })
 
   it('uses physical codes for every practiced letter, digit, and symbol', () => {
-    expect(resolvePracticeKey('KeyA', 'a')).toBe('a')
-    expect(resolvePracticeKey('Digit8', '8')).toBe('8')
-    expect(resolvePracticeKey('Minus', '-')).toBe('-')
-    expect(resolvePracticeKey('Comma', ',')).toBe(',')
-    expect(resolvePracticeKey('Period', '.')).toBe('.')
-    expect(resolvePracticeKey('Slash', '/')).toBe('/')
+    expect(resolvePracticeKey('KeyA', 'a')).toEqual({ key: 'a', physicalMatch: true })
+    expect(resolvePracticeKey('Digit8', '8')).toEqual({ key: '8', physicalMatch: true })
+    for (const layout of ['jis', 'us'] as const) {
+      expect(resolvePracticeKey('Minus', '-', layout)).toEqual({ key: '-', physicalMatch: true })
+      expect(resolvePracticeKey('Comma', ',', layout)).toEqual({ key: ',', physicalMatch: true })
+      expect(resolvePracticeKey('Period', '.', layout)).toEqual({ key: '.', physicalMatch: true })
+      expect(resolvePracticeKey('Slash', '/', layout)).toEqual({ key: '/', physicalMatch: true })
+    }
     expect(resolvePracticeKey('Slash', '?')).toBeUndefined()
+    expect(resolvePracticeKey('IntlRo', '/', 'us')).toEqual({ key: '/', physicalMatch: false })
   })
 
   it('assigns every key shown in either layout to a finger', () => {
@@ -31,12 +34,30 @@ describe('keyboard layouts', () => {
     }
   })
 
-  it('defaults old profiles to JIS and stores an explicit US selection', () => {
+  it('defaults old profiles to JIS and stores the selection for the device', () => {
     const values = new Map<string, string>()
     vi.stubGlobal('localStorage', { getItem: (name: string) => values.get(name) ?? null, setItem: (name: string, value: string) => values.set(name, value) })
     expect(readKeyboardLayout('old')).toBe('jis')
-    saveKeyboardLayout('old', 'us')
-    expect(readKeyboardLayout('old')).toBe('us')
+    saveKeyboardLayout('us')
+    expect(readKeyboardLayout('another-profile')).toBe('us')
     vi.unstubAllGlobals()
+  })
+
+  it('migrates a legacy profile layout once without overriding a device setting', () => {
+    const values = new Map<string, string>([['kotobajima-profile:legacy:keyboard-layout', 'us']])
+    vi.stubGlobal('localStorage', { getItem: (name: string) => values.get(name) ?? null, setItem: (name: string, value: string) => values.set(name, value) })
+    expect(readKeyboardLayout('legacy')).toBe('us')
+    expect(values.get('kotobajima:keyboard-layout')).toBe('us')
+    values.set('kotobajima-profile:other:keyboard-layout', 'jis')
+    expect(readKeyboardLayout('other')).toBe('us')
+    vi.unstubAllGlobals()
+  })
+
+  it('calibrates US with the unshifted key immediately right of P', () => {
+    expect(detectKeyboardLayout({ key: '[', code: 'BracketLeft', shiftKey: false, repeat: false, isComposing: false })).toBe('us')
+    expect(detectKeyboardLayout({ key: '@', code: 'BracketLeft', shiftKey: false, repeat: false, isComposing: false })).toBe('jis')
+    expect(detectKeyboardLayout({ key: '{', code: 'BracketLeft', shiftKey: true, repeat: false, isComposing: false })).toBeUndefined()
+    expect(detectKeyboardLayout({ key: '[', code: 'BracketLeft', shiftKey: false, repeat: true, isComposing: false })).toBeUndefined()
+    expect(detectKeyboardLayout({ key: '[', code: 'BracketLeft', shiftKey: false, repeat: false, isComposing: true })).toBeUndefined()
   })
 })

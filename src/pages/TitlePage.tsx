@@ -6,6 +6,7 @@ import type { Course } from '../rewards'
 import type { getAdventureRank } from '../ranks'
 import type { ReturnTypeOfGoalProgress } from '../types'
 import { AudioControls } from '../components/AudioControls'
+import { KeyboardLayoutCalibration } from '../components/KeyboardLayoutCalibration'
 
 export function TitlePage({ profile, grade, character, points, rank, bgmOn, soundEffectsOn, completedCourses, goalProgress, tutorialComplete, onBgmChange, onSoundEffectsChange, onProfiles, onRomaji, onCourse, onCatalog, onCollection, onRankGuide, onReport }: { profile: UserProfile; grade: Grade; character: CharacterStyle; points: number; rank: ReturnType<typeof getAdventureRank>; bgmOn: boolean; soundEffectsOn: boolean; completedCourses: string[]; goalProgress: ReturnTypeOfGoalProgress; tutorialComplete: boolean; onBgmChange: (on: boolean) => void; onSoundEffectsChange: (on: boolean) => void; onProfiles: () => void; onRomaji: () => void; onCourse: (course: Course) => void; onCatalog: () => void; onCollection: () => void; onRankGuide: () => void; onReport: () => void }) {
   return <main className={`stage-select-screen title-grade-${grade}`}>
@@ -15,6 +16,7 @@ export function TitlePage({ profile, grade, character, points, rank, bgmOn, soun
       <AudioControls className="stage-audio-controls" bgmOn={bgmOn} soundEffectsOn={soundEffectsOn} onBgmChange={onBgmChange} onSoundEffectsChange={onSoundEffectsChange} />
     </header>
     <section className="stage-select-main">
+      <KeyboardLayoutCalibration profileId={profile.id} />
       <div className="stage-select-heading"><span>ADVENTURE MAP</span><h1>{grade}年生の ステージ</h1><p>挑戦するステージを選ぶと、すぐに冒険が始まるよ</p></div>
       <div className="unified-stage-grid">
         <button className={`unified-stage-card romaji ${tutorialComplete ? 'cleared' : 'next'}`} onClick={onRomaji}>

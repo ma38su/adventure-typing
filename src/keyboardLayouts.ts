@@ -14,6 +14,11 @@ export type KeyboardLayout = {
   maxKeys: number
 }
 
+export type PracticeKeyResult = { key: string; physicalMatch: boolean }
+export type KeyboardCalibrationEvent = Pick<KeyboardEvent, 'code' | 'key' | 'shiftKey' | 'repeat' | 'isComposing'>
+
+const DEVICE_LAYOUT_KEY = 'kotobajima:keyboard-layout'
+
 const key = (code: string, label: string, fingerKey: string, input: string | null = label.toLowerCase()): KeyboardKey => ({ code, label, input: input ?? undefined, fingerKey })
 const letters = (source: string) => [...source].map((letter) => key(`Key${letter.toUpperCase()}`, letter.toUpperCase(), letter))
 const digits = [...'1234567890'].map((digit) => key(`Digit${digit}`, digit, digit))
@@ -40,19 +45,44 @@ export const KEYBOARD_LAYOUTS: Record<KeyboardLayoutId, KeyboardLayout> = {
 }
 
 export function readKeyboardLayout(profileId: string): KeyboardLayoutId {
-  try { return localStorage.getItem(`kotobajima-profile:${profileId}:keyboard-layout`) === 'us' ? 'us' : 'jis' } catch { return 'jis' }
+  try {
+    const deviceLayout = localStorage.getItem(DEVICE_LAYOUT_KEY)
+    if (deviceLayout === 'jis' || deviceLayout === 'us') return deviceLayout
+    const legacyLayout = localStorage.getItem(`kotobajima-profile:${profileId}:keyboard-layout`)
+    if (legacyLayout === 'jis' || legacyLayout === 'us') {
+      localStorage.setItem(DEVICE_LAYOUT_KEY, legacyLayout)
+      return legacyLayout
+    }
+    return 'jis'
+  } catch { return 'jis' }
 }
 
-export function saveKeyboardLayout(profileId: string, layout: KeyboardLayoutId) {
-  try { localStorage.setItem(`kotobajima-profile:${profileId}:keyboard-layout`, layout) } catch { /* 設定を保存できなくても練習は続けられる */ }
+export function hasKeyboardLayoutPreference() {
+  try { return ['jis', 'us'].includes(localStorage.getItem(DEVICE_LAYOUT_KEY) ?? '') } catch { return false }
 }
 
-export function resolvePracticeKey(code: string, value: string): string | undefined {
-  if (code.startsWith('Key')) return code.slice(3).toLowerCase()
-  if (code.startsWith('Digit') && value === code.slice(5)) return value
-  if (code === 'Minus' && value === '-') return '-'
-  if (code === 'Comma' && value === ',') return ','
-  if (code === 'Period' && value === '.') return '.'
-  if (code === 'Slash' && value === '/') return '/'
-  return /^[a-z0-9,./-]$/i.test(value) ? value.toLowerCase() : undefined
+export function saveKeyboardLayout(layout: KeyboardLayoutId, calibrationCode?: string) {
+  try {
+    localStorage.setItem(DEVICE_LAYOUT_KEY, layout)
+    if (calibrationCode) localStorage.setItem('kotobajima:keyboard-layout-calibration-code', calibrationCode)
+  } catch { /* 設定を保存できなくても練習は続けられる */ }
+}
+
+export function detectKeyboardLayout(event: KeyboardCalibrationEvent): KeyboardLayoutId | undefined {
+  if (event.repeat || event.isComposing || event.shiftKey) return undefined
+  if (event.key === '@') return 'jis'
+  if (event.key === '[') return 'us'
+  return undefined
+}
+
+const PRACTICE_SYMBOL_CODES: Record<KeyboardLayoutId, Record<string, string>> = {
+  jis: { ',': 'Comma', '.': 'Period', '-': 'Minus', '/': 'Slash' },
+  us: { ',': 'Comma', '.': 'Period', '-': 'Minus', '/': 'Slash' },
+}
+
+export function resolvePracticeKey(code: string, value: string, layout: KeyboardLayoutId = 'jis'): PracticeKeyResult | undefined {
+  if (code.startsWith('Key')) return { key: code.slice(3).toLowerCase(), physicalMatch: true }
+  if (code.startsWith('Digit') && value === code.slice(5)) return { key: value, physicalMatch: true }
+  if (value in PRACTICE_SYMBOL_CODES[layout]) return { key: value, physicalMatch: code === PRACTICE_SYMBOL_CODES[layout][value] }
+  return undefined
 }
