@@ -15,6 +15,22 @@
 - `kotoba-island-geology-map-concept-v1.png`: 平面俯瞰。旧カルデラ縁、風上多雨林、三支流、河口湿地、雨陰草原、古代樹の関係を確認する。
 - `kotoba-island-geology-map-concept-v2.png`: v1の地学構造を保ったまま、珊瑚の範囲、河口湿地、集落密度、古代樹と雲上遺跡の高度差を修正した地形候補。
 - `kotoba-world-globe-concept-v1.png`: 同じ島を低緯度の球体世界上に置いた縮尺確認用。
+- `kotoba-island-coordinate-map-v2.png`: 1280×800の座標正本QA。水彩OFF、座標地形・region・分水嶺・三支流・外礁、Stage 1〜12実線、13〜36破線、全216 scenicAnchorを表示。
+- `kotoba-island-coordinate-map-terrain-v2.png`: 1280×800の地形基盤QA。水彩・route・anchorをOFFにし、座標由来の島輪郭、region、標高帯、分水嶺、流域だけを表示。
+
+## 座標地図v2 QA
+
+検証元は`kotoba-island-map-overlay-v2.html`と`kotoba-island-route-v2.js`。Chromeの1280×800 viewportで確認し、真正PNGへ正規化した。
+
+- 横overflowなし、console warning/error 0。
+- Stage 1〜12 route 12本、Stage 13〜36 route 24本、合計36本を確認。
+- scenicAnchor 216個をDOM件数と画面上の点で確認。
+- 水彩比較はOFF。座標地形、region、分水嶺、三支流、外礁はON。
+- 気候は北東多雨林／南西雨陰草原というregion色で読めるが、v2 HTMLには独立した気候矢印layerがまだない。今回のPNGへ存在しないlayerを後加工で描き足していない。
+- 36 routeの線種とStage番号、主要地名は1280×800で判別できる。
+- 216 anchorの位置と密度は判別できるが、全`Stage.anchor`番号を等倍で個別読解することはできない。個別監査はHTMLの拡大表示またはStage/章filterが必要。
+
+したがって、`kotoba-island-coordinate-map-v2.png`は全体整合QAには合格だが、全anchor IDを一枚で読む制作表としては不合格である。次版ではHTML正本へ気候layerとStage/章filterを追加し、通常表示はanchor点のみ、選択時だけIDを表示する。
 
 ## v1の合格点
 
