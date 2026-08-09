@@ -1,7 +1,8 @@
 import questionData from './data/questions.json'
 
 export type Grade = 1 | 2 | 3 | 4 | 5 | 6
-export type StageSection = 1 | 2 | 3 | 4 | 5
+/** 可変course番号。Stage 1〜12は3〜8 courseを持つ。 */
+export type StageSection = number
 
 export type Question = {
   id: string
