@@ -10,7 +10,7 @@ describe('UIRuby', () => {
 
   it('reports kanji that still need a reading', () => {
     expect(getUncoveredUIKanji('冒険へ進む')).toBe('')
-    expect(getUncoveredUIKanji('未知語')).toBe('未知語')
+    expect(getUncoveredUIKanji('鰐齧')).toBe('鰐齧')
   })
 
   it('covers the fixed labels in the first delivery flow', () => {

@@ -9,7 +9,7 @@ export const PROFILE_REGISTRY_STORAGE = 'kotobajima-profiles'
 export const profileDataKey = (id: string) => `kotobajima-profile:${id}:data`
 
 export type StorageLike = Pick<Storage, 'getItem' | 'setItem'>
-type LegacyProfileData = Omit<Partial<ProfileData>, 'schemaVersion'> & { schemaVersion?: number; soundOn?: boolean }
+type LegacyProfileData = Omit<Partial<ProfileData>, 'schemaVersion'> & { schemaVersion?: number; soundOn?: boolean; completedCourses?: string[] }
 
 const isRecord = (value: unknown): value is Record<string, unknown> => Boolean(value) && typeof value === 'object' && !Array.isArray(value)
 const nonNegativeNumber = (value: unknown, fallback = 0) => typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : fallback
@@ -58,10 +58,10 @@ export function loadProfileData(id: string | null, storage: StorageLike = localS
   if (!id) {
     const problemStats = readStored<ProfileData['problemStats']>(storage, LEGACY_KEYS.problemStats, {})
     return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     keyStats: readStored(storage, LEGACY_KEYS.keyStats, {}),
     collection: normalizeCollection(readStored(storage, LEGACY_KEYS.collection, [])),
-    completedCourses: [],
+    completedStageIds: [], lastStage: 1,
     problemStats,
     scoreData: emptyScoreData(),
     dailyActivity: {}, goals: { dailyProblems: 5, weeklyProblems: 25 }, tutorialCompletedAt: Object.values(problemStats).some((stat) => stat.completions > 0) ? 'legacy' : '', audioSettings: { bgmOn: true, soundEffectsOn: true }, typingDisplayCase: 'lower',
@@ -75,13 +75,14 @@ export function migrateProfileData(saved: LegacyProfileData): ProfileData {
   const score: Record<string, unknown> = isRecord(saved.scoreData) ? saved.scoreData : {}
   const problemStats = isRecord(saved.problemStats) ? saved.problemStats as ProfileData['problemStats'] : {}
   const legacySoundOn = typeof saved.soundOn === 'boolean' ? saved.soundOn : true
-  const usesStageSectionSchema = typeof saved.schemaVersion === 'number' && saved.schemaVersion >= 2
+  const usesLinearStageSchema = typeof saved.schemaVersion === 'number' && saved.schemaVersion >= 3
   // 新しい版を古いクライアントで開いても、既知の項目は捨てずに読み取る。
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     keyStats: isRecord(saved.keyStats) ? saved.keyStats as ProfileData['keyStats'] : {},
     collection: normalizeCollection(saved.collection),
-    completedCourses: usesStageSectionSchema && Array.isArray(saved.completedCourses) ? saved.completedCourses.filter((id): id is string => typeof id === 'string') : [],
+    completedStageIds: usesLinearStageSchema && Array.isArray(saved.completedStageIds) ? saved.completedStageIds.filter((id): id is string => /^stage-([1-9]|[12][0-9]|3[0-6])$/.test(id)) : [],
+    lastStage: usesLinearStageSchema && typeof saved.lastStage === 'number' && saved.lastStage >= 1 && saved.lastStage <= 36 ? Math.floor(saved.lastStage) : 1,
     problemStats,
     dailyActivity: normalizeDailyActivity(saved.dailyActivity),
     goals: {
@@ -96,9 +97,9 @@ export function migrateProfileData(saved: LegacyProfileData): ProfileData {
     typingDisplayCase: saved.typingDisplayCase === 'upper' ? 'upper' : 'lower',
     scoreData: {
       ...emptyScoreData(),
-      lifetime: usesStageSectionSchema ? nonNegativeNumber(score.lifetime) : 0,
-      courseBest: usesStageSectionSchema ? numberRecord(score.courseBest) : {},
-      coursePlays: usesStageSectionSchema ? numberRecord(score.coursePlays) : {},
+      lifetime: usesLinearStageSchema ? nonNegativeNumber(score.lifetime) : 0,
+      courseBest: usesLinearStageSchema ? numberRecord(score.courseBest) : {},
+      coursePlays: usesLinearStageSchema ? numberRecord(score.coursePlays) : {},
     },
   }
 }

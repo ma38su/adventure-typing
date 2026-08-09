@@ -6,5 +6,10 @@
 .catalog-course.locked{opacity:.67}.catalog-course.locked .catalog-question{background:#f3f5f3}.catalog-question>button:disabled{cursor:not-allowed;background:#c5cecb;color:#fff;border:0}
 @keyframes clear-spark{50%{transform:scale(1.8) rotate(45deg);opacity:.45}}
 
+/* 子ども向け一覧の説明文と操作ラベルは、ルビを含めても読める大きさを保つ */
+.catalog-hero p{font-size:12px;line-height:1.5}
+.catalog-summary span,.catalog-course header span,.course-stat-strip,.question-status small,.question-copy>small,.question-metrics small,.question-metrics b,.question-metrics p,.catalog-storage-note{font-size:11px;line-height:1.5}
+.catalog-question>button{font-size:12px;line-height:1.4}
+
 /* スコアと生涯がんばりポイント */
 .lifetime-score-title{margin:-3px 0 8px;padding:7px 11px;display:flex;align-items:center;justify-content:space-between;border-radius:11px;background:linear-gradient(90deg,#fff6cf,#fffaf0);color:#8b681f}.lifetime-score-title span{font-size:9px;font-weight:900}.lifetime-score-title b{font-size:17px}.lifetime-score-title small,.points-pill small{font-size:7px}.points-pill{white-space:nowrap}.course-score-hud{display:grid;grid-template-columns:repeat(3,1fr) minmax(145px,1.35fr);gap:7px;margin:-3px 0 9px}.course-score-hud>div{min-height:48px;padding:7px 10px;display:flex;flex-direction:column;justify-content:center;border:1px solid #dce9e4;border-radius:11px;background:rgba(255,255,255,.88)}.course-score-hud span{color:#788b87;font-size:7px;font-weight:900}.course-score-hud b{color:#156f68;font-size:17px;line-height:1.2}.course-score-hud b small{font-size:7px}.course-score-hud .last-score-chip{position:relative;background:linear-gradient(120deg,#fff6d6,#edfbf5)}.last-score-chip b{color:#be7827}.last-score-chip small{color:#70827e;font-size:7px}.course-total-score{margin:0 0 10px;padding:11px;border:1px solid #efd48c;border-radius:14px;background:linear-gradient(135deg,#fff6c9,#fffdf6)}.course-total-score>span{display:block;color:#967027;font-size:9px;font-weight:900}.course-total-score>b{display:block;color:#bd7621;font-size:30px}.course-total-score>b small{font-size:10px}.course-total-score>p{margin:1px 0 0;color:#8a8170;font-size:7px}

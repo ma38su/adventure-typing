@@ -15,8 +15,8 @@ export type ScoreBreakdown = { total: number; accuracyPoints: number; speedPoint
 export type CharacterStyle = 'girl' | 'boy'
 export type UserProfile = { id: string; name: string; createdAt: string; lastPlayedAt: string; lastGrade: Grade; characterStyle: CharacterStyle }
 export type ProfileRegistry = { schemaVersion: 1; activeProfileId: string | null; profiles: UserProfile[] }
-export type ProfileData = { schemaVersion: 2; keyStats: KeyStats; collection: CollectionRecord[]; completedCourses: string[]; problemStats: ProblemStats; scoreData: ScoreData; dailyActivity: Record<string, DailyActivity>; goals: LearningGoals; tutorialCompletedAt: string; audioSettings: AudioSettings; typingDisplayCase: TypingDisplayCase }
+export type ProfileData = { schemaVersion: 3; keyStats: KeyStats; collection: CollectionRecord[]; completedStageIds: string[]; lastStage: number; problemStats: ProblemStats; scoreData: ScoreData; dailyActivity: Record<string, DailyActivity>; goals: LearningGoals; tutorialCompletedAt: string; audioSettings: AudioSettings; typingDisplayCase: TypingDisplayCase }
 
 export const emptyProblemStat = (): ProblemStat => ({ attempts: 0, completions: 0, correctKeys: 0, mistakes: 0, totalTimeMs: 0, completedKeys: 0, bestKpm: 0, lastPlayedAt: '', wrongSpots: {} })
 export const emptyScoreData = (): ScoreData => ({ lifetime: 0, courseBest: {}, coursePlays: {} })
-export const emptyProfileData = (): ProfileData => ({ schemaVersion: 2, keyStats: {}, collection: [], completedCourses: [], problemStats: {}, scoreData: emptyScoreData(), dailyActivity: {}, goals: { dailyProblems: 5, weeklyProblems: 25 }, tutorialCompletedAt: '', audioSettings: { bgmOn: true, soundEffectsOn: true }, typingDisplayCase: 'lower' })
+export const emptyProfileData = (): ProfileData => ({ schemaVersion: 3, keyStats: {}, collection: [], completedStageIds: [], lastStage: 1, problemStats: {}, scoreData: emptyScoreData(), dailyActivity: {}, goals: { dailyProblems: 5, weeklyProblems: 25 }, tutorialCompletedAt: '', audioSettings: { bgmOn: true, soundEffectsOn: true }, typingDisplayCase: 'lower' })

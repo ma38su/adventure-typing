@@ -1,41 +1,21 @@
-import type { ProblemStat, ProblemStats, ScoreData } from '../domain'
-import { isCourseUnlocked, LEARNING_STAGES } from '../game/courseConfig'
-import { QUESTIONS, type Grade, type Question } from '../questions'
-import type { Course } from '../rewards'
-import { RubyPhrase } from '../components/game/GameVisuals'
+import type { ProblemStats, ScoreData } from '../domain'
+import { LEARNING_STAGES } from '../game/courseConfig'
+import { isLinearStageUnlocked, LINEAR_STAGES, linearStageId, type LinearStageNumber } from '../game/linearStageConfig'
+import { UIRuby } from '../components/UIRuby'
 
-const statAccuracy = (stat?: ProblemStat) => stat && stat.correctKeys + stat.mistakes > 0 ? Math.round((stat.correctKeys / (stat.correctKeys + stat.mistakes)) * 100) : 0
-const statAverageKpm = (stat?: ProblemStat) => stat && stat.totalTimeMs > 0 ? Math.round((stat.completedKeys / stat.totalTimeMs) * 60000) : 0
-
-export function CatalogPage({ grade, problemStats, completedCourses, scoreData, onBack, onStart }: { grade: Grade; problemStats: ProblemStats; completedCourses: string[]; scoreData: ScoreData; onBack: () => void; onStart: (question: Question) => void }) {
-  const gradeQuestions = QUESTIONS[grade]
-  const attemptedTotal = gradeQuestions.filter((item) => (problemStats[item.id]?.attempts ?? 0) > 0).length
-  const completedTotal = gradeQuestions.filter((item) => (problemStats[item.id]?.completions ?? 0) > 0).length
+export function CatalogPage({ problemStats, completedStageIds, scoreData, onBack, onStart }: { problemStats: ProblemStats; completedStageIds: string[]; scoreData: ScoreData; onBack: () => void; onStart: (stage: LinearStageNumber) => void }) {
+  const attemptedTotal = Object.values(problemStats).filter((item) => item.attempts > 0).length
+  const completedTotal = Object.values(problemStats).filter((item) => item.completions > 0).length
   return <main className="catalog-page">
-    <header className="catalog-topbar"><button className="catalog-back" onClick={onBack}>‹ 戻る</button><div className="brand"><span className="brand-mark">📚</span><div><strong>問題一覧</strong><small>学習のきろく</small></div></div><div className="catalog-overall"><b>{completedTotal}</b>問クリア <span>/</span> {gradeQuestions.length}問</div></header>
-    <section className="catalog-hero"><div><span>ことば島 学習記録</span><h1>{grade}年生の ステージと問題</h1><p>挑戦した問題、間違えた場所、タイピングのペースをいつでも振り返れます</p></div><div className="catalog-progress-ring" style={{ '--score': `${gradeQuestions.length ? (completedTotal / gradeQuestions.length) * 360 : 0}deg` } as React.CSSProperties}><b>{completedTotal}<small>/{gradeQuestions.length}</small></b><span>クリア</span></div></section>
-    <div className="catalog-summary"><div><span>挑戦済み</span><b>{attemptedTotal}<small>問</small></b></div><div><span>クリア済み</span><b>{completedTotal}<small>問</small></b></div><div><span>まだ未挑戦</span><b>{gradeQuestions.length - attemptedTotal}<small>問</small></b></div><div><span>ステージ達成</span><b>{LEARNING_STAGES.filter((_, courseIndex) => completedCourses.includes(`${grade}-${courseIndex + 1}`)).length}<small>/{LEARNING_STAGES.length}</small></b></div></div>
-    <div className="catalog-courses">{LEARNING_STAGES.map((course, courseIndex) => {
-      const courseNumber = (courseIndex + 1) as Course
-      const courseQuestions = gradeQuestions.filter((item) => item.stage === courseNumber)
-      const courseStats = courseQuestions.map((item) => problemStats[item.id]).filter(Boolean)
-      const courseAttempted = courseQuestions.filter((item) => (problemStats[item.id]?.attempts ?? 0) > 0).length
-      const courseCompleted = courseQuestions.filter((item) => (problemStats[item.id]?.completions ?? 0) > 0).length
-      const courseCorrect = courseStats.reduce((total, stat) => total + stat.correctKeys, 0)
-      const courseMistakes = courseStats.reduce((total, stat) => total + stat.mistakes, 0)
-      const courseAccuracy = courseCorrect + courseMistakes ? Math.round((courseCorrect / (courseCorrect + courseMistakes)) * 100) : 0
-      const courseTime = courseStats.reduce((total, stat) => total + stat.totalTimeMs, 0)
-      const courseKeys = courseStats.reduce((total, stat) => total + stat.completedKeys, 0)
-      const courseKpm = courseTime ? Math.round((courseKeys / courseTime) * 60000) : 0
-      const isCourseComplete = completedCourses.includes(`${grade}-${courseNumber}`)
-      const unlocked = isCourseUnlocked(grade, courseNumber, completedCourses)
-      return <section className={`catalog-course panel ${!unlocked ? 'locked' : ''}`} key={course.name}><header><div className="catalog-course-icon">{isCourseComplete ? '✓' : unlocked ? course.icon : '🔒'}</div><div><span>ステージ {courseNumber}・{course.label}・{course.habitat}</span><h2>{course.name}</h2><p className="course-description">{course.description}</p></div><div className="course-list-progress"><b>{courseCompleted}/{courseQuestions.length}</b><i><em style={{ width: `${(courseCompleted / courseQuestions.length) * 100}%` }} /></i></div></header><div className="course-stat-strip"><span>挑戦 {courseAttempted}問</span><span>正確さ {courseAccuracy || '―'}{courseAccuracy ? '%' : ''}</span><span>平均 {courseKpm || '―'}{courseKpm ? ' KPM' : ''}</span><span>ベスト {scoreData.courseBest[`${grade}-${courseNumber}`]?.toLocaleString() ?? '―'} GP</span><span>{isCourseComplete ? '🏆 ステージ達成' : unlocked ? '冒険中' : `🔒 ステージ${courseNumber - 1}クリアで解放`}</span></div><div className="catalog-question-list">{courseQuestions.map((item, itemIndex) => {
-        const stat = problemStats[item.id]
-        const challenged = (stat?.attempts ?? 0) > 0
-        const cleared = (stat?.completions ?? 0) > 0
-        const wrongSpots = stat ? Object.values(stat.wrongSpots).sort((a, b) => b.count - a.count).slice(0, 3) : []
-        return <article className={`catalog-question ${cleared ? 'cleared' : challenged ? 'challenged' : 'untried'}`} key={item.id}><div className="question-status"><span>{cleared ? '✓' : challenged ? '…' : unlocked ? '○' : '🔒'}</span><small>{cleared ? 'クリア' : challenged ? '挑戦中' : unlocked ? '未挑戦' : 'ロック'}</small></div><div className="question-copy"><small>問題 {itemIndex + 1}</small><h3>{item.ruby.map((phrase, index) => <span key={`${phrase}-${index}`}><RubyPhrase markup={phrase} />{index < item.ruby.length - 1 && ' '}</span>)}</h3><code>{item.romaji}</code>{wrongSpots.length > 0 && <div className="wrong-spot-list">{wrongSpots.map((spot) => <span key={`${spot.position}-${spot.expected}-${spot.actual}`}>{spot.position + 1}文字目「{spot.actual}」→「{spot.expected}」×{spot.count}</span>)}</div>}</div><div className="question-metrics">{challenged ? <><span><small>挑戦</small><b>{stat.attempts}回</b></span><span><small>正確さ</small><b>{statAccuracy(stat)}%</b></span><span><small>平均ペース</small><b>{statAverageKpm(stat) || '―'} KPM</b></span><span><small>最高ペース</small><b>{stat.bestKpm || '―'} KPM</b></span></> : <p>まだ記録がありません</p>}</div><button disabled={!unlocked} onClick={() => onStart(item)}>{unlocked ? cleared ? 'もう一度' : '挑戦する' : '未解放'} {unlocked && '▶'}</button></article>
-      })}</div></section>
-    })}</div><p className="catalog-storage-note">この学習記録は、この端末のローカルストレージに保存されています</p>
+    <header className="catalog-topbar"><button className="catalog-back" onClick={onBack}>‹ <UIRuby>戻る</UIRuby></button><div className="brand"><span className="brand-mark">📚</span><div><strong><UIRuby>冒険の記録</UIRuby></strong><small><UIRuby>36ステージの旅</UIRuby></small></div></div><div className="catalog-overall"><b>{completedStageIds.length}</b> / 36 <UIRuby>ステージ</UIRuby></div></header>
+    <section className="catalog-hero"><div><span><UIRuby>ことば島 学習記録</UIRuby></span><h1><UIRuby>ひとつにつながる物語</UIRuby></h1><p><UIRuby>クリアした場所と、次に進めるステージを振り返れます</UIRuby></p></div><div className="catalog-progress-ring" style={{ '--score': `${completedStageIds.length / 36 * 360}deg` } as React.CSSProperties}><b>{completedStageIds.length}<small>/36</small></b><span>クリア</span></div></section>
+    <div className="catalog-summary"><div><span><UIRuby>挑戦済み</UIRuby></span><b>{attemptedTotal}<small><UIRuby>問</UIRuby></small></b></div><div><span><UIRuby>問題クリア</UIRuby></span><b>{completedTotal}<small><UIRuby>問</UIRuby></small></b></div><div><span><UIRuby>ステージ達成</UIRuby></span><b>{completedStageIds.length}<small>/36</small></b></div><div><span><UIRuby>総合スコア</UIRuby></span><b>{scoreData.lifetime.toLocaleString()}<small> GP</small></b></div></div>
+    <div className="catalog-courses">{LINEAR_STAGES.map((stage) => {
+      const id = linearStageId(stage.number)
+      const cleared = completedStageIds.includes(id)
+      const unlocked = isLinearStageUnlocked(stage.number, completedStageIds)
+      const theme = LEARNING_STAGES[stage.chapterStage - 1]
+      return <section className={`catalog-course panel ${!unlocked ? 'locked' : ''}`} key={id}><header><div className="catalog-course-icon">{cleared ? '✓' : unlocked ? theme.icon : '🔒'}</div><div><span><UIRuby>{`第${stage.chapter}章・ステージ ${stage.number}・${stage.difficultyBand}`}</UIRuby></span><h2>{stage.title}</h2><p className="course-description">{stage.objective}</p></div><div className="course-list-progress"><b>{scoreData.courseBest[id]?.toLocaleString() ?? '―'} GP</b></div></header><div className="course-stat-strip"><span>{theme.habitat}</span><span><UIRuby>{cleared ? '🏆 ステージ達成' : unlocked ? '冒険中' : `🔒 ステージ${stage.number - 1}クリアで解放`}</UIRuby></span><button disabled={!unlocked} onClick={() => onStart(stage.number)}><UIRuby>{cleared ? 'もう一度' : unlocked ? 'このステージへ' : '未解放'}</UIRuby>{unlocked && ' ▶'}</button></div></section>
+    })}</div><p className="catalog-storage-note"><UIRuby>この学習記録は、この端末のローカルストレージに保存されています</UIRuby></p>
   </main>
 }

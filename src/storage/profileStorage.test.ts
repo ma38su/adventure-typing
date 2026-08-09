@@ -15,7 +15,7 @@ describe('profile storage', () => {
 
   it('migrates unversioned profile data into the current schema', () => {
     const migrated = migrateProfileData({ scoreData: { lifetime: 123, courseBest: {}, coursePlays: {} } })
-    expect(migrated.schemaVersion).toBe(2)
+    expect(migrated.schemaVersion).toBe(3)
     expect(migrated.scoreData.lifetime).toBe(0)
     expect(migrated.problemStats).toEqual({})
     expect(migrated.audioSettings).toEqual({ bgmOn: true, soundEffectsOn: true })
@@ -38,9 +38,10 @@ describe('profile storage', () => {
   })
 
   it('keeps known data from a future schema and repairs incomplete score data', () => {
-    const migrated = migrateProfileData({ schemaVersion: 99, scoreData: { lifetime: 456 } as never, completedCourses: ['2-1'] })
+    const migrated = migrateProfileData({ schemaVersion: 99, scoreData: { lifetime: 456 } as never, completedStageIds: ['stage-7'], lastStage: 7 })
     expect(migrated.scoreData).toEqual({ lifetime: 456, courseBest: {}, coursePlays: {} })
-    expect(migrated.completedCourses).toEqual(['2-1'])
+    expect(migrated.completedStageIds).toEqual(['stage-7'])
+    expect(migrated.lastStage).toBe(7)
   })
 
   it('resets old stage completion and incompatible score scale while preserving learning history', () => {
@@ -51,7 +52,8 @@ describe('profile storage', () => {
       keyStats: { '1:a': { attempts: 2, misses: 0, wrongKeys: {} } },
       scoreData: { lifetime: 500, courseBest: { '1-1': 400 }, coursePlays: { '1-1': 1 } },
     })
-    expect(migrated.completedCourses).toEqual([])
+    expect(migrated.completedStageIds).toEqual([])
+    expect(migrated.lastStage).toBe(1)
     expect(migrated.scoreData).toEqual({ lifetime: 0, courseBest: {}, coursePlays: {} })
     expect(migrated.problemStats['1-s01']).toBeDefined()
     expect(migrated.keyStats['1:a']).toBeDefined()
@@ -70,11 +72,11 @@ describe('profile storage', () => {
     vi.useFakeTimers()
     const storage = memoryStorage()
     const writer = createDebouncedProfileWriter(750, storage)
-    writer.schedule('a', { ...emptyProfileData(), completedCourses: ['1-1'] })
-    writer.schedule('a', { ...emptyProfileData(), completedCourses: ['1-1', '1-2'] })
+    writer.schedule('a', { ...emptyProfileData(), completedStageIds: ['stage-1'] })
+    writer.schedule('a', { ...emptyProfileData(), completedStageIds: ['stage-1', 'stage-2'] })
     expect(storage.getItem(profileDataKey('a'))).toBeNull()
     writer.flush()
-    expect(loadProfileData('a', storage).completedCourses).toEqual(['1-1', '1-2'])
+    expect(loadProfileData('a', storage).completedStageIds).toEqual(['stage-1', 'stage-2'])
     vi.useRealTimers()
   })
 })
