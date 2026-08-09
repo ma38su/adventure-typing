@@ -96,7 +96,7 @@ function App() {
   const gradeStory = GRADE_STORIES[grade]
   const courseStory = getCourseStory(grade, selectedCourse)
   const stageIndex = question.stage - 1
-  const { canonicalRomaji, displayProgress, currentChar, nextKeyOptions, enterCharacters, resetQuestion: resetTypingQuestion } = useTypingEngine({
+  const { canonicalRomaji, displayProgress, inputDisplayProgress, currentChar, nextKeyOptions, enterCharacters, resetQuestion: resetTypingQuestion } = useTypingEngine({
     question,
     grade,
     course: selectedCourse,
@@ -596,10 +596,12 @@ function App() {
         <CourseMap grade={grade} selectedCourse={selectedCourse} completedCourses={completedCourses} questionIndex={questionIndex} questionCount={questions.length} />
 
         <section className="game-area">
+          <div className="stage-hud panel">
           <div className={`stage-title ${practiceMode === 'weak-keys' ? 'practice-title' : ''}`}><div><span>{practiceMode === 'weak-keys' ? `🎯 苦手キー「${reviewTargetKeys.join('・')}」を特訓中` : `${grade}年生の物語・第${selectedCourse}話　${gradeStory.chapterTitle}`}</span><h1>{practiceMode === 'weak-keys' ? 'にがてキー特訓' : courseStory.title}</h1>{practiceMode === 'adventure' && <p className="stage-theme-description">🎯 {courseStory.objective}　<span>{courseStory.intro}</span></p>}</div><div className="xp-wrap">{practiceMode === 'weak-keys' && <button className="leave-practice" onClick={(event) => { event.stopPropagation(); reset(grade, selectedCourse) }}>通常モードへ</button>}<span>問題 {questionIndex + 1}/{questions.length}</span><div className="xp-bar"><i style={{ width: `${(questionIndex + 1) / questions.length * 100}%` }} /></div><b>{questionIndex + 1}/{questions.length}</b></div></div>
           <div className="course-score-hud"><div><span>今回のステージスコア</span><b>{courseScore.toLocaleString()}<small> GP</small></b></div><div><span>ステージベスト</span><b>{currentCourseBest.toLocaleString()}<small> GP</small></b></div><div><span>発見ボーナス</span><b>+{runBonus.toLocaleString()}<small> GP</small></b></div>{lastScore && <div className="last-score-chip"><span>直前の問題</span><b>+{lastScore.total.toLocaleString()}</b><small>正確さ {lastScore.accuracy}%・{lastScore.kpm} KPM</small></div>}</div>
+          </div>
           <AdventureScenes stageIndex={stageIndex} action={adventureAction} event={adventureEvent} reward={adventureReward} trailTreasure={trailTreasure} character={characterStyle} stageWalked={stageWalked} stepQueue={stepQueue} stepDelay={stepDelay} courseProgress={courseProgress} walkPercent={walkPercent} sentenceProgress={sentenceProgress} awaitingFinish={awaitingFinish} />
-          <TypingCard question={question} practiceMode={practiceMode} reviewTargetKeys={reviewTargetKeys} typed={typed} displayProgress={displayProgress} canonicalRomaji={canonicalRomaji} notice={notice} awaitingFinish={awaitingFinish} combo={combo} currentChar={currentChar} nextKeyOptions={nextKeyOptions} inputRef={inputRef} onTyped={setTyped} onEnter={enterCharacters} />
+          <TypingCard question={question} practiceMode={practiceMode} reviewTargetKeys={reviewTargetKeys} typed={typed} displayProgress={displayProgress} inputDisplayProgress={inputDisplayProgress} canonicalRomaji={canonicalRomaji} notice={notice} awaitingFinish={awaitingFinish} combo={combo} currentChar={currentChar} nextKeyOptions={nextKeyOptions} inputRef={inputRef} onTyped={setTyped} onEnter={enterCharacters} />
           <div className="tip"><span>💡</span><p><b>ローマ字ヒント</b>　「し」は <kbd>s</kbd> <kbd>h</kbd> <kbd>i</kbd> の順に入力するよ</p></div>
         </section>
 

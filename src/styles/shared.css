@@ -52,4 +52,63 @@
 .storage-warning span { grid-column: 1; font-size: 12px; line-height: 1.55; }
 .storage-warning button { grid-column: 2; grid-row: 1 / 3; border: 0; background: transparent; color: inherit; font-size: 24px; cursor: pointer; }
 .confirm-shortcut-hint{display:block;margin-top:8px;color:#71817f;font-size:9px;font-weight:800;letter-spacing:.02em}
-.reward-discovery-modal:after,.course-clear-modal:after{content:'Spaceキーでも進める';display:block;margin-top:8px;color:#71817f;font-size:9px;font-weight:800;letter-spacing:.02em}
+.reward-discovery-modal:after{content:'Spaceキーでも進める';display:block;margin-top:8px;color:#71817f;font-size:9px;font-weight:800;letter-spacing:.02em}
+
+/* Typing view: progress above, a full-width prompt in the center, discoveries below. */
+.world-layout{width:min(1180px,94vw);display:flex;flex-direction:column;gap:12px;margin-top:16px}
+.world-layout>.map-panel{order:1;width:100%}
+.world-layout>.game-area{order:2;width:100%;min-width:0}
+.world-layout>.side-panel{order:3;width:100%}
+.map-panel>.panel-heading{padding:9px 14px 7px}
+.map-panel .route{display:flex;padding:9px 16px 8px}
+.map-panel .route-line{left:38px;right:38px;top:28px;bottom:auto;width:auto;height:2px;background:repeating-linear-gradient(to right,#bcd8d1 0 5px,transparent 5px 9px)}
+.map-panel .route-stop{flex:1;min-width:0;min-height:42px;gap:7px}
+.map-panel .route-stop div{min-width:0}
+.map-panel .route-stop small,.map-panel .route-stop strong{overflow:hidden;text-overflow:ellipsis}
+.map-panel .island-bubble{width:34px;height:34px;flex-basis:34px;font-size:16px}
+.map-panel .map-footer{display:none}
+.map-panel .you-are-here{top:-5px;right:auto;left:20px}
+.map-panel .check{margin-left:2px}
+.stage-hud{display:grid;grid-template-columns:minmax(300px,1.35fr) minmax(420px,1fr);align-items:center;gap:14px;margin-bottom:10px;padding:8px 12px}
+.stage-hud .stage-title{height:auto;min-height:44px;margin:0}
+.stage-hud .stage-theme-description{margin:2px 0 0;font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:54vw}
+.stage-hud .course-score-hud{margin:0}
+.stage-hud .course-score-hud>div{min-height:42px;padding:5px 8px}
+.game-area .typing-card{width:100%}
+.game-area .romaji-line{height:auto;min-height:88px;align-content:center;overflow:visible}
+.game-area .romaji-line ruby{display:inline-flex;flex-direction:column-reverse;align-items:center;vertical-align:bottom}
+.game-area .romaji-line rt{min-height:1.25em;font-family:'M PLUS Rounded 1c',sans-serif;font-size:.34em;line-height:1.1;letter-spacing:.04em;color:#71817f}
+.side-panel{display:grid;grid-template-columns:minmax(220px,1.25fr) minmax(170px,.8fr) minmax(190px,1fr) minmax(220px,1.1fr) minmax(160px,.75fr);gap:9px;padding-top:0;align-items:stretch}
+.side-panel>button,.side-panel>.accuracy-card{height:100%;min-height:82px}
+.side-panel .friends-card,.side-panel .treasure-card{padding:10px 12px}
+.side-panel .friend-row{margin:7px 0 4px}
+.side-panel .friend{height:43px;flex-direction:row;gap:3px}
+.side-panel .friend>span{font-size:20px}
+.side-panel .treasures{margin:7px 0 4px}
+.side-panel .treasures>span{width:36px;height:36px;font-size:18px}
+.side-panel .review-card,.side-panel .key-stats-card{padding:10px}
+
+@media(max-width:900px){
+  .stage-hud{grid-template-columns:1fr}
+  .stage-hud .stage-theme-description{max-width:86vw}
+  .side-panel{grid-template-columns:repeat(2,1fr)}
+  .side-panel .accuracy-card{grid-column:1/-1}
+}
+@media(max-width:760px){
+  .world-layout>.map-panel{order:1}
+  .world-layout>.game-area{order:2}
+  .world-layout>.side-panel{order:3}
+  .map-panel .route-stop{flex-direction:column;gap:4px;text-align:center}
+  .map-panel .route-stop div{display:none}
+  .stage-hud{padding:8px}
+  .stage-hud .stage-title{margin:0}
+  .stage-hud .course-score-hud{grid-template-columns:repeat(3,1fr)}
+  .side-panel{display:grid;grid-template-columns:1fr 1fr}
+}
+@media(max-width:520px){
+  .map-panel .route{padding-inline:9px}
+  .map-panel .island-bubble{width:30px;height:30px;flex-basis:30px;font-size:14px}
+  .stage-hud .stage-theme-description{white-space:normal}
+  .side-panel{display:flex}
+  .side-panel .friends-card,.side-panel .treasure-card{display:block}
+}

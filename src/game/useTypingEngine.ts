@@ -73,6 +73,11 @@ export function useTypingEngine(options: TypingEngineOptions) {
   const displayProgress = matchingCandidates.length
     ? Math.min(...matchingCandidates.map((candidate) => candidate.displayProgress[typed.length] ?? 0))
     : 0
+  const inputDisplayProgress = Array.from({ length: typed.length + 1 }, (_, inputLength) => (
+    matchingCandidates.length
+      ? Math.min(...matchingCandidates.map((candidate) => candidate.displayProgress[inputLength] ?? 0))
+      : 0
+  ))
   const currentChar = canonicalRomaji[displayProgress] ?? ''
   const nextKeyOptions = [...new Set(matchingCandidates.map((candidate) => candidate.target[typed.length]).filter(Boolean))]
   const startedAtRef = useRef(Date.now())
@@ -153,5 +158,5 @@ export function useTypingEngine(options: TypingEngineOptions) {
     }, score)
   }, [acceptedCandidates, canonicalRomaji, course, disabled, grade, onAcceptedKey, onComplete, onRejectedKey, onTyped, question.id, typed])
 
-  return { canonicalRomaji, displayProgress, currentChar, nextKeyOptions, enterCharacters, resetQuestion }
+  return { canonicalRomaji, displayProgress, inputDisplayProgress, currentChar, nextKeyOptions, enterCharacters, resetQuestion }
 }
