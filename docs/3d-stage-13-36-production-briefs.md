@@ -10,12 +10,18 @@
 
 各「六コマ」は正規化確認アンカー。`0`は直前Stageと同一チャンク、`1`は次Stageと同一チャンクでなければ不合格とする。動物発見の距離・遮蔽・退避・音OFF・`reducedMotion`・2D図鑑接続は [全36対応表の動物発見候補](3d-stage-1-36-continuous-world-plan.md#9-動物発見候補制作前仕様) を併用する。
 
+全Stageの六コマは [景観anchorの地形リズム契約](3d-stage-1-36-continuous-world-plan.md#23-景観anchorの地形リズム契約) に従う。各コマを地域に合う異なるmicro-landformへ割り当て、制作データへ`microLandform / geologyReason / deltaFromPrevious`を記録する。前コマとの差は視界、勾配、水、岩、植生帯、landmark、光のうち最低二軸とし、二anchor連続で同じ状態を反復しない。以下の短縮記法の六コマにも同じ受入基準を適用し、既存の物語順・共有chunk・BGM意味区間は変えない。
+
+全Stageの自然地理と文化は [地学・気候設計](world-geology-and-climate-spec.md) と [植生・生物・文化設計](world-biomes-fauna-culture-spec.md) を正とする。旧カルデラ縁を持つ低緯度玄武岩火山島、東北東卓越風、北東多雨・南西雨陰、分水嶺と三支流、河口湿地→藻場→外礁、低地常緑・半常緑林→山地雲霧林→風衝尾根、雲上の霧氷を章をまたいで維持する。集落・建材・生業は地域の風、水、岩、植生へ結びつけ、再訪では同じ施設の用途と修復結果を増やす。
+
+球面座標から得る`routeDistanceKm`は地図と3D worldで共通の唯一正本である。空間短縮、途中skip、teleportは行わず、chunk streamingで連続距離を扱う。見える前進速度を不自然に上げず、[全36対応表の距離別算定式](3d-stage-1-36-continuous-world-plan.md#22-距離から問題密度を決める契約)で18〜60問・可変courseを見積もり、各六コマ・発見・境界へ短文を配る。
+
 ## 2. 第3章「消えた星座と 夜空の地図」
 
 ### Stage 13「昼の草原に落ちた星」
 
 - 物語目的: 閉じられなくなった花から昼光と星光を分け、最初の星片を見つける。
-- 開始→終了: Stage 12の夜航路展望台から連続する星航路下降丘 → 星形樹液の見える林縁。
+- 開始→終了: Stage 12と同じ`bnd-sky-star-route`・球面座標`(12.029,141.998,1.91)`の夜航路展望台 → 実体下降路 → 地上アンカー`(12.046,142.022,0.26)` → 星形樹液の見える林縁。
 - 近／中／遠景: 休めない花と淡い星草／おひさま石台、細い下降路／回復した風車群、暗い星座穴、森。
 - 地形・植生・光・霧: 雲上石→草丘、開花草原→夕刻に閉じる花。青紫の夜明けから昼へ連続し、星片だけ低輝度を保つ。下降霧は薄くする。
 - 経路・カメラ: 落下せず尾根を緩く下降。花の開閉を横視線で比較し、星片成功後は森へ戻す。
@@ -86,7 +92,7 @@
 - 経路・カメラ: 重い台座横を通り投影方向へ。成功後は星座を追い続けず、航路下降路へ向く。
 - 共有chunk: `bnd-root-sky-c`→`bnd-sky-meadow-c`。
 - モデル／material: 天文円盤、旅程台座、航路灯、下降石／cloud-stone、weathered-gold、star-projection、dew-meadow。
-- item／animal予兆: 盾飾り候補は台座面の小さな反射。若ライオンは20〜30mの天文柱から投影台脇へ。音OFFは足元影、動き軽減は歩行を遅く。
+- item／animal予兆: 盾飾り候補は台座面の小さな反射。外島から来た獅子鬣風の仲間レオ（愛称若ライオン）は20〜30mの天文柱から投影台脇へ。野生個体群を示さない。音OFFは足元影、動き軽減は歩行を遅く。
 - BGM意味区間: `new-constellation-rise`→`old-map-resists`→`journey-projected`→`night-route`→`rainbow-dew-preview`。
 - 六コマ合否: `0`上昇根と基壇一致／`0.2`旧円盤の抵抗／`0.4`旅程台座接続／`0.6`新星座投影／`0.8`航路下降／`1`朝露丘。祝祭過多、暗転朝、Stage 19再ロードは不合格。
 
@@ -140,7 +146,7 @@
 - 経路・カメラ: 波は沖に置き、足場を揺らしすぎない。鐘片ごとに環境色が戻る。
 - 共有chunk: `bnd-mountain-inlet-d`→`bnd-inlet-root-d`。
 - モデル／material: 珊瑚鐘、鐘片、作業足場、七色水路／coral-muted/restored、bell-stone、shallow-water、root-bark。
-- item／animal予兆: にじ色の貝は鐘片近くの固定波紋。ラッコは18〜25mの足場陰から穏やかな湾へ。
+- item／animal予兆: にじ色の貝は鐘片近くの固定波紋。温暖湾の島カワウソ（愛称ラッコ）は18〜25mの足場陰から穏やかな湾へ。
 - BGM意味区間: `broken-bell`→`gray-surge`→`fragments-return`→`true-tone`→`seven-threads`。
 - 六コマ合否: `0`作業浜一致／`0.2`鐘と大波の因果／`0.4`片の由来差／`0.6`正音で波減衰／`0.8`七色水路／`1`プリズム根門。水難恐怖、鐘爆発、ポータルは不合格。
 
@@ -166,7 +172,7 @@
 - 経路・カメラ: 灰潮を遠景で見せ、鐘成功後に下降石路へ。虹を追って横旋回しない。
 - 共有chunk: `bnd-root-sky-d`→`bnd-sky-meadow-d`。
 - モデル／material: 虹鐘、七台座、下降石橋、空白看板proxy／cloud-stone、bell-gold、gray-tide、rainbow-atmosphere、meadow-ground。
-- item／animal予兆: 空色冠は台座の固定環光。雪うさぎは18〜28mの鐘柱から灰潮と逆の陰へ。
+- item／animal予兆: 空色冠は台座の固定環光。霧氷色の雲うさぎ（愛称雪うさぎ）は18〜28mの鐘柱から灰潮と逆の陰へ。恒常雪は置かない。
 - BGM意味区間: `sky-sea-call`→`gray-tide`→`seven-land-tones`→`rainbow-restored`→`words-fade`。
 - 六コマ合否: `0`虹鐘台一致／`0.2`灰潮遠景／`0.4`七音受渡し／`0.6`虹が海へ／`0.8`実体下降路／`1`空白看板草原。虹を床にする、全面彩色フラッシュ、章ロードは不合格。
 
@@ -207,7 +213,7 @@
 - 経路・カメラ: 危険側へ侵入せず、照合後に安全路を光でなく地形として読む。
 - 共有chunk: `bnd-forest-mountain-e`→`bnd-mountain-inlet-e`。
 - モデル／material: 風化石碑、旧道具、崩れ古道、安全標石／mountain-rock、eroded-inscription、rope、coastal-pebble。
-- item／animal予兆: 登山メダルは旧道具箱の固定反射。山ヤギは25〜35mの古道岩から安全斜面へ。
+- item／animal予兆: 登山メダルは旧道具箱の固定反射。小型の島崖ヤギは25〜35mの古道岩から採食低木のある安全斜面へ。
 - BGM意味区間: `stone-record`→`missing-inscription`→`terrain-confirms`→`safe-route`→`letters-at-sea`。
 - 六コマ合否: `0`石碑道一致／`0.2`欠字と道具／`0.4`危険古道は奥／`0.6`安全記録回復／`0.8`谷川下降／`1`漂着浜。危険路選択を要求、落石恐怖、海ワープは不合格。
 
@@ -326,7 +332,7 @@
 - 経路・カメラ: 王冠を被る一人称演出はしない。六入力ごとに競合揺れを減らし、最後は連絡台へ前進。
 - 共有chunk: `bnd-root-sky-f`→`evt-sky-crown`→将来再訪用`hub-sky-contact-platform`。
 - モデル／material: 六台座、円環王冠、仲間印、連絡台、未踏航路proxy／cloud-stone、six-energy-muted、promise-gold、dawn-sky。
-- item／animal予兆: 盾飾りは台座間の固定反射。若ライオンは20〜30mの王冠柱から仲間円環外へ退く。発見報酬より物語イベントを優先し、図鑑表示は終幕後。
+- item／animal予兆: 盾飾りは台座間の固定反射。外島から来た同じ一頭のレオは20〜30mの王冠柱から仲間円環外へ退く。発見報酬より物語イベントを優先し、図鑑表示は終幕後。
 - BGM意味区間: `six-lights-rise`→`powers-compete`→`friends-support`→`circular-promise`→`island-breathes`→`new-route-open`。終幕でも基礎モチーフを完全終止しすぎない。
 - 六コマ合否: `0`王冠前庭一致／`0.2`六力の競合は破壊でなく位相ずれ／`0.4`仲間の支え／`0.6`円環へ結合／`0.8`六地域回復／`1`連絡台と未踏航路。王座、戴冠支配、爆発、エンド後scene破棄は不合格。
 
