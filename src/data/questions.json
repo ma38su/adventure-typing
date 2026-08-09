@@ -1,6 +1,57 @@
 {
   "1": [
     {
+      "id": "1-s01",
+      "stage": 1,
+      "sentence": "海だ",
+      "reading": "うみだ",
+      "ruby": [
+        "[海:うみ]だ"
+      ],
+      "romaji": "umida",
+      "focus": "海",
+      "meaning": "草原の先に海が見えた"
+    },
+    {
+      "id": "1-s02",
+      "stage": 1,
+      "sentence": "森へ 行く",
+      "reading": "もりへ いく",
+      "ruby": [
+        "[森:もり]へ",
+        "[行:い]く"
+      ],
+      "romaji": "morihe iku",
+      "focus": "森・行",
+      "meaning": "森へ向かって歩きだす"
+    },
+    {
+      "id": "1-s03",
+      "stage": 1,
+      "sentence": "花が さく",
+      "reading": "はなが さく",
+      "ruby": [
+        "[花:はな]が",
+        "さく"
+      ],
+      "romaji": "hanaga saku",
+      "focus": "花",
+      "meaning": "道ばたの花がひらいた"
+    },
+    {
+      "id": "1-s04",
+      "stage": 1,
+      "sentence": "鳥が とぶ",
+      "reading": "とりが とぶ",
+      "ruby": [
+        "[鳥:とり]が",
+        "とぶ"
+      ],
+      "romaji": "toriga tobu",
+      "focus": "鳥",
+      "meaning": "鳥が森の方へ飛んでいく"
+    },
+    {
       "id": "1-000a",
       "stage": 1,
       "sentence": "山へ 行く",
@@ -38,6 +89,61 @@
       "romaji": "inuto hashiru",
       "focus": "犬・走",
       "meaning": "犬と かけっこ"
+    },
+    {
+      "id": "1-s05",
+      "stage": 2,
+      "sentence": "小鳥が うたう",
+      "reading": "ことりが うたう",
+      "ruby": [
+        "[小鳥:ことり]が",
+        "うたう"
+      ],
+      "romaji": "kotoriga utau",
+      "focus": "小鳥",
+      "meaning": "森の入口で小鳥の声がする"
+    },
+    {
+      "id": "1-s06",
+      "stage": 2,
+      "sentence": "森の 道を あるく",
+      "reading": "もりの みちを あるく",
+      "ruby": [
+        "[森:もり]の",
+        "[道:みち]を",
+        "あるく"
+      ],
+      "romaji": "morino michiwo aruku",
+      "focus": "森・道",
+      "meaning": "細い森の道を進む"
+    },
+    {
+      "id": "1-s07",
+      "stage": 2,
+      "sentence": "川で 石を ひろう",
+      "reading": "かわで いしを ひろう",
+      "ruby": [
+        "[川:かわ]で",
+        "[石:いし]を",
+        "ひろう"
+      ],
+      "romaji": "kawade ishiwo hirou",
+      "focus": "川・石",
+      "meaning": "水べで丸い石を見つけた"
+    },
+    {
+      "id": "1-s08",
+      "stage": 2,
+      "sentence": "白い 花が ゆれる",
+      "reading": "しろい はなが ゆれる",
+      "ruby": [
+        "[白:しろ]い",
+        "[花:はな]が",
+        "ゆれる"
+      ],
+      "romaji": "shiroi hanaga yureru",
+      "focus": "白・花",
+      "meaning": "森の風で白い花がゆれる"
     },
     {
       "id": "1-001",
