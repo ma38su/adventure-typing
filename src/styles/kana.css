@@ -15,3 +15,14 @@
 @media(max-width:680px){.finger-map-intro{grid-template-columns:1fr;padding:15px;gap:10px}.finger-map-copy br{display:none}.finger-legend{grid-template-columns:repeat(2,minmax(0,1fr))}.finger-keyboard.overview kbd{width:clamp(19px,7.3vw,30px)}}
 
 .kana-romaji span.current{position:relative;border-radius:7px;background:#fff0bd;outline:2px solid rgba(224,145,40,.5);box-shadow:0 2px 0 rgba(190,112,23,.28)}.kana-romaji span.current:before{content:'';position:absolute;left:-3px;top:8%;bottom:8%;width:3px;border-radius:3px;background:#d97718;animation:typing-caret 1.15s ease-in-out infinite}
+
+/* Offset each physical keyboard row from one shared left edge. */
+.finger-keyboard{--key-size:34px;--key-gap:4px}
+.finger-keyboard>.finger-keyboard-row{--row-offset:0px;width:max-content;display:flex;justify-content:flex-start;gap:var(--key-gap);margin:3px 0 3px max(0px,calc((100% - (11 * var(--key-size) + 10 * var(--key-gap))) / 2 + var(--row-offset)))}
+.finger-keyboard>.finger-keyboard-row[data-row]{padding-left:0}
+.finger-keyboard>.finger-keyboard-row[data-row="1"]{--row-offset:calc(var(--key-size) * .25)}
+.finger-keyboard>.finger-keyboard-row[data-row="2"]{--row-offset:calc(var(--key-size) * .5)}
+.finger-keyboard>.finger-keyboard-row[data-row="3"]{--row-offset:calc(var(--key-size) * .75)}
+.finger-keyboard kbd,.finger-keyboard.overview kbd{width:var(--key-size);min-width:var(--key-size)}
+@media(max-width:680px){.finger-keyboard{--key-size:22px;--key-gap:2px}}
+@media(max-width:420px){.finger-keyboard{--key-size:18px;--key-gap:2px}}

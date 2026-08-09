@@ -14,7 +14,7 @@ function RubyLabel({ text }: { text: keyof typeof reading }) {
 }
 
 function FingerKeyboard({ nextKeys = [], overview = false }: { nextKeys?: string[]; overview?: boolean }) {
-  return <div className={`finger-keyboard ${overview ? 'overview' : ''}`} aria-label={overview ? 'キーと担当する指の一覧' : '指使いキーボード'}>{FINGER_KEYBOARD_ROWS.map((row) => <div key={row}>{[...row].map((key) => {
+  return <div className={`finger-keyboard ${overview ? 'overview' : ''}`} aria-label={overview ? 'キーと担当する指の一覧' : '指使いキーボード'}>{FINGER_KEYBOARD_ROWS.map((row, rowIndex) => <div key={row} className="finger-keyboard-row" data-row={rowIndex}>{[...row].map((key) => {
     const guide = getFingerGuide(key)
     const label = guide ? `${key.toUpperCase()}キー、${handName[guide.hand]}の${guide.finger}` : `${key.toUpperCase()}キー`
     return <kbd key={key} aria-label={`${label}${key === 'f' || key === 'j' ? '、ホームポジションの突起' : ''}`} data-hand={guide?.hand} className={`${nextKeys.includes(key) ? 'next' : ''} ${HOME_KEYS.includes(key) ? 'home' : ''} ${key === 'f' || key === 'j' ? 'tactile' : ''}`} style={{ '--key-color': guide?.color } as React.CSSProperties}>{key.toUpperCase()}{HOME_KEYS.includes(key) && <i aria-hidden="true" />}</kbd>
