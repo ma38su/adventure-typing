@@ -9,7 +9,7 @@ const makeItems = (source: string, instruction?: string): KanaItem[] => source.t
   return { kana, romaji, instruction }
 })
 
-const FINGER_KEYS: Array<[string, FingerGuide]> = [
+export const FINGER_KEYS: Array<[string, FingerGuide]> = [
   ['qaz', { hand: 'left', finger: '小指', color: '#e56f6f' }],
   ['wsx', { hand: 'left', finger: '薬指', color: '#e89b52' }],
   ['edc', { hand: 'left', finger: '中指', color: '#d8b73f' }],
@@ -30,6 +30,7 @@ const FINGER_KEYS: Array<[string, FingerGuide]> = [
 
 export const getFingerGuide = (key: string): FingerGuide | undefined => FINGER_KEYS.find(([keys]) => keys.includes(key.toLowerCase()))?.[1]
 export const HOME_KEYS = ['a', 's', 'd', 'f', 'j', 'k', 'l']
+export const FINGER_KEYBOARD_ROWS = ['1234567890', 'qwertyuiop', 'asdfghjkl', 'zxcvbnm,./-']
 
 export const KANA_COURSES: KanaCourse[] = [
   {
