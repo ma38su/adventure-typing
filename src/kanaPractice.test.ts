@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { KANA_COURSES } from './kanaPractice'
+import { getFingerGuide, KANA_COURSES } from './kanaPractice'
 import { buildRomajiCandidates } from './romajiVariants'
 
 describe('kana practice courses', () => {
-  it('progresses from basic sounds to voiced and contracted sounds', () => {
-    expect(KANA_COURSES.map((course) => course.id)).toEqual(['basic-1', 'basic-2', 'voiced', 'contracted'])
-    expect(KANA_COURSES[2].items.some((item) => item.kana === 'ぱ')).toBe(true)
-    expect(KANA_COURSES[3].items.some((item) => item.kana === 'きゃ')).toBe(true)
+  it('progresses from finger placement to practical words', () => {
+    expect(KANA_COURSES.slice(0, 6).map((course) => course.id)).toEqual(['home-position', 'index-fingers', 'outer-fingers', 'vowels', 'hand-alternation', 'words'])
+    expect(KANA_COURSES.filter((course) => course.unlocksAdventure).map((course) => course.id)).toEqual(['home-position'])
+    expect(KANA_COURSES.find((course) => course.id === 'numbers')?.optional).toBe(true)
+    expect(KANA_COURSES.find((course) => course.id === 'symbols')?.optional).toBe(true)
   })
 
   it('has unique kana within each course and valid input candidates', () => {
@@ -16,9 +17,10 @@ describe('kana practice courses', () => {
     }
   })
 
-  it('accepts keyboard aliases while retaining school Hepburn display', () => {
-    const shi = KANA_COURSES[0].items.find((item) => item.kana === 'し')!
-    expect(shi.romaji).toBe('shi')
-    expect(buildRomajiCandidates(shi.romaji, shi.kana).map((candidate) => candidate.target)).toContain('si')
+  it('maps keys to the standard touch-typing fingers', () => {
+    expect(getFingerGuide('f')).toMatchObject({ hand: 'left', finger: '人差し指' })
+    expect(getFingerGuide('j')).toMatchObject({ hand: 'right', finger: '人差し指' })
+    expect(getFingerGuide('2')).toMatchObject({ hand: 'left', finger: '薬指' })
+    expect(getFingerGuide('.')).toMatchObject({ hand: 'right', finger: '薬指' })
   })
 })
