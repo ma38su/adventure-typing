@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Local design exploration archives (kept for recovery, not versioned)
+.archive/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
