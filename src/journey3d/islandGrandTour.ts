@@ -10,6 +10,12 @@ export type IslandTourStop = {
   color: number
 }
 
+export type IslandTourRoutePoint = {
+  eastKm: number
+  northKm: number
+  stopId?: IslandTourStop['id']
+}
+
 const KM_PER_DEGREE = 111.195
 const longitudeKm = KM_PER_DEGREE * Math.cos(WORLD_PROJECTION.origin[0] * Math.PI / 180)
 
@@ -35,8 +41,49 @@ export const ISLAND_GRAND_TOUR_STOPS: readonly IslandTourStop[] = [
   { id: 'south-coast', name: '南岸の花壇集落', description: '湧水路と海辺の暮らしがつながる休憩地', eastKm: 2.5, northKm: -5.5, color: 0xffa878 },
 ] as const
 
+/**
+ * A scenic walking line rather than straight chords between landmarks.
+ * Intermediate points follow coast terraces, stream valleys and broad ridge
+ * shoulders so the visitor gains height gradually instead of climbing a
+ * volcanic face head-on.
+ */
+export const ISLAND_GRAND_TOUR_ROUTE: readonly IslandTourRoutePoint[] = [
+  { eastKm: 4.9, northKm: -3.4, stopId: 'meadow' },
+  { eastKm: 5.45, northKm: -1.5 },
+  { eastKm: 5.6, northKm: 0.8, stopId: 'east-forest' },
+  { eastKm: 5.1, northKm: 2.7 },
+  { eastKm: 3.7, northKm: 4.8, stopId: 'wet-forest' },
+  { eastKm: 2.1, northKm: 5.45 },
+  { eastKm: 0.4, northKm: 5.95 },
+  { eastKm: -1.4, northKm: 6.6, stopId: 'caldera' },
+  { eastKm: -3.0, northKm: 5.85 },
+  { eastKm: -4.35, northKm: 4.75 },
+  { eastKm: -5.2, northKm: 3.3, stopId: 'west-ridge' },
+  { eastKm: -5.65, northKm: 1.65 },
+  { eastKm: -6.0, northKm: -0.2, stopId: 'estuary' },
+  { eastKm: -5.75, northKm: -2.0 },
+  { eastKm: -4.7, northKm: -3.7, stopId: 'beach' },
+  { eastKm: -3.45, northKm: -2.55 },
+  { eastKm: -2.35, northKm: -1.75 },
+  { eastKm: -1.4, northKm: -1.0, stopId: 'root-spring' },
+  { eastKm: -0.55, northKm: -0.15 },
+  { eastKm: -1.0, northKm: 0.35 },
+  { eastKm: -0.2, northKm: 0.15 },
+  { eastKm: -0.45, northKm: 0.7 },
+  { eastKm: 0.2, northKm: 0.9, stopId: 'ancient-edge' },
+  { eastKm: 0.85, northKm: -1.15 },
+  { eastKm: 1.45, northKm: -3.35 },
+  { eastKm: 2.5, northKm: -5.5, stopId: 'south-coast' },
+  { eastKm: 3.75, northKm: -4.75 },
+] as const
+
+export const tourProgressForStop = (stopId: string) => {
+  const index = ISLAND_GRAND_TOUR_ROUTE.findIndex((point) => point.stopId === stopId)
+  if (index < 0) throw new RangeError(`Unknown tour stop: ${stopId}`)
+  return index / ISLAND_GRAND_TOUR_ROUTE.length
+}
+
 export const sampleTourStop = (stop: IslandTourStop) => {
   const geographic = enuToGeographic(stop.eastKm, stop.northKm)
   return { ...stop, ...geographic, surface: sampleIslandSurface(geographic.latitudeDeg, geographic.longitudeDeg) }
 }
-
