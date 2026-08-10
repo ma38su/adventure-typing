@@ -1,7 +1,7 @@
 # Stage 3 明るさ・可愛さ・3D実装性 校正v2
 
 最終更新: 2026-08-10
-状態: 方向確認用。Stage 2/4/5への展開前
+状態: ユーザー方向確認済み。Stage 1〜5 bright setへ展開済み
 画像: `artwork/preproduction/stage-3-mountain-to-inlet-storyboard-bright-v2.png`
 
 ## v1の問題
@@ -53,13 +53,12 @@
 
 ## 展開gate
 
-この明るさ、形状の丸み、asset分解をStage 2/4/5へ展開候補とする。ただし、道中央へ草・土・根を
-戻す一回の画像修正と、ユーザーの方向確認後に展開する。可愛さを増すために小物を大量追加せず、
-色、輪郭、余白、丸い大形状で調整する。
+この明るさ、形状の丸み、asset分解をStage 1/2/4/5へ展開した。画像と共通監査は
+`stage1-5-bright-storyboard-set.md`を参照する。可愛さを増すために小物を大量追加せず、色、輪郭、
+余白、丸い大形状で調整する。
 
 ## 生成記録
 
 組み込み画像生成を使用。Stage 1正本をvisual-language reference、Stage 3 v1を地理順のreference
 として渡した。promptでは再利用可能なasset数、route方位/標高、camera接線、海の遮蔽、大色面、
 palette、禁止する専用崖/細密模様/敷石道を明記した。特定作品・作家の模倣は指定していない。
-
