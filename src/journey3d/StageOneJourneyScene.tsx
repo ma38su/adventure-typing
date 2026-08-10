@@ -4,18 +4,18 @@ import {
   CylinderGeometry, DirectionalLight, DodecahedronGeometry, DoubleSide, Float32BufferAttribute,
   FogExp2, Group, HemisphereLight, IcosahedronGeometry, MathUtils, Mesh, MeshToonMaterial,
   PCFShadowMap, PerspectiveCamera, PlaneGeometry, RepeatWrapping, Scene, SphereGeometry,
-  SRGBColorSpace, Vector3, WebGLRenderer,
+  SRGBColorSpace, Uint32BufferAttribute, Vector3, WebGLRenderer,
 } from 'three/src/Three.js'
 import type { JourneySceneContracts } from './journeyContracts'
-import { sampleSurfaceHeightKm } from './islandTerrainSurface'
-import { SCENE_UNITS_PER_KM, scenePointToGeographic, STAGE_ONE_TWO_CONTINUOUS_ROUTE } from './stageTwoRouteV2'
+import { createCorridorTerrainMeshData, sampleCorridorGroundSceneY } from './canonicalTerrainMesh'
+import { STAGE_ONE_TWO_CONTINUOUS_ROUTE } from './stageTwoRouteV2'
 
 const THREE = {
   ACESFilmicToneMapping, BoxGeometry, BufferGeometry, CanvasTexture, CatmullRomCurve3, Color,
   CylinderGeometry, DirectionalLight, DodecahedronGeometry, DoubleSide, Float32BufferAttribute,
   FogExp2, Group, HemisphereLight, IcosahedronGeometry, MathUtils, Mesh, MeshToonMaterial,
   PCFShadowMap, PerspectiveCamera, PlaneGeometry, RepeatWrapping, Scene, SphereGeometry,
-  SRGBColorSpace, Vector3, WebGLRenderer,
+  SRGBColorSpace, Uint32BufferAttribute, Vector3, WebGLRenderer,
 }
 
 export type StageOneJourneySceneProps = JourneySceneContracts & {
@@ -81,12 +81,7 @@ export function StageOneJourneyScene(props: StageOneJourneySceneProps) {
     const point = (s: number) => route.getPoint(routeParameter(s))
     const tangent = (s: number) => route.getTangent(routeParameter(s)).normalize()
     const rightAt = (s: number) => { const t = tangent(s); return new THREE.Vector3(-t.z, 0, t.x).normalize() }
-    const height = (x: number, z: number) => {
-      const geographic = scenePointToGeographic(x, z)
-      const backboneHeight = (sampleSurfaceHeightKm(geographic.latitudeDeg, geographic.longitudeDeg) - .08) * SCENE_UNITS_PER_KM
-      const corridorMicroRelief = .12 * Math.sin(x * .17 + z * .035) + .06 * Math.sin(z * .09) - .04 * Math.cos(x * .35 - z * .025)
-      return backboneHeight + corridorMicroRelief
-    }
+    const height = sampleCorridorGroundSceneY
     const widthAt = (s: number) => THREE.MathUtils.lerp(2.35, 1.55, THREE.MathUtils.smoothstep(s, 0.1, 0.62))
 
     const makeTexture = (base: string, spots: string[], seedValue: number) => {
@@ -116,13 +111,11 @@ export function StageOneJourneyScene(props: StageOneJourneySceneProps) {
     trailTexture?.repeat.set(1.2, 32)
     const groundMaterial = new THREE.MeshToonMaterial({ map: groundTexture, color: 0xcbd7a1 })
     const trailMaterial = new THREE.MeshToonMaterial({ map: trailTexture, color: 0xbba876, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -4 })
-    const terrain = new THREE.Mesh(new THREE.PlaneGeometry(230, 390, 100, 190).rotateX(-Math.PI / 2), groundMaterial)
-    terrain.position.set(-35, 0, -150)
-    const terrainPositions = terrain.geometry.attributes.position
-    for (let i = 0; i < terrainPositions.count; i += 1) {
-      const x = terrainPositions.getX(i) - 35, z = terrainPositions.getZ(i) - 150
-      terrainPositions.setY(i, height(x, z))
-    }
+    const meshData = createCorridorTerrainMeshData({ minSceneX: -150, maxSceneX: 80, minSceneZ: -345, maxSceneZ: 45 }, 101, 191, 'regional-corridor')
+    const terrainGeometry = new THREE.BufferGeometry()
+    terrainGeometry.setAttribute('position', new THREE.Float32BufferAttribute(meshData.positions, 3))
+    terrainGeometry.setIndex(new THREE.Uint32BufferAttribute(meshData.indices, 1))
+    const terrain = new THREE.Mesh(terrainGeometry, groundMaterial)
     terrain.geometry.computeVertexNormals()
     terrain.receiveShadow = true
     scene.add(terrain)

@@ -20,6 +20,22 @@ export type IslandTerrainGrid = {
   vertices: readonly IslandSurfaceSample[]
 }
 
+export type IslandTerrainLod = 'globe' | 'regional-corridor' | 'gameplay-near'
+
+export type TerrainLodContract = {
+  id: IslandTerrainLod
+  /** The LOD changes sampling density, never the coastline or macro elevation source. */
+  nominalSpacingMeters: number
+  includesCanonicalMicroRelief: boolean
+  ownsProps: boolean
+}
+
+export const ISLAND_TERRAIN_LODS: Readonly<Record<IslandTerrainLod, TerrainLodContract>> = {
+  globe: { id: 'globe', nominalSpacingMeters: 250, includesCanonicalMicroRelief: false, ownsProps: false },
+  'regional-corridor': { id: 'regional-corridor', nominalSpacingMeters: 25, includesCanonicalMicroRelief: true, ownsProps: false },
+  'gameplay-near': { id: 'gameplay-near', nominalSpacingMeters: 2, includesCanonicalMicroRelief: true, ownsProps: true },
+}
+
 export const ISLAND_SURFACE_BOUNDS = {
   latitudeMinDeg: 11.955,
   latitudeMaxDeg: 12.105,
@@ -128,6 +144,24 @@ export function sampleIslandSurface(latitudeDeg: number, longitudeDeg: number): 
 
 export function sampleSurfaceHeightKm(latitudeDeg: number, longitudeDeg: number) {
   return sampleIslandSurface(latitudeDeg, longitudeDeg).heightKm
+}
+
+/**
+ * Canonical rendered ground height. Macro terrain is identical at every LOD;
+ * deterministic micro relief is revealed by corridor/near LODs only. Keeping
+ * this function geographic prevents a detailed chunk from inventing a second
+ * local terrain surface.
+ */
+export function sampleRenderedSurfaceHeightKm(latitudeDeg: number, longitudeDeg: number, lod: IslandTerrainLod) {
+  const sample = sampleIslandSurface(latitudeDeg, longitudeDeg)
+  if (!sample.land || !ISLAND_TERRAIN_LODS[lod].includesCanonicalMicroRelief) return sample.heightKm
+  const coastFade = clamp01(sample.coastDistanceKm / 0.18)
+  const reliefKm = (
+    0.0012 * Math.sin(sample.eastKm * 17 + sample.northKm * 3.5)
+    + 0.0006 * Math.sin(sample.northKm * 9)
+    - 0.0004 * Math.cos(sample.eastKm * 35 - sample.northKm * 2.5)
+  ) * coastFade
+  return Math.max(0.0005, sample.heightKm + reliefKm)
 }
 
 /** Clockwise deterministic coastline, suitable for a low-detail map mesh or debug overlay. */

@@ -13,17 +13,20 @@ export type WorldRouteAnchor = {
 }
 
 export type TerrainDetailContract = {
-  level: 'backbone' | 'corridor'
-  owns: readonly ('route' | 'elevation' | 'region' | 'watershed' | 'surface' | 'props')[]
+  level: 'backbone' | 'corridor' | 'near'
+  owns: readonly ('route' | 'canonical-surface' | 'sampling-density' | 'props')[]
   retainedBehindStages: number
   preloadedAheadStages: number
 }
 
 export const GLOBAL_TERRAIN_DETAIL: TerrainDetailContract = {
-  level: 'backbone', owns: ['route', 'elevation', 'region', 'watershed'], retainedBehindStages: 1, preloadedAheadStages: 2,
+  level: 'backbone', owns: ['route', 'canonical-surface'], retainedBehindStages: 1, preloadedAheadStages: 2,
 }
 export const CORRIDOR_TERRAIN_DETAIL: TerrainDetailContract = {
-  level: 'corridor', owns: ['surface', 'props'], retainedBehindStages: 1, preloadedAheadStages: 1,
+  level: 'corridor', owns: ['sampling-density'], retainedBehindStages: 1, preloadedAheadStages: 1,
+}
+export const NEAR_TERRAIN_DETAIL: TerrainDetailContract = {
+  level: 'near', owns: ['sampling-density', 'props'], retainedBehindStages: 0, preloadedAheadStages: 1,
 }
 
 export const WORLD_ROUTE_REGISTRY = routeData.stages as readonly (Omit<(typeof routeData.stages)[number], 'anchors'> & { anchors: readonly WorldRouteAnchor[] })[]

@@ -54,3 +54,12 @@ export function scenePointToGeographic(sceneX: number, sceneZ: number) {
     longitudeDeg: origin.longitudeDeg + eastKm / (KM_PER_LATITUDE_DEGREE * Math.cos(REFERENCE_LATITUDE_RAD)),
   }
 }
+
+/** Forward transform paired with scenePointToGeographic. */
+export function geographicPointToScene(latitudeDeg: number, longitudeDeg: number) {
+  const eastKm = (longitudeDeg - origin.longitudeDeg) * KM_PER_LATITUDE_DEGREE * Math.cos(REFERENCE_LATITUDE_RAD)
+  const northKm = (latitudeDeg - origin.latitudeDeg) * KM_PER_LATITUDE_DEGREE
+  const alongKm = eastKm * forwardEast + northKm * forwardNorth
+  const crossKm = -eastKm * forwardNorth + northKm * forwardEast
+  return { sceneX: crossKm * SCENE_UNITS_PER_KM, sceneZ: 10 - alongKm * SCENE_UNITS_PER_KM }
+}
