@@ -35,6 +35,8 @@
 
 地形と海は既存のcanonical island surfaceを使う。ルートとデモ用の簡略ランドマークは評価層であり、正式なgameplay propsではない。承認後は、各区間を同じ座標のregional-corridor / gameplay-near LODとして作り込み、別の島を作らない。22%は全島模型の制御点間を監査する上限であり、実際の歩行用LODではさらに細かな折返しと地形整形を入れ、短区間の体感勾配を緩める。
 
+全島の自然要素は [オープンワールド環境データ設計](island-open-world-data-model.md) に従う。木・低木・草・花・葦・玄武岩は決定論的セルから描画し、三支流・ことば川・南西の河口湾も同じ地理座標を使う。
+
 ## 対象ファイル
 
 - 配布用単体版: `artwork/renderer-prototypes/kotoba-island-grand-tour-v1.html`
