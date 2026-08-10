@@ -1,7 +1,7 @@
 # Stage 2 storyboard design review v2
 
 最終更新: 2026-08-10  
-状態: v1目視評価済み・v2 first pass生成済み・画像承認前
+状態: v2-1修正版生成済み・境界比較前
 対象: `evt-forest-creek-bridge` → `bnd-forest-mountain-a`
 
 ## 1. 制作判断
@@ -105,3 +105,10 @@ Avoid: white feather, wayfinding icon, arrow, glowing trail, portal, sea, clear-
 3. panel 6の門をさらに外し、門越しの左曲がりStage 3道を明確にする。
 
 修正版を`stage-2-continuous-corridor-storyboard-v2-1.png`として保存し、v2を上書きしない。
+
+### v2-1修正結果
+
+`stage-2-continuous-corridor-storyboard-v2-1.png`では、panel 3に低い非対称樹洞を追加し、
+panel 3〜6の道へ苔・根・暗色土を戻し、panel 6の門を縮小して外側へ移動した。
+門越しの左曲がり道も読める。単独画像では条件付き合格とし、Stage 1橋との同一性、
+Stage 3門との同一性は境界比較sheetで最終判定する。
