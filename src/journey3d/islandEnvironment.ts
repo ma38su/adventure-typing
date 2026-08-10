@@ -1,7 +1,7 @@
 import { sampleIslandSurface } from './islandTerrainSurface'
 import { WORLD_PROJECTION } from './worldTerrainBackbone'
 
-export type IslandEnvironmentKind = 'broadleaf-tree' | 'cloud-tree' | 'shrub' | 'grass' | 'flower' | 'reed' | 'basalt'
+export type IslandEnvironmentKind = 'broadleaf-tree' | 'cloud-tree' | 'shrub' | 'grass' | 'flower' | 'reed' | 'fern' | 'basalt' | 'fallen-log'
 
 export type IslandEnvironmentInstance = {
   id: string
@@ -41,8 +41,8 @@ function chooseKind(eastKm: number, northKm: number, seed: number): IslandEnviro
   if (surface.coastalZoneId === 'estuary-wetland') return pick < .72 ? 'reed' : 'shrub'
   if (surface.coastalZoneId === 'sand-shore') return pick < .55 ? 'grass' : 'flower'
   if (surface.coastalZoneId === 'rock-shore') return 'basalt'
-  if (surface.heightKm > .58) return pick < .5 ? 'cloud-tree' : pick < .78 ? 'shrub' : 'basalt'
-  if (surface.climateZoneId === 'windward-wet') return pick < .68 ? 'broadleaf-tree' : pick < .9 ? 'shrub' : 'grass'
+  if (surface.heightKm > .58) return pick < .46 ? 'cloud-tree' : pick < .7 ? 'shrub' : pick < .88 ? 'basalt' : 'fern'
+  if (surface.climateZoneId === 'windward-wet') return pick < .58 ? 'broadleaf-tree' : pick < .72 ? 'shrub' : pick < .88 ? 'fern' : pick < .95 ? 'fallen-log' : 'grass'
   if (surface.climateZoneId === 'leeward-rainshadow') return pick < .48 ? 'grass' : pick < .75 ? 'flower' : 'basalt'
   return pick < .42 ? 'broadleaf-tree' : pick < .72 ? 'shrub' : pick < .9 ? 'grass' : 'flower'
 }

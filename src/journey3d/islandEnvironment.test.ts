@@ -9,7 +9,7 @@ describe('island environment cells', () => {
     expect(first.length).toBeGreaterThan(200)
     const instances = first.flatMap((cell) => cell.instances)
     expect(instances.length).toBeGreaterThan(700)
-    expect(new Set(instances.map((instance) => instance.kind)).size).toBe(7)
+    expect(new Set(instances.map((instance) => instance.kind)).size).toBe(9)
     expect(new Set(first.map((cell) => cell.id)).size).toBe(first.length)
   })
 
