@@ -17,12 +17,12 @@
   <script type="module">
     import * as THREE from 'three'
     import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-    import { createIslandTerrainGrid, createIslandCoastlinePolygon, sampleSurfaceHeightKm } from '/src/journey3d/islandTerrainSurface.ts'
+    import { createIslandTerrainGrid, createIslandCoastlinePolygon, sampleIslandSurface, sampleSurfaceHeightKm } from '/src/journey3d/islandTerrainSurface.ts'
     import { createIslandEnvironmentCells } from '/src/journey3d/islandEnvironment.ts'
     import { ISLAND_WATERWAYS } from '/src/journey3d/islandHydrology.ts'
     import { steerRouteAroundObstacles } from '/src/journey3d/routeObstacleAvoidance.ts'
     import { projectAnchorToEnu } from '/src/journey3d/worldTerrainBackbone.ts'
-    import { ISLAND_GRAND_TOUR_ROUTE, ISLAND_GRAND_TOUR_STOPS, enuToGeographic, tourProgressForStop } from '/src/journey3d/islandGrandTour.ts'
+    import { ISLAND_GRAND_TOUR_ROUTE, ISLAND_GRAND_TOUR_STOPS, enuToGeographic } from '/src/journey3d/islandGrandTour.ts'
 
     const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;document.body.prepend(renderer.domElement)
     const scene=new THREE.Scene();scene.background=new THREE.Color(0xa9dfeb);scene.fog=new THREE.Fog(0xa9dfeb,7,30)
@@ -46,7 +46,7 @@
     const authoredGuide=new THREE.CatmullRomCurve3(ISLAND_GRAND_TOUR_ROUTE.map(s=>new THREE.Vector3(s.eastKm,0,-s.northKm)),true,'centripetal',.35)
     const authoredPoints=Array.from({length:220},(_,index)=>{const point=authoredGuide.getPoint(index/220);return{eastKm:point.x,northKm:-point.z}})
     const obstacles=environment.filter(instance=>['broadleaf-tree','cloud-tree','basalt','fallen-log'].includes(instance.kind)).map(instance=>({eastKm:instance.eastKm,northKm:instance.northKm,radiusKm:instance.kind.includes('tree') ? .085 : .065}))
-    const navigablePoints=steerRouteAroundObstacles(authoredPoints,obstacles,.075)
+    const steeredPoints=steerRouteAroundObstacles(authoredPoints,obstacles,.075),navigablePoints=steeredPoints.map((point,index)=>{const authored=authoredPoints[index],g=enuToGeographic(authored.eastKm,authored.northKm);return sampleIslandSurface(g.latitudeDeg,g.longitudeDeg).coastalZoneId==='sand-shore'?authored:point})
     const planarGuide=new THREE.CatmullRomCurve3(navigablePoints.map(point=>new THREE.Vector3(point.eastKm,0,-point.northKm)),true,'centripetal',.18)
     const routePoints=Array.from({length:600},(_,index)=>{const point=planarGuide.getPoint(index/600);point.y=groundY(point.x,-point.z)+.035;return point})
     const route=new THREE.CatmullRomCurve3(routePoints,true,'centripetal',.2)
@@ -82,7 +82,8 @@
     const play=document.querySelector('#play'),view=document.querySelector('#view'),resetView=document.querySelector('#resetView'),slider=document.querySelector('#progress'),nameEl=document.querySelector('#placeName'),descEl=document.querySelector('#placeDescription'),stopsEl=document.querySelector('#stops')
     let playing=true,overview=false,progress=0,last=performance.now(),activeIndex=-1
     let followYaw=0,followCameraPitch=.67,followLookPitch=-.12,followDistance=.72,dragging=false,dragX=0,dragY=0
-    ISLAND_GRAND_TOUR_STOPS.forEach(stop=>{const b=document.createElement('button');b.textContent=stop.name;b.onclick=()=>{progress=tourProgressForStop(stop.id);slider.value=progress;playing=false;play.textContent='再生';play.setAttribute('aria-pressed','false');update(true)};stopsEl.appendChild(b)})
+    const renderedProgressForStop=stop=>{let nearest=0,best=Infinity;routePoints.forEach((point,index)=>{const distance=(point.x-stop.eastKm)**2+(-point.z-stop.northKm)**2;if(distance<best){best=distance;nearest=index}});return nearest/routePoints.length}
+    ISLAND_GRAND_TOUR_STOPS.forEach(stop=>{const b=document.createElement('button');b.textContent=stop.name;b.onclick=()=>{progress=renderedProgressForStop(stop);slider.value=progress;playing=false;play.textContent='再生';play.setAttribute('aria-pressed','false');update(true)};stopsEl.appendChild(b)})
     play.onclick=()=>{playing=!playing;play.textContent=playing?'一時停止':'再生';play.setAttribute('aria-pressed',String(playing))}
     view.onclick=()=>{overview=!overview;view.textContent=overview?'追従に戻る':'全島を見る';view.setAttribute('aria-pressed',String(overview));controls.enabled=overview;scene.fog.far=overview?72:30;if(overview){camera.position.set(17,21,25);controls.target.set(0,1.8,0)}else update(true)}
     resetView.onclick=()=>{followYaw=0;followCameraPitch=.67;followLookPitch=-.12;followDistance=.72;if(overview){camera.position.set(17,21,25);controls.target.set(0,1.8,0);controls.update()}else update(true)}
@@ -92,7 +93,7 @@
     const stopDrag=event=>{if(!dragging)return;dragging=false;renderer.domElement.releasePointerCapture?.(event.pointerId);renderer.domElement.style.cursor='grab'}
     renderer.domElement.addEventListener('pointerup',stopDrag);renderer.domElement.addEventListener('pointercancel',stopDrag);renderer.domElement.style.cursor='grab'
     renderer.domElement.addEventListener('wheel',event=>{if(overview)return;event.preventDefault();followDistance=Math.max(.48,Math.min(1.8,followDistance+event.deltaY*.001))},{passive:false})
-    const stopProgress=ISLAND_GRAND_TOUR_STOPS.map(stop=>tourProgressForStop(stop.id));const circularDistance=(a,b)=>Math.min(Math.abs(a-b),1-Math.abs(a-b)),beachProgress=tourProgressForStop('beach')
+    const stopProgress=ISLAND_GRAND_TOUR_STOPS.map(renderedProgressForStop);const circularDistance=(a,b)=>Math.min(Math.abs(a-b),1-Math.abs(a-b)),beachProgress=renderedProgressForStop(ISLAND_GRAND_TOUR_STOPS.find(stop=>stop.id==='beach'))
     const update=(jump=false)=>{const p=route.getPoint(progress),ahead=route.getPoint((progress+.008)%1),tangent=ahead.clone().sub(p).normalize();marker.position.copy(p).add(new THREE.Vector3(0,.08,0));let sightline=null;if(!overview){const forward=new THREE.Vector3(tangent.x,0,tangent.z).normalize(),nearBeach=circularDistance(progress,beachProgress)<.038,cameraPitch=nearBeach?.43:followCameraPitch,lookPitch=nearBeach?.04:followLookPitch;const orbit=new THREE.Vector3(-forward.x,0,-forward.z).applyAxisAngle(new THREE.Vector3(0,1,0),followYaw);const horizontal=followDistance*Math.cos(cameraPitch),vertical=.20+followDistance*Math.sin(cameraPitch);const desired=p.clone().addScaledVector(orbit,horizontal).add(new THREE.Vector3(0,vertical,0));camera.position.lerp(desired,jump?1:.045);const lookHeight=.08+Math.tan(lookPitch)*.62;const target=p.clone().addScaledVector(forward,.56).add(new THREE.Vector3(0,lookHeight,0));camera.lookAt(target);sightline={from:camera.position,to:target}}updateCanopyFade(broadleafTrunks,broadleaf,sightline);updateCanopyFade(broadleafCrowns,broadleaf,sightline);updateCanopyFade(cloudTrunks,cloudTrees,sightline);updateCanopyFade(cloudCrowns,cloudTrees,sightline);const idx=stopProgress.reduce((best,value,index)=>circularDistance(progress,value)<circularDistance(progress,stopProgress[best])?index:best,0);if(idx!==activeIndex){activeIndex=idx;const stop=ISLAND_GRAND_TOUR_STOPS[idx];nameEl.textContent=stop.name;descEl.textContent=stop.description;[...stopsEl.children].forEach((b,i)=>b.classList.toggle('active',i===idx))}}
     const resize=()=>{renderer.setSize(innerWidth,innerHeight,false);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix()};addEventListener('resize',resize);resize();update(true)
     renderer.setAnimationLoop(now=>{const dt=Math.min(.05,(now-last)/1000);last=now;waveTexture.offset.x=(waveTexture.offset.x+dt*.003)%1;waveTexture.offset.y=(waveTexture.offset.y+dt*.0012)%1;foamMaterial.opacity=.78+Math.sin(now*.0016)*.10;if(playing){progress=(progress+dt*.012)%1;slider.value=progress}update();if(overview)controls.update();renderer.render(scene,camera)})
