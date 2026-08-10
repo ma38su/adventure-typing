@@ -66,9 +66,9 @@ export function createIslandEnvironmentCells(cellSizeKm = .65): readonly IslandE
       const center = geographicAt(eastMinKm + cellSizeKm / 2, northMinKm + cellSizeKm / 2)
       const centerSurface = sampleIslandSurface(center.latitudeDeg, center.longitudeDeg)
       if (!centerSurface.land) continue
-      const density = centerSurface.climateZoneId === 'windward-wet' ? 6
-        : centerSurface.climateZoneId === 'upland-cloud' ? 4
-          : centerSurface.climateZoneId === 'leeward-rainshadow' ? 2 : 3
+      const density = centerSurface.climateZoneId === 'windward-wet' ? 12
+        : centerSurface.climateZoneId === 'upland-cloud' ? 9
+          : centerSurface.climateZoneId === 'leeward-rainshadow' ? 5 : 7
       const instances: IslandEnvironmentInstance[] = []
       for (let index = 0; index < density; index += 1) {
         const seed = row * 10007 + column * 101 + index * 17
