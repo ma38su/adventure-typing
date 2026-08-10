@@ -44,7 +44,13 @@
 - 後方ゲームcameraで読む髪、肩布、鞄、bootsのsilhouette sheet
 - 色を消しても主人公として識別できること
 
-現状は全身三面の外観方向だけ承認候補。顔拡大sheetと後方silhouette sheetは未制作。
+次のGate 0資料を制作済み。これらを造形の入力に使い、生成画像自体をmeshとは扱わない。
+
+- `third-person-adventurer-girl-face-expression-sheet-v1.png`
+- `third-person-adventurer-girl-rear-motion-sheet-v1.png`
+
+顔sheetはneutral front / true side / front 3/4 / gentle smile / blink / discoveryを同一人物で固定。
+後方sheetはstanding / walk / run / back A-poseで、髪、肩布、鞄、sash、bootsの重なりを固定した。
 
 ### Gate 1 — 無彩色head bust
 
@@ -108,6 +114,8 @@ prompt追加や色変更だけで構造上のfailを直したことにしない�
 - 配信形式: GLB（skin、morph targets、複数animation clips）
 - 将来互換: VRM 1.0 humanoid / expression / lookAt / SpringBoneへ対応可能な命名
 - Three.js: `GLTFLoader` + `AnimationMixer`
+- 読込・受入検査: `loadAdventurerCharacter.ts` / `adventurerCharacterAsset.ts`。skin、6 clips、
+  9 facial morphsが揃うまで正式assetへ切り替えない。未完成GLBをゲーム画面へ自動fallback表示しない
 - primitive v3: motion timing比較専用。正式モデルのfallback外観には使用しない
 
 ## 参照した一次資料
@@ -121,4 +129,3 @@ prompt追加や色変更だけで構造上のfailを直したことにしない�
 - Three.js — SkinnedMesh: https://threejs.org/docs/pages/SkinnedMesh.html
 - Three.js — Animation System: https://threejs.org/manual/en/animation-system.html
 - Three.js — GLTFLoader: https://threejs.org/docs/pages/GLTFLoader.html
-

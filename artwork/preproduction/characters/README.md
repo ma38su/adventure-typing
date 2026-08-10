@@ -18,6 +18,27 @@
 - capsule、tube、球の継ぎ足し、棒状四肢、下着状の骨盤面は不合格例とする。
 - 正式制作前に顔拡大sheetと後方ゲームcamera silhouette sheetを追加する。
 
+## `third-person-adventurer-girl-face-expression-sheet-v1.png`
+
+組み込み画像生成で作成したGate 0の顔造形資料。外観正本をreference imageとして使用し、
+neutral front / true side / front 3/4 / gentle smile / blink / discoveryの6面を生成した。
+頬、顎、耳、眼球、瞼、眉、鼻、口、髪束、首接続の読み取りに使う。表情ごとに別人へ
+見えないことを優先し、画像をface textureとして直接使用しない。
+
+最終promptの要約: 同一のオリジナル女の子冒険者、3x2の頭肩sheet、同じ頭部scale、
+高品質anime 3D / VTuber-inspired造形、目を隠さない髪、形状が読めるneutral studio lighting、
+primitive形状・特定VTuber模倣・顔の不一致・文字を避ける。
+
+## `third-person-adventurer-girl-rear-motion-sheet-v1.png`
+
+組み込み画像生成で作成したGate 0の後方ゲームcamera資料。standing / walk / run / back A-poseの
+4面で、髪、葉飾り、非対称肩布、鞄、sash、パンツ、bootsが後方からどう重なるかを固定した。
+walk/runはmotionの完成見本ではなく、後方silhouetteと可動時の干渉を確認する資料である。
+
+最終promptの要約: 同一人物の後方4面、冒険ゲームの少し高い追従camera、自然な接地と重心、
+控えめな髪・肩布・sashの動き、高品質anime 3D、全身表示。primitive、浮足、過剰な動き、
+武器、長いcape、文字を避ける。
+
 ## `third-person-adventurer-turnaround-v1.png`
 
 OpenAIの組み込み画像生成で作成した三面図の比較用v1。正式モデル・配信素材ではない。
