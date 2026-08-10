@@ -19,11 +19,15 @@ describe('deterministic whole-island terrain surface', () => {
     }
   })
 
-  it('uses every terrestrial route anchor as an exact height constraint', () => {
+  it('keeps terrestrial route metadata subordinate to the canonical terrain', () => {
     const anchors = WORLD_ROUTE_REGISTRY.flatMap((stage) => stage.anchors).filter(isGroundAnchor)
     for (const anchor of anchors) {
-      expect(sampleSurfaceHeightKm(anchor.latitudeDeg, anchor.longitudeDeg)).toBeCloseTo(anchor.altitudeKm, 9)
+      const height = sampleSurfaceHeightKm(anchor.latitudeDeg, anchor.longitudeDeg)
+      expect(height).toBeGreaterThanOrEqual(0)
+      expect(height).toBeLessThanOrEqual(ISLAND_SURFACE_BOUNDS.groundMaxKm)
     }
+    const coast = createIslandCoastlinePolygon(96)
+    expect(Math.max(...coast.map((point) => sampleSurfaceHeightKm(point.latitudeDeg, point.longitudeDeg)))).toBeLessThan(.01)
   })
 
   it('keeps every route anchor on the island or its immediate coastal corridor', () => {

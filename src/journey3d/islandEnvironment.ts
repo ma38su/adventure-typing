@@ -41,6 +41,12 @@ function chooseKind(eastKm: number, northKm: number, seed: number): IslandEnviro
   if (surface.coastalZoneId === 'estuary-wetland') return pick < .72 ? 'reed' : 'shrub'
   if (surface.coastalZoneId === 'sand-shore') return pick < .55 ? 'grass' : 'flower'
   if (surface.coastalZoneId === 'rock-shore') return 'basalt'
+  // Salt spray, wind exposure and shallow coastal soils create a strand belt.
+  // Judge the whole crown footprint, not only whether the trunk is on land.
+  if (surface.coastDistanceKm < .62) {
+    if (surface.moisture01 > .72) return pick < .58 ? 'fern' : 'grass'
+    return pick < .58 ? 'grass' : pick < .86 ? 'flower' : 'basalt'
+  }
   if (surface.heightKm > .58) return pick < .46 ? 'cloud-tree' : pick < .7 ? 'shrub' : pick < .88 ? 'basalt' : 'fern'
   if (surface.climateZoneId === 'windward-wet') return pick < .58 ? 'broadleaf-tree' : pick < .72 ? 'shrub' : pick < .88 ? 'fern' : pick < .95 ? 'fallen-log' : 'grass'
   if (surface.climateZoneId === 'leeward-rainshadow') return pick < .48 ? 'grass' : pick < .75 ? 'flower' : 'basalt'

@@ -105,14 +105,17 @@ function constrainedHeightKm(eastKm: number, northKm: number, coastDistanceKm: n
   for (let index = 0; index < groundAnchors.length; index += 1) {
     const point = groundAnchors[index]
     const distanceSquared = (eastKm - point.eastKm) ** 2 + (northKm - point.northKm) ** 2
-    if (distanceSquared < 1e-12) return point.anchor.altitudeKm
-    // A broad Gaussian blend keeps route constraints part of one eroded island
-    // surface instead of producing a narrow spike beneath every anchor.
-    const weight = gaussian(distanceSquared, 1.8) / Math.max(Math.sqrt(distanceSquared), 1e-9)
+    // Route metadata may guide the macro surface, but it must not override the
+    // shoreline or turn authored travel heights into terrain spikes.
+    const weight = gaussian(distanceSquared, 1.8) / Math.max(Math.sqrt(distanceSquared), .12)
     correction += weight * (point.anchor.altitudeKm - groundAnchorBaselines[index])
     totalWeight += weight
   }
-  const corrected = baseline + (totalWeight > 0 ? correction / totalWeight : 0)
+  const coastAuthority = clamp01(coastDistanceKm / 0.9)
+  const boundedCorrection = totalWeight > 0
+    ? Math.max(-0.26, Math.min(0.26, correction / totalWeight)) * coastAuthority
+    : 0
+  const corrected = baseline + boundedCorrection
   return Math.max(0.003, Math.min(GROUND_ANCHOR_MAX_KM, corrected))
 }
 
