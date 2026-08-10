@@ -42,4 +42,11 @@ describe('island grand tour', () => {
       expect(progress).toBeLessThan(1)
     }
   })
+
+  it('places the pocket-beach stop on the canonical sand shore', () => {
+    const beach = ISLAND_GRAND_TOUR_STOPS.find((stop) => stop.id === 'beach')!
+    const surface = sampleTourStop(beach).surface
+    expect(surface.coastalZoneId).toBe('sand-shore')
+    expect(surface.coastDistanceKm).toBeGreaterThan(.08)
+  })
 })
