@@ -43,3 +43,7 @@ v2の階層リグとmotion比較機能を維持しつつ、華やか版v2三面�
 - 既存1024×768表示もdesktop用distance / FOVを維持する。
 
 坂道IK、skin weight、髪や布のsecondary bone、表情animationは正式GLB工程の対象で、このprimitive pilotの判定には含めない。
+
+## 単体配布版
+
+`artwork/renderer-prototypes/third-person-girl-motion-v3-standalone.html`は、Three.jsを含む依存コードを一つのHTMLへbundleした版である。開発サーバー、`node_modules`、ネットワーク接続を必要とせず、ファイルを端末へコピーしてブラウザで直接開く。生成は`node scripts/build-standalone-prototypes.mjs`を使用し、開発用HTMLを正本として再生成する。

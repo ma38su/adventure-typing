@@ -17,3 +17,7 @@
 - debugの回転中心は島中心に固定し、panを禁止する。海面は有限平面でなく球面なので360° orbitでも端や裏面が見えない。水平線より手前を空気遠近とfogで連続させる。
 - 海岸距離から`deep-ocean → outer-reef → shallow-water → sand/rock-shore`を段階化し、南西湾北部には`estuary-wetland`を置く。bathymetryは深海側へ連続的に下げる。
 - runtime LODは遠景の球面海（低分割・低周波法線）、current/forward corridor周辺の沿岸帯、カメラ近傍の波detailの三層。波detailは見た目だけでroute・海岸・標高を所有しない。
+
+## 単体配布版
+
+`artwork/renderer-prototypes/kotoba-island-terrain-backbone-v1-standalone.html`は、Three.js、terrain生成、216 anchorを内包した一ファイル版である。開発サーバーやネットワークを必要としない。`node scripts/build-standalone-prototypes.mjs`で開発版から再生成する。
