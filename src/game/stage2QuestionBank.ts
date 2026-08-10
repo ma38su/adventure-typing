@@ -2,7 +2,7 @@ import { QUESTIONS, type Grade, type StageSection } from '../questions'
 import type { LinearAuthoredQuestion } from './linearQuestionTypes'
 
 const compactLength = (romaji: string) => romaji.replaceAll(' ', '').length
-const anchorIds = ['creek-bridge', 'tree-hollow', 'feather-sign', 'forest-thins', 'star-gate'] as const
+const anchorIds = ['creek-bridge', 'tree-hollow', 'terrace-turn', 'forest-thins', 'star-gate'] as const
 const legacyStage2 = new Map(QUESTIONS[1].filter((question) => question.stage === 2).map((question) => [question.id, question]))
 
 let newIndex = 0
@@ -63,14 +63,14 @@ export const STAGE_2_QUESTION_BANK: readonly LinearAuthoredQuestion[] = [
   authored(2, 'よく 聞く', 'よく きく', ['よく', '[聞:き]く'], 'yoku kiku', '聞', '立ち止まって小鳥の合図をよく聞く'),
   authored(2, '合図だ', 'あいずだ', ['[合図:あいず]だ'], 'aizuda', '合図', '短い応答音がピピの合図だと分かる'),
 
-  authored(3, '羽だ', 'はねだ', ['[羽:はね]だ'], 'haneda', '羽', '樹洞の下に落ちた羽を見つける'),
-  authored(3, '羽を 取る', 'はねを とる', ['[羽:はね]を', '[取:と]る'], 'hanewo toru', '羽・取', '道を塞がず羽根印を拾う'),
-  authored(3, '印だ', 'しるしだ', ['[印:しるし]だ'], 'shirushida', '印', '羽が渡り便の道標だと気づく'),
-  authored(3, '山を さす', 'やまを さす', ['[山:やま]を', 'さす'], 'yamawo sasu', '山', '羽根印が山側を指している'),
-  authored(3, '右だ', 'みぎだ', ['[右:みぎ]だ'], 'migida', '右', '根を避けて右へ蛇行する細道を見る'),
-  authored(3, '道だ', 'みちだ', ['[道:みち]だ'], 'michida', '道', '羽根印に合う一本の踏み跡を選ぶ'),
-  authored(3, '笛が なる', 'ふえが なる', ['[笛:ふえ]が', 'なる'], 'fuega naru', '笛', 'どんぐり笛が短く応える'),
-  authored(3, '先へ 行く', 'さきへ いく', ['[先:さき]へ', '[行:い]く'], 'sakihe iku', '先・行', '羽根印を確かめて上り道へ進む'),
+  authored(3, '大木だ', 'おおきだ', ['[大木:おおき]だ'], 'ookida', '大木', '斜面の手前に立つ樹洞の大木を見る'),
+  authored(3, '木の 穴', 'きの あな', ['[木:き]の', '[穴:あな]'], 'kino ana', '木・穴', '大木の低い位置にある樹洞を見る'),
+  authored(3, '坂だ', 'さかだ', ['[坂:さか]だ'], 'sakada', '坂', '大木の先で緩く上る斜面を見る'),
+  authored(3, '倒木だ', 'とうぼくだ', ['[倒木:とうぼく]だ'], 'toubokuda', '倒木', '斜面の途中に倒木が横たわる'),
+  authored(3, 'すき間だ', 'すきまだ', ['すき[間:ま]だ'], 'sukimada', '間', '倒木の脇に道が通るすき間を見る'),
+  authored(3, '木が へる', 'きが へる', ['[木:き]が', 'へる'], 'kiga heru', '木', '上る道の先で木々が少なくなる'),
+  authored(3, '空の ぬけ', 'そらの ぬけ', ['[空:そら]の', 'ぬけ'], 'sorano nuke', '空', '薄くなった木々の間に空の抜けを見る'),
+  authored(3, 'のぼる 坂', 'のぼる さか', ['のぼる', '[坂:さか]'], 'noboru saka', '坂', '空の見える方へ続く一本の上り道を見る'),
 
   adapt('1-001', 4, '木で 休む', 'きで やすむ', ['[木:き]で', '[休:やす]む'], 'kide yasumu', '木・休', '疎林へ上る前に木陰で短く休む'),
   authored(4, '木が へる', 'きが へる', ['[木:き]が', 'へる'], 'kiga heru', '木', '標高が上がり高木が少しずつ減る'),

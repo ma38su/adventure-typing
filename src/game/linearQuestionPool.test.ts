@@ -49,6 +49,9 @@ describe('linear question pool', () => {
     courseCeilings.forEach((ceiling, index) => {
       expect(STAGE_2_QUESTION_BANK.filter(({ section }) => section === index + 1).every(({ difficultyLevel }) => difficultyLevel <= ceiling)).toBe(true)
     })
+    const terraceQuestions = STAGE_2_QUESTION_BANK.filter(({ section }) => section === 3)
+    expect(terraceQuestions.every(({ anchorId }) => anchorId === 'terrace-turn')).toBe(true)
+    expect(terraceQuestions.every(({ sentence, meaning }) => !/(羽根印|道標|進路)/u.test(`${sentence}${meaning}`))).toBe(true)
   })
 
   it('keeps one visit deterministic and raises the ceiling gradually', () => {

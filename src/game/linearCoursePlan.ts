@@ -7,7 +7,7 @@ export type LinearCoursePlan = {
 
 const PLANS_1_TO_12: readonly LinearCoursePlan[] = [
   { questionCounts: [7, 7, 7, 7, 8, 8, 8], anchorIds: ['arrival', 'flower-slope', 'tracks', 'seed-glow', 'seed-restored', 'forest-edge', 'rabbit-creek-bridge'] },
-  { questionCounts: [7, 8, 8, 8, 8], anchorIds: ['creek-bridge', 'tree-hollow', 'feather-sign', 'forest-thins', 'star-gate'] },
+  { questionCounts: [7, 8, 8, 8, 8], anchorIds: ['creek-bridge', 'tree-hollow', 'terrace-turn', 'forest-thins', 'star-gate'] },
   { questionCounts: [8, 8, 8, 8, 8, 8, 8], anchorIds: ['star-gate', 'foothold', 'observatory', 'two-winds', 'seed-descends', 'valley-descent', 'river-mouth'] },
   { questionCounts: [7, 7, 7, 7], anchorIds: ['river-mouth', 'seagrass-animal', 'ripple-seed', 'root-gate'] },
   { questionCounts: [8, 8, 8], anchorIds: ['root-gate-spring', 'three-seeds-moonlight', 'light-root-ascent'] },
