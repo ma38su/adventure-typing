@@ -1,7 +1,7 @@
 # Stage 2 storyboard design review v2
 
 最終更新: 2026-08-10  
-状態: v1目視評価済み・v2生成仕様確定・生成前  
+状態: v1目視評価済み・v2 first pass生成済み・画像承認前
 対象: `evt-forest-creek-bridge` → `bnd-forest-mountain-a`
 
 ## 1. 制作判断
@@ -81,3 +81,27 @@ Avoid: white feather, wayfinding icon, arrow, glowing trail, portal, sea, clear-
 ```
 
 出力名は`stage-2-continuous-corridor-storyboard-v2.png`とし、v1を上書きしない。生成後は本書第1節と`stage2-boundary-comparison-spec.md`で判定する。
+
+## 5. v2 first pass画像評価
+
+対象: `artwork/preproduction/stage-2-continuous-corridor-storyboard-v2.png`
+
+| 要件 | 判定 | 画像観察 |
+|---|---|---|
+| 六コマの地形順 | 合格 | 橋、水際の上り、大木、倒木、岩の肩、門の順が明瞭 |
+| 羽根なしの進路 | 合格 | 白羽根・矢印・発光なしで、斜面と空の抜けから進路が読める |
+| 森の段階変化 | 合格 | panel 4まで高木面が残り、panel 5から岩と空が増える |
+| Stage 1橋の同一性 | 条件付き G | 木橋・低い欄干・水・苔岩は継承。ただし同一camera比較sheetがなく、床板・主要岩の対応は未証明 |
+| 樹洞landmark | 不合格 C | panel 3は大木と太根は読めるが、非対称な樹洞が見えずlandmarkとして弱い |
+| 道面 | 不合格 P | panel 3〜6の中央明色面が連続し、部分的に敷石・舗装帯に見える。中央へ苔・落葉・根・草を戻す必要がある |
+| 星見門 | 条件付き S | 低く非発光だが画面中央の比重がまだ強く、門越しの左曲がり道が弱い |
+| 密度と大色面 | 条件付き D | v1より空と遠景が増えたが、panel 2〜4は細部密度が高くquiet areaが不足 |
+
+判定は**first pass条件付き・3D反映禁止**。方向性はv1より改善したため全面再生成はせず、
+次は画像編集で次の三点だけを直す。
+
+1. panel 3の大木へ低く非対称な樹洞を作り、進路はその右へ通す。
+2. panel 3〜6の道中央へ苔・落葉・根・草を戻し、連続した明色面を分断する。
+3. panel 6の門をさらに外し、門越しの左曲がりStage 3道を明確にする。
+
+修正版を`stage-2-continuous-corridor-storyboard-v2-1.png`として保存し、v2を上書きしない。
