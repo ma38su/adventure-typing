@@ -33,6 +33,11 @@
   低緯度雲霧林の広葉樹・風衝低木へ修正が必要。
 - 判定: **構図・地理は条件付き合格、植生と道は修正要**。
 
+明るさ・可愛さ・3D実装性の校正v2は
+`stage-3-mountain-to-inlet-storyboard-bright-v2.png`および
+`stage3-bright-implementation-calibration.md`を参照する。v1は地理初稿として保持し、v2で
+明るいpalette、広葉樹、再利用asset familyへ置き換えた。
+
 ## Stage 4「入り江から古代樹の根へ」
 
 対象: `artwork/preproduction/stage-4-inlet-to-ancient-root-storyboard-v1.png`
@@ -74,4 +79,3 @@
 
 すべて、Stage 1正本をvisual-language reference、直前Stage画像をstart-boundary referenceとして
 組み込み画像生成へ渡した。特定の既存ゲーム、VTuber、作家の模倣は指定していない。
-
