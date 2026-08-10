@@ -1,26 +1,90 @@
 export type IslandWaterway = {
   id: 'east-forest-stream' | 'rain-forest-stream' | 'spring-stream' | 'kotoba-river'
   name: string
+  /** Bankfull water width. Visual renderers must not inflate this to a map symbol. */
   widthKm: number
+  /** Approximate contributing area at the downstream end. */
+  catchmentKm2: number
+  flowClass: 'perennial' | 'spring-fed'
   points: readonly { eastKm: number; northKm: number }[]
 }
 
-/** Surface-water centerlines used by every terrain LOD. */
+export type IslandWaterBody = {
+  id: string
+  kind: 'spring-pool' | 'rain-marsh' | 'tide-pool'
+  eastKm: number
+  northKm: number
+  radiusKm: number
+}
+
+/**
+ * Surface-water centerlines used by every terrain LOD.
+ *
+ * The island is an old permeable basalt shield. Persistent water is therefore
+ * limited to the wet windward catchments and one spring-fed tributary. Lines
+ * follow concave topographic lows from headwater to outlet and only widen
+ * after confluences; they never cross a ridge merely to reach a story beat.
+ */
 export const ISLAND_WATERWAYS: readonly IslandWaterway[] = [
   {
-    id: 'east-forest-stream', name: '東の森支流', widthKm: .035,
-    points: [{ eastKm: 5.45, northKm: .7 }, { eastKm: 4.2, northKm: .85 }, { eastKm: 2.8, northKm: .9 }, { eastKm: 1.2, northKm: .7 }, { eastKm: -.1, northKm: .45 }],
+    id: 'east-forest-stream', name: '東風上沢', widthKm: .012, catchmentKm2: 6.8, flowClass: 'perennial',
+    points: [
+      { eastKm: -.2, northKm: .15 }, { eastKm: 1.0, northKm: .35 }, { eastKm: 2.05, northKm: .75 },
+      { eastKm: 3.0, northKm: 1.35 }, { eastKm: 3.85, northKm: 2.05 }, { eastKm: 4.55, northKm: 2.75 },
+      { eastKm: 5.1, northKm: 3.45 }, { eastKm: 5.85, northKm: 3.65 }, { eastKm: 6.55, northKm: 3.55 },
+    ],
   },
   {
-    id: 'rain-forest-stream', name: '北東の雨森支流', widthKm: .028,
-    points: [{ eastKm: 3.65, northKm: 4.55 }, { eastKm: 3.15, northKm: 3.45 }, { eastKm: 2.5, northKm: 2.35 }, { eastKm: 1.25, northKm: 1.3 }, { eastKm: -.1, northKm: .45 }],
+    id: 'rain-forest-stream', name: '北東雨森沢', widthKm: .015, catchmentKm2: 9.4, flowClass: 'perennial',
+    points: [
+      { eastKm: -.2, northKm: .15 }, { eastKm: .25, northKm: .9 }, { eastKm: .75, northKm: 1.8 },
+      { eastKm: 1.25, northKm: 2.7 }, { eastKm: 1.75, northKm: 3.65 }, { eastKm: 2.25, northKm: 4.55 },
+      { eastKm: 2.65, northKm: 5.45 }, { eastKm: 3.35, northKm: 6.0 }, { eastKm: 4.15, northKm: 6.25 },
+    ],
   },
   {
-    id: 'spring-stream', name: '中央湧水支流', widthKm: .032,
-    points: [{ eastKm: -.9, northKm: -.65 }, { eastKm: -1.55, northKm: -.7 }, { eastKm: -2.35, northKm: -.55 }, { eastKm: -3.15, northKm: -.25 }],
+    id: 'spring-stream', name: '溶岩層境湧水沢', widthKm: .009, catchmentKm2: 2.2, flowClass: 'spring-fed',
+    points: [
+      { eastKm: -.8, northKm: -.8 }, { eastKm: -1.25, northKm: -.62 },
+      { eastKm: -1.75, northKm: -.45 }, { eastKm: -2.25, northKm: -.38 },
+    ],
   },
   {
-    id: 'kotoba-river', name: 'ことば川', widthKm: .065,
-    points: [{ eastKm: -.1, northKm: .45 }, { eastKm: -1.15, northKm: .15 }, { eastKm: -2.25, northKm: -.15 }, { eastKm: -3.15, northKm: -.25 }, { eastKm: -4.15, northKm: -.2 }, { eastKm: -5.25, northKm: -.3 }, { eastKm: -5.85, northKm: -.45 }, { eastKm: -6.2, northKm: -.72 }, { eastKm: -6.42, northKm: -1.02 }],
+    id: 'kotoba-river', name: '南西谷川', widthKm: .026, catchmentKm2: 23.5, flowClass: 'perennial',
+    points: [
+      { eastKm: -.9, northKm: -.05 }, { eastKm: -1.55, northKm: -.22 },
+      { eastKm: -2.25, northKm: -.38 }, { eastKm: -3.0, northKm: -.55 }, { eastKm: -3.75, northKm: -.78 },
+      { eastKm: -4.45, northKm: -1.05 }, { eastKm: -5.05, northKm: -1.35 }, { eastKm: -5.55, northKm: -1.7 },
+      { eastKm: -5.95, northKm: -2.05 },
+    ],
   },
 ] as const
+
+export const ISLAND_WATER_BODIES: readonly IslandWaterBody[] = [
+  { id: 'spring-eye', kind: 'spring-pool', eastKm: -.8, northKm: -.8, radiusKm: .075 },
+  { id: 'rain-marsh-a', kind: 'rain-marsh', eastKm: 2.58, northKm: 5.34, radiusKm: .11 },
+  { id: 'rain-marsh-b', kind: 'rain-marsh', eastKm: 2.42, northKm: 5.18, radiusKm: .065 },
+  { id: 'west-platform-pool-a', kind: 'tide-pool', eastKm: -7.15, northKm: 2.48, radiusKm: .052 },
+  { id: 'west-platform-pool-b', kind: 'tide-pool', eastKm: -7.02, northKm: 2.3, radiusKm: .036 },
+] as const
+
+export function nearestWaterwayDistanceKm(eastKm: number, northKm: number) {
+  let best: { waterway: IslandWaterway; distanceKm: number; downstream01: number } | undefined
+  for (const waterway of ISLAND_WATERWAYS) {
+    for (let index = 0; index < waterway.points.length - 1; index += 1) {
+      const a = waterway.points[index]
+      const b = waterway.points[index + 1]
+      const dx = b.eastKm - a.eastKm
+      const dn = b.northKm - a.northKm
+      const lengthSquared = dx * dx + dn * dn
+      const t = Math.max(0, Math.min(1, ((eastKm - a.eastKm) * dx + (northKm - a.northKm) * dn) / lengthSquared))
+      const distanceKm = Math.hypot(eastKm - (a.eastKm + dx * t), northKm - (a.northKm + dn * t))
+      if (!best || distanceKm < best.distanceKm) best = {
+        waterway,
+        distanceKm,
+        downstream01: (index + t) / (waterway.points.length - 1),
+      }
+    }
+  }
+  return best!
+}

@@ -3,9 +3,9 @@ import { enuToGeographic, ISLAND_GRAND_TOUR_ROUTE, ISLAND_GRAND_TOUR_STOPS, samp
 import { sampleIslandSurface } from './islandTerrainSurface'
 
 describe('island grand tour', () => {
-  it('visits ten distinct characteristic places on canonical land', () => {
-    expect(ISLAND_GRAND_TOUR_STOPS).toHaveLength(10)
-    expect(new Set(ISLAND_GRAND_TOUR_STOPS.map((stop) => stop.id)).size).toBe(10)
+  it('visits eleven distinct characteristic places on canonical land', () => {
+    expect(ISLAND_GRAND_TOUR_STOPS).toHaveLength(11)
+    expect(new Set(ISLAND_GRAND_TOUR_STOPS.map((stop) => stop.id)).size).toBe(11)
     for (const stop of ISLAND_GRAND_TOUR_STOPS) {
       const sampled = sampleTourStop(stop)
       expect(sampled.surface.land, stop.name).toBe(true)
@@ -48,5 +48,11 @@ describe('island grand tour', () => {
     const surface = sampleTourStop(beach).surface
     expect(surface.coastalZoneId).toBe('sand-shore')
     expect(surface.coastDistanceKm).toBeGreaterThan(.08)
+  })
+
+  it('routes through the exposed west-coast wave-cut platform', () => {
+    const platform = ISLAND_GRAND_TOUR_STOPS.find((stop) => stop.id === 'wave-platform')!
+    expect(platform.eastKm).toBeLessThan(-6.5)
+    expect(tourProgressForStop(platform.id)).toBeGreaterThan(tourProgressForStop('west-ridge'))
   })
 })

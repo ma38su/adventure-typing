@@ -1,4 +1,5 @@
 import { projectAnchorToEnu, WORLD_PROJECTION, WORLD_ROUTE_REGISTRY, type WorldRouteAnchor } from './worldTerrainBackbone'
+import { nearestWaterwayDistanceKm } from './islandHydrology'
 
 export type GeographicPoint = { latitudeDeg: number; longitudeDeg: number }
 export type IslandSurfaceSample = GeographicPoint & {
@@ -81,22 +82,34 @@ function unconstrainedHeightKm(eastKm: number, northKm: number, coastDistanceKm:
   const centralWatershed = 0.31 * gaussian((eastKm + 0.3) ** 2 + (northKm - 3.2) ** 2, 3.6)
   const southeastLavaPlain = 0.07 * gaussian((eastKm - 5.1) ** 2 + (northKm + 3.8) ** 2, 4.2)
   const southwestBayErosion = 0.22 * gaussian((eastKm + 5.8) ** 2 + (northKm + 2.1) ** 2, 2.15)
-  return Math.min(GROUND_ANCHOR_MAX_KM, inland * Math.max(0.008, 0.025 + calderaRim + northwestPeak + centralWatershed + southeastLavaPlain - southwestBayErosion))
+  const drainage = nearestWaterwayDistanceKm(eastKm, northKm)
+  const valleyRadius = drainage.waterway.id === 'kotoba-river' ? .34 : .18
+  const valleyDepth = (drainage.waterway.id === 'kotoba-river' ? .022 : .009)
+    + drainage.downstream01 * (drainage.waterway.id === 'kotoba-river' ? .026 : .012)
+  const fluvialIncision = valleyDepth * gaussian(drainage.distanceKm ** 2, valleyRadius)
+  return Math.min(GROUND_ANCHOR_MAX_KM, inland * Math.max(0.008, 0.025 + calderaRim + northwestPeak + centralWatershed + southeastLavaPlain - southwestBayErosion - fluvialIncision))
 }
+
+let groundAnchorBaselines: readonly number[] | undefined
 
 function constrainedHeightKm(eastKm: number, northKm: number, coastDistanceKm: number) {
   const baseline = unconstrainedHeightKm(eastKm, northKm, coastDistanceKm)
   if (coastDistanceKm <= 0) return 0
+  groundAnchorBaselines ??= groundAnchors.map((point) => unconstrainedHeightKm(
+    point.eastKm,
+    point.northKm,
+    Math.max(0.05, sampleCoastDistanceKm(point.anchor.latitudeDeg, point.anchor.longitudeDeg)),
+  ))
   let correction = 0
   let totalWeight = 0
-  for (const point of groundAnchors) {
+  for (let index = 0; index < groundAnchors.length; index += 1) {
+    const point = groundAnchors[index]
     const distanceSquared = (eastKm - point.eastKm) ** 2 + (northKm - point.northKm) ** 2
     if (distanceSquared < 1e-12) return point.anchor.altitudeKm
-    const anchorBase = unconstrainedHeightKm(point.eastKm, point.northKm, Math.max(0.05, sampleCoastDistanceKm(point.anchor.latitudeDeg, point.anchor.longitudeDeg)))
     // A broad Gaussian blend keeps route constraints part of one eroded island
     // surface instead of producing a narrow spike beneath every anchor.
     const weight = gaussian(distanceSquared, 1.8) / Math.max(Math.sqrt(distanceSquared), 1e-9)
-    correction += weight * (point.anchor.altitudeKm - anchorBase)
+    correction += weight * (point.anchor.altitudeKm - groundAnchorBaselines[index])
     totalWeight += weight
   }
   const corrected = baseline + (totalWeight > 0 ? correction / totalWeight : 0)
