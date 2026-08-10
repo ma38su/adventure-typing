@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ことば島 ぐるっと周遊デモ v1</title>
+  <style>
+    *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#9edce8;font-family:system-ui,"Hiragino Sans",sans-serif;color:#173c42}canvas{display:block;width:100%;height:100%}
+    .top{position:fixed;z-index:3;left:12px;right:12px;top:10px;display:flex;justify-content:space-between;gap:12px;pointer-events:none}.card{pointer-events:auto;background:#fff9e9e8;border:1px solid #fff;border-radius:16px;box-shadow:0 8px 28px #17434b2c;backdrop-filter:blur(8px)}.title{padding:10px 14px;max-width:440px}.title h1{font-size:17px;margin:0}.title p{font-size:11px;margin:4px 0 0;line-height:1.45}.place{padding:10px 14px;min-width:260px;text-align:right}.place strong{display:block;font-size:16px}.place span{font-size:11px}
+    .controls{position:fixed;z-index:3;left:12px;right:12px;bottom:10px;padding:9px 11px;display:grid;grid-template-columns:auto auto minmax(130px,1fr) auto;gap:8px;align-items:center}.controls button,.stops button{border:0;border-radius:999px;background:#e7f5d1;color:#173c42;padding:8px 12px;font-weight:700;cursor:pointer}.controls button[aria-pressed="true"]{background:#ffb076}.controls input{width:100%;accent-color:#ef8258}.stops{position:fixed;z-index:3;left:12px;bottom:68px;display:flex;gap:6px;max-width:calc(100vw - 24px);overflow:auto;padding:7px}.stops button{font-size:10px;white-space:nowrap;padding:6px 9px}.stops button.active{background:#ffd566}.hint{font-size:10px;white-space:nowrap}
+    @media(max-width:700px){.top{display:block}.place{margin-top:7px;text-align:left;min-width:0}.title p{display:none}.controls{grid-template-columns:auto auto 1fr}.hint{display:none}.stops{bottom:64px}.controls button{padding:8px 10px}.place strong{font-size:14px}}
+  </style>
+</head>
+<body>
+  <div class="top"><section class="card title"><h1>ことば島｜ぐるっと周遊デモ</h1><p>物語とは独立した地理確認コース。共通の全島地形上を、切替・再ロードなしで一周します。</p></section><section class="card place"><strong id="placeName">南東の花草原</strong><span id="placeDescription">海風を受ける明るい溶岩原の緩丘</span></section></div>
+  <nav class="card stops" id="stops" aria-label="見どころ"></nav>
+  <section class="card controls"><button id="play" aria-pressed="true">一時停止</button><button id="view" aria-pressed="false">全島を見る</button><input id="progress" type="range" min="0" max="1" step="0.0005" value="0" aria-label="周遊位置"><span class="hint">ドラッグ: 視点調整　地点ボタン: すぐ移動</span></section>
+  <script type="module">
+    import * as THREE from 'three'
+    import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+    import { createIslandTerrainGrid, createIslandCoastlinePolygon, sampleSurfaceHeightKm } from '/src/journey3d/islandTerrainSurface.ts'
+    import { projectAnchorToEnu } from '/src/journey3d/worldTerrainBackbone.ts'
+    import { ISLAND_GRAND_TOUR_STOPS, enuToGeographic } from '/src/journey3d/islandGrandTour.ts'
+
+    const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.shadowMap.enabled=true;document.body.prepend(renderer.domElement)
+    const scene=new THREE.Scene();scene.background=new THREE.Color(0xa9dfeb);scene.fog=new THREE.Fog(0xa9dfeb,7,30)
+    const camera=new THREE.PerspectiveCamera(47,1,.03,140);camera.position.set(6,4,8)
+    const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.enablePan=false;controls.maxPolarAngle=Math.PI*.48;controls.enabled=false
+    scene.add(new THREE.HemisphereLight(0xfff4cf,0x315b62,2.5));const sun=new THREE.DirectionalLight(0xffdc93,3.8);sun.position.set(-9,18,12);sun.castShadow=true;scene.add(sun)
+    const PLANET_RADIUS_KM=6371,curvature=(e,n)=>(e*e+n*n)/(2*PLANET_RADIUS_KM),groundY=(e,n)=>{const g=enuToGeographic(e,n);return sampleSurfaceHeightKm(g.latitudeDeg,g.longitudeDeg)*7-curvature(e,n)}
+    const ocean=new THREE.Mesh(new THREE.SphereGeometry(PLANET_RADIUS_KM,128,64),new THREE.MeshToonMaterial({color:0x3b9fb2}));ocean.position.y=-PLANET_RADIUS_KM;scene.add(ocean)
+    const grid=createIslandTerrainGrid(101,101,3),positions=[],colors=[],indices=[],C=grid.columns,R=grid.rows
+    const coastal={"deep-ocean":0x3b91aa,"outer-reef":0x45c3bd,"shallow-water":0x72d8c5,"estuary-wetland":0x77aa72,"sand-shore":0xf0d991,"rock-shore":0x7e8274}
+    const tone=s=>s.coastalZoneId!=='inland'?new THREE.Color(coastal[s.coastalZoneId]):s.heightKm>.58?new THREE.Color(0x779486):s.climateZoneId==='windward-wet'?new THREE.Color(0x55a96b):s.climateZoneId==='leeward-rainshadow'?new THREE.Color(0xaeb663):new THREE.Color(0x78ad63)
+    grid.vertices.forEach(s=>{const y=s.land?s.heightKm*7:s.bathymetryKm*.18;positions.push(s.eastKm,y-curvature(s.eastKm,s.northKm),-s.northKm);const c=tone(s);colors.push(c.r,c.g,c.b)})
+    for(let r=0;r<R-1;r++)for(let c=0;c<C-1;c++){const a=r*C+c,b=a+1,d=(r+1)*C+c,e=d+1;if([a,b,d,e].some(i=>grid.vertices[i].coastalZoneId!=='deep-ocean'))indices.push(a,d,b,b,d,e)}
+    const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geo.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));geo.setIndex(indices);geo.computeVertexNormals();const land=new THREE.Mesh(geo,new THREE.MeshToonMaterial({vertexColors:true,side:THREE.DoubleSide}));land.receiveShadow=true;scene.add(land)
+    const coast=createIslandCoastlinePolygon(160).map(p=>{const e=projectAnchorToEnu({...p,altitudeKm:0});return new THREE.Vector3(e.eastKm,.025-curvature(e.eastKm,e.northKm),-e.northKm)});coast.push(coast[0]);scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(coast),new THREE.LineBasicMaterial({color:0xfff3c5,transparent:true,opacity:.8})))
+
+    const routePoints=ISLAND_GRAND_TOUR_STOPS.map(s=>new THREE.Vector3(s.eastKm,groundY(s.eastKm,s.northKm)+.09,-s.northKm))
+    const route=new THREE.CatmullRomCurve3(routePoints,true,'catmullrom',.3)
+    const routeTube=new THREE.Mesh(new THREE.TubeGeometry(route,420,.022,7,true),new THREE.MeshToonMaterial({color:0xff8b63}));scene.add(routeTube)
+    const marker=new THREE.Mesh(new THREE.SphereGeometry(.050,16,12),new THREE.MeshToonMaterial({color:0xfff0a0,emissive:0x5b3515,emissiveIntensity:.3}));scene.add(marker)
+
+    const trunkMat=new THREE.MeshToonMaterial({color:0x6b573d}),leafMat=new THREE.MeshToonMaterial({color:0x4e9b61}),flowerMat=new THREE.MeshToonMaterial({color:0xffd05e}),rockMat=new THREE.MeshToonMaterial({color:0x6f807b})
+    const addTree=(x,n,scale=1)=>{const y=groundY(x,n);const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.045*scale,.07*scale,.55*scale,7),trunkMat);trunk.position.set(x,y+.27*scale,-n);const crown=new THREE.Mesh(new THREE.IcosahedronGeometry(.28*scale,1),leafMat);crown.scale.y=1.25;crown.position.set(x,y+.69*scale,-n);scene.add(trunk,crown)}
+    const addRock=(x,n,scale=.2)=>{const o=new THREE.Mesh(new THREE.DodecahedronGeometry(scale,0),rockMat);o.scale.y=.65;o.position.set(x,groundY(x,n)+scale*.35,-n);scene.add(o)}
+    for(const stop of ISLAND_GRAND_TOUR_STOPS){const y=groundY(stop.eastKm,stop.northKm);const pin=new THREE.Mesh(new THREE.CylinderGeometry(.045,.065,.32,8),new THREE.MeshToonMaterial({color:stop.color}));pin.position.set(stop.eastKm,y+.16,-stop.northKm);scene.add(pin);if(/森/.test(stop.name))for(let i=0;i<8;i++)addTree(stop.eastKm+Math.sin(i*2.1)*(.22+i*.025),stop.northKm+Math.cos(i*1.7)*(.24+i*.025),.55+(.15*(i%3)));if(/草原|花壇/.test(stop.name))for(let i=0;i<12;i++){const f=new THREE.Mesh(new THREE.IcosahedronGeometry(.045,0),flowerMat);const x=stop.eastKm+Math.sin(i*2.4)*(.2+i*.018),n=stop.northKm+Math.cos(i*1.8)*(.2+i*.018);f.position.set(x,groundY(x,n)+.05,-n);scene.add(f)}if(/カルデラ|尾根/.test(stop.name))for(let i=0;i<7;i++)addRock(stop.eastKm+(i-3)*.13,stop.northKm+Math.sin(i)*.18,.10+(i%3)*.035)}
+    const treeStop=ISLAND_GRAND_TOUR_STOPS.find(s=>s.id==='ancient-edge');{const y=groundY(treeStop.eastKm,treeStop.northKm);const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.34,.58,2.9,10),trunkMat);trunk.position.set(treeStop.eastKm,y+1.45,-treeStop.northKm);const crown=new THREE.Mesh(new THREE.IcosahedronGeometry(1.25,2),new THREE.MeshToonMaterial({color:0x3e7d55}));crown.scale.set(1.35,.75,1.2);crown.position.set(treeStop.eastKm,y+3.15,-treeStop.northKm);scene.add(trunk,crown)}
+
+    const play=document.querySelector('#play'),view=document.querySelector('#view'),slider=document.querySelector('#progress'),nameEl=document.querySelector('#placeName'),descEl=document.querySelector('#placeDescription'),stopsEl=document.querySelector('#stops')
+    let playing=true,overview=false,progress=0,last=performance.now(),activeIndex=-1
+    ISLAND_GRAND_TOUR_STOPS.forEach((stop,index)=>{const b=document.createElement('button');b.textContent=stop.name;b.onclick=()=>{progress=index/ISLAND_GRAND_TOUR_STOPS.length;slider.value=progress;playing=false;play.textContent='再生';play.setAttribute('aria-pressed','false');update(true)};stopsEl.appendChild(b)})
+    play.onclick=()=>{playing=!playing;play.textContent=playing?'一時停止':'再生';play.setAttribute('aria-pressed',String(playing))}
+    view.onclick=()=>{overview=!overview;view.textContent=overview?'追従に戻る':'全島を見る';view.setAttribute('aria-pressed',String(overview));controls.enabled=overview;scene.fog.far=overview?72:30;if(overview){camera.position.set(17,21,25);controls.target.set(0,1.8,0)}else update(true)}
+    slider.oninput=()=>{progress=Number(slider.value);playing=false;play.textContent='再生';play.setAttribute('aria-pressed','false');update(true)}
+    const update=(jump=false)=>{const p=route.getPoint(progress),ahead=route.getPoint((progress+.008)%1),tangent=ahead.clone().sub(p).normalize();marker.position.copy(p).add(new THREE.Vector3(0,.08,0));if(!overview){const desired=p.clone().addScaledVector(tangent,-.82).add(new THREE.Vector3(0,.48,0));camera.position.lerp(desired,jump?1:.045);const target=p.clone().addScaledVector(tangent,.55).add(new THREE.Vector3(0,.16,0));camera.lookAt(target)}const idx=Math.round(progress*ISLAND_GRAND_TOUR_STOPS.length)%ISLAND_GRAND_TOUR_STOPS.length;if(idx!==activeIndex){activeIndex=idx;const stop=ISLAND_GRAND_TOUR_STOPS[idx];nameEl.textContent=stop.name;descEl.textContent=stop.description;[...stopsEl.children].forEach((b,i)=>b.classList.toggle('active',i===idx))}}
+    const resize=()=>{renderer.setSize(innerWidth,innerHeight,false);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix()};addEventListener('resize',resize);resize();update(true)
+    renderer.setAnimationLoop(now=>{const dt=Math.min(.05,(now-last)/1000);last=now;if(playing){progress=(progress+dt*.012)%1;slider.value=progress}update();if(overview)controls.update();renderer.render(scene,camera)})
+  </script>
+</body>
+</html>

@@ -7,6 +7,7 @@ const root = resolve(import.meta.dirname, '..')
 const targets = [
   'artwork/renderer-prototypes/third-person-girl-motion-v3.html',
   'artwork/renderer-prototypes/kotoba-island-terrain-backbone-v1.html',
+  'artwork/renderer-prototypes/kotoba-island-grand-tour-v1.html',
 ]
 
 async function inlinePrototype(input) {
