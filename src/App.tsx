@@ -22,7 +22,7 @@ import { ParentReportPage } from './pages/ParentReportPage'
 import { GRADE_STORIES, getCourseStory } from './game/storyConfig'
 import { linearStageId, toLegacyStage, type LinearStageNumber } from './game/linearStageConfig'
 import { buildLinearStageQuestions } from './game/linearQuestionPool'
-import { getJourneyLabel } from './journey3d/journeyRoute'
+import { getStageJourneyLabel } from './journey3d/journeyRoute'
 import './App.css'
 
 const KanaPracticePage = lazy(() => import('./KanaPracticePage').then((module) => ({ default: module.KanaPracticePage })))
@@ -159,7 +159,7 @@ function App() {
   const currentCourseId = linearStageId(selectedStage)
   // Expand the numeric range only after each shared boundary passes its gate. Keeping
   // this as one owner lets later stages retain the same scene/camera/transport.
-  const usesJourneyWorld = selectedStage === 1 && practiceMode === 'adventure'
+  const usesJourneyWorld = selectedStage <= 2 && practiceMode === 'adventure'
   const journeyTypingPace = Math.min(2, 0.65 + combo * 0.025 + stepQueue * 0.08)
   const chapterCompletedCourses = useMemo(() => Array.from({ length: 6 }, (_, index) => ({
     legacy: `${storyGrade}-${index + 1}`,
@@ -635,7 +635,7 @@ function App() {
             <JourneyWorld stageNumber={selectedStage} journeyProgress={courseProgress} isTyping={typed.length > 0 && !awaitingFinish && !completed} typingPace={journeyTypingPace} reducedMotion={reducedMotion} />
           </Suspense>
           <div className="stage-one-hud" aria-live="polite">
-            <div className="stage-one-hud-title"><small>第1話</small><strong>{courseStory.title}</strong><span>{getJourneyLabel(courseProgress)}</span></div>
+            <div className="stage-one-hud-title"><small>第{selectedStage}話</small><strong>{courseStory.title}</strong><span>{getStageJourneyLabel(selectedStage, courseProgress)}</span></div>
             <div className="stage-one-hud-progress">
               <span>コース {currentSegmentIndex + 1}/{segmentGroups.length}・問題 {questionIndex + 1}/{questions.length}</span>
               <div role="progressbar" aria-label="このステージの道のり" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(courseProgress * 100)}><i style={{ width: `${courseProgress * 100}%` }} /></div>

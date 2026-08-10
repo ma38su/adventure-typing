@@ -14,6 +14,6 @@ export type JourneyWorldProps = JourneySceneContracts & {
  * renderer today; future stage chunks belong below this owner so crossing a
  * boundary does not recreate the canvas, camera, or audio transport.
  */
-export function JourneyWorld({ stageNumber: _stageNumber, ...sceneProps }: JourneyWorldProps) {
-  return <StageOneJourneyScene {...sceneProps} />
+export function JourneyWorld({ stageNumber, journeyProgress, ...sceneProps }: JourneyWorldProps) {
+  return <StageOneJourneyScene {...sceneProps} journeyProgress={(stageNumber - 1) + journeyProgress} />
 }

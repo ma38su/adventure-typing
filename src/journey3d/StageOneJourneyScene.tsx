@@ -6,9 +6,9 @@ import {
   PCFShadowMap, PerspectiveCamera, PlaneGeometry, RepeatWrapping, Scene, SphereGeometry,
   SRGBColorSpace, Vector3, WebGLRenderer,
 } from 'three/src/Three.js'
-import { clampJourneyProgress } from './journeyRoute'
 import type { JourneySceneContracts } from './journeyContracts'
-import { STAGE_ONE_CHUNK_LOCAL_ROUTE } from './stageOneRouteV2'
+import { sampleSurfaceHeightKm } from './islandTerrainSurface'
+import { SCENE_UNITS_PER_KM, scenePointToGeographic, STAGE_ONE_TWO_CONTINUOUS_ROUTE } from './stageTwoRouteV2'
 
 const THREE = {
   ACESFilmicToneMapping, BoxGeometry, BufferGeometry, CanvasTexture, CatmullRomCurve3, Color,
@@ -51,6 +51,8 @@ export function StageOneJourneyScene(props: StageOneJourneySceneProps) {
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1.04
     renderer.domElement.setAttribute('aria-hidden', 'true')
+    renderer.domElement.id = 'journey-world-canvas'
+    renderer.domElement.dataset.worldSource = 'kotoba-island-route-v2'
     host.prepend(renderer.domElement)
 
     const scene = new THREE.Scene()
@@ -71,11 +73,20 @@ export function StageOneJourneyScene(props: StageOneJourneySceneProps) {
 
     let seed = 872341
     const random = () => ((seed = Math.imul(seed ^ seed >>> 15, 1 | seed)) + (seed ^ seed >>> 7) >>> 0) / 4294967296
-    const route = new THREE.CatmullRomCurve3(STAGE_ONE_CHUNK_LOCAL_ROUTE.map(({ sceneX, sceneZ }) => new THREE.Vector3(sceneX, 0, sceneZ)), false, 'catmullrom', 0.32)
-    const point = (s: number) => route.getPointAt(clampJourneyProgress(s))
-    const tangent = (s: number) => route.getTangentAt(clampJourneyProgress(s)).normalize()
+    const clampWorldProgress = (value: number) => Math.min(2, Math.max(0, Number.isFinite(value) ? value : 0))
+    const clampRouteProgress = (value: number) => Math.min(2.2, Math.max(0, Number.isFinite(value) ? value : 0))
+    const route = new THREE.CatmullRomCurve3(STAGE_ONE_TWO_CONTINUOUS_ROUTE.map(({ sceneX, sceneZ }) => new THREE.Vector3(sceneX, 0, sceneZ)), false, 'catmullrom', 0.32)
+    // 11 spline segments: five per playable stage plus one Stage 3 proxy.
+    const routeParameter = (s: number) => clampRouteProgress(s) * 5 / 11
+    const point = (s: number) => route.getPoint(routeParameter(s))
+    const tangent = (s: number) => route.getTangent(routeParameter(s)).normalize()
     const rightAt = (s: number) => { const t = tangent(s); return new THREE.Vector3(-t.z, 0, t.x).normalize() }
-    const height = (x: number, z: number) => 0.38 * Math.sin(x * 0.17 + z * 0.035) + 0.2 * Math.sin(z * 0.09) - 0.12 * Math.cos(x * 0.35 - z * 0.025)
+    const height = (x: number, z: number) => {
+      const geographic = scenePointToGeographic(x, z)
+      const backboneHeight = (sampleSurfaceHeightKm(geographic.latitudeDeg, geographic.longitudeDeg) - .08) * SCENE_UNITS_PER_KM
+      const corridorMicroRelief = .12 * Math.sin(x * .17 + z * .035) + .06 * Math.sin(z * .09) - .04 * Math.cos(x * .35 - z * .025)
+      return backboneHeight + corridorMicroRelief
+    }
     const widthAt = (s: number) => THREE.MathUtils.lerp(2.35, 1.55, THREE.MathUtils.smoothstep(s, 0.1, 0.62))
 
     const makeTexture = (base: string, spots: string[], seedValue: number) => {
@@ -105,11 +116,11 @@ export function StageOneJourneyScene(props: StageOneJourneySceneProps) {
     trailTexture?.repeat.set(1.2, 32)
     const groundMaterial = new THREE.MeshToonMaterial({ map: groundTexture, color: 0xcbd7a1 })
     const trailMaterial = new THREE.MeshToonMaterial({ map: trailTexture, color: 0xbba876, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -4 })
-    const terrain = new THREE.Mesh(new THREE.PlaneGeometry(76, 190, 72, 150).rotateX(-Math.PI / 2), groundMaterial)
-    terrain.position.z = -68
+    const terrain = new THREE.Mesh(new THREE.PlaneGeometry(230, 390, 100, 190).rotateX(-Math.PI / 2), groundMaterial)
+    terrain.position.set(-35, 0, -150)
     const terrainPositions = terrain.geometry.attributes.position
     for (let i = 0; i < terrainPositions.count; i += 1) {
-      const x = terrainPositions.getX(i), z = terrainPositions.getZ(i) - 68
+      const x = terrainPositions.getX(i) - 35, z = terrainPositions.getZ(i) - 150
       terrainPositions.setY(i, height(x, z))
     }
     terrain.geometry.computeVertexNormals()
@@ -117,9 +128,9 @@ export function StageOneJourneyScene(props: StageOneJourneySceneProps) {
     scene.add(terrain)
 
     const ribbonVertices: number[] = [], ribbonUvs: number[] = [], ribbonIndices: number[] = []
-    const ribbonSteps = 220
+    const ribbonSteps = 440
     for (let i = 0; i <= ribbonSteps; i += 1) {
-      const s = i / ribbonSteps, p = point(s), r = rightAt(s), w = widthAt(s) / 2 * (0.88 + 0.08 * Math.sin(s * 91))
+      const s = i / ribbonSteps * 2.18, p = point(s), r = rightAt(s), w = widthAt(Math.min(1, s)) / 2 * (0.88 + 0.08 * Math.sin(s * 91))
       for (const side of [-1, 1]) {
         const x = p.x + r.x * w * side, z = p.z + r.z * w * side
         ribbonVertices.push(x, height(x, z) + 0.075, z)
@@ -199,6 +210,35 @@ export function StageOneJourneyScene(props: StageOneJourneySceneProps) {
       const moss = new THREE.Mesh(new THREE.SphereGeometry(0.68, 8, 5, 0, Math.PI * 2, 0, Math.PI / 2), mossMaterial); moss.scale.set(scale, 0.18 * scale, 0.75 * scale); moss.position.copy(rock.position).add(new THREE.Vector3(0, scale * 0.42, 0)); scene.add(moss)
     }
 
+    // Stage 2 remains part of this scene. The bridge above is the single shared
+    // boundary chunk; all following placement uses route-v2 world progress.
+    for (let i = 0; i < 164; i += 1) {
+      const s = 1.015 + random() * .92, side = i % 2 ? 1 : -1
+      const thinning = THREE.MathUtils.smoothstep(s, 1.55, 1.94)
+      const scale = .5 + random() * (.65 - thinning * .18)
+      const offset = side * (widthAt(Math.min(1, s - 1)) / 2 + .8 + random() * (5.5 + thinning * 5))
+      place(tree(scale, i % 5), s, offset, 0, (random() - .5) * .65)
+    }
+    for (let i = 0; i < 72; i += 1) {
+      const s = 1.03 + random() * .9, side = i % 2 ? 1 : -1
+      const shrub = new THREE.Mesh(shrubGeometry, shrubMaterial)
+      shrub.scale.set(.45 + random() * .8, .3 + random() * .4, .5 + random() * .6)
+      place(shrub, s, side * (1.2 + random() * 5), .35)
+    }
+    // Hollow tree: a dark, moss-rimmed natural landmark, not a symbolic sign.
+    const hollowTree = tree(1.38, 1)
+    place(hollowTree, 1.39, -2.35, 0, .15)
+    const hollow = new THREE.Mesh(new THREE.SphereGeometry(.46, 12, 8), new THREE.MeshToonMaterial({ color: 0x302d22 }))
+    place(hollow, 1.39, -1.82, 1.45)
+    hollow.scale.set(.7, 1.35, .28)
+    const stageTwoLog = new THREE.Mesh(new THREE.CylinderGeometry(.42, .52, 5.4, 9), woodMaterial)
+    stageTwoLog.rotation.z = Math.PI / 2; stageTwoLog.castShadow = true; place(stageTwoLog, 1.61, -1.3, .46, .25)
+    // Low stone stargazing gate. It frames the continuing Stage 3 proxy road.
+    const gate = new THREE.Group()
+    for (const x of [-1.65, 1.65]) { const post = new THREE.Mesh(new THREE.BoxGeometry(.7, 3.1, .8), rockMaterial); post.position.set(x, 1.55, 0); post.castShadow = true; gate.add(post) }
+    const lintel = new THREE.Mesh(new THREE.BoxGeometry(4.2, .65, .9), rockMaterial); lintel.position.y = 3.08; lintel.castShadow = true; gate.add(lintel)
+    place(gate, 1.96, 0, 0)
+
     const meadowFog = new THREE.Color(0xc4dcd2), forestFog = new THREE.Color(0x779485)
     let frame = 0, lastTime = performance.now(), walkPhase = 0
     const resize = () => {
@@ -212,14 +252,16 @@ export function StageOneJourneyScene(props: StageOneJourneySceneProps) {
     observer.observe(host); resize()
     const render = (now: number) => {
       const delta = Math.min(0.05, (now - lastTime) / 1000); lastTime = now
-      const input = liveRef.current, progress = clampJourneyProgress(input.journeyProgress)
-      const s = progress > 0.975 ? 0.925 : Math.min(progress, 0.975), p = point(s), r = rightAt(s), look = point(Math.min(1, s + 0.045))
+      const input = liveRef.current, progress = clampWorldProgress(input.journeyProgress)
+      const s = progress > 1.975 ? 1.94 : Math.min(progress, 1.975), p = point(s), r = rightAt(s), look = point(Math.min(2, s + 0.045))
       const motion = input.reducedMotion ? 0.18 : 1
       if (input.isTyping) walkPhase += delta * (4.4 + Math.min(2, Math.max(0.45, input.typingPace)) * 3.4)
       const foot = Math.sin(walkPhase), vertical = input.isTyping ? Math.abs(foot) * 0.052 * motion : 0, lateral = input.isTyping ? foot * 0.034 * motion : 0
       camera.position.set(p.x + r.x * lateral, height(p.x, p.z) + 1.52 + vertical, p.z + r.z * lateral)
-      camera.lookAt(look.x, height(look.x, look.z) + (progress > 0.975 ? 0.42 : 1.25) + vertical * 0.35, look.z)
-      const forestMix = THREE.MathUtils.smoothstep(progress, 0.22, 0.68) * (1 - 0.36 * THREE.MathUtils.smoothstep(progress, 0.88, 1))
+      camera.lookAt(look.x, height(look.x, look.z) + (progress > 1.94 ? .7 : 1.25) + vertical * .35, look.z)
+      const stageOneForest = THREE.MathUtils.smoothstep(progress, .22, .68) * (1 - .18 * THREE.MathUtils.smoothstep(progress, .88, 1))
+      const mountainOpening = THREE.MathUtils.smoothstep(progress, 1.56, 1.94)
+      const forestMix = stageOneForest * (1 - .55 * mountainOpening)
       scene.fog.color.copy(meadowFog).lerp(forestFog, forestMix)
       scene.fog.density = THREE.MathUtils.lerp(0.0085, 0.024, forestMix)
       hemi.intensity = THREE.MathUtils.lerp(2, 1.22, forestMix)
@@ -237,7 +279,7 @@ export function StageOneJourneyScene(props: StageOneJourneySceneProps) {
   }, [])
 
   return (
-    <div ref={hostRef} className={`stage-one-scene${failed ? ' is-fallback' : ''}`} aria-label="花の草原から木漏れ日の森へ続く一人称3Dシーン">
+    <div ref={hostRef} className={`stage-one-scene${failed ? ' is-fallback' : ''}`} aria-label="花の草原から森と星見の山道へ連続する3Dシーン">
       <div className="stage-one-paper" aria-hidden="true" />
       <div className="stage-one-wash" aria-hidden="true" />
       {failed && <p className="stage-one-webgl-note">3D背景を表示できないため、軽量背景で冒険を続けます。</p>}
