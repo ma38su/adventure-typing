@@ -3,6 +3,7 @@
 最終更新: 2026-08-10  
 対象: `artwork/renderer-prototypes/third-person-girl-review-v4.html`  
 外観正本: `artwork/preproduction/characters/third-person-adventurer-girl-3d-visual-target-v1.png`
+制作方法正本: `docs/cute-girl-3d-production-method.md`
 
 ## 外観正本の制作記録
 
@@ -46,7 +47,9 @@
 
 ## 制作gate
 
-primitiveの継ぎ足しを外観承認用モデルとして継続しない。正本をmodel sheetとしてBlenderでretopology可能なmeshを制作し、次を満たすGLBをv3の階層リグへ接続する。
+primitiveの継ぎ足しを外観承認用モデルとして継続しない。制作方法正本のGate 0から順に進め、
+正本をmodel sheetとしてBlenderでretopology可能なmeshを制作する。次を満たすGLBを制作し、
+v3はmotion timingの比較対象にだけ使用する。
 
 1. 顔と大きな琥珀目、眼窩、耳、口を独立mesh / shape key化。
 2. 前髪・横髪・後髪・片側結びを意図的なhair cardsまたは束meshで制作。

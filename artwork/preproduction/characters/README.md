@@ -3,6 +3,21 @@
 更新: 2026-08-10
 正本: `docs/third-person-adventurer-design.md`
 
+女の子正式3D化の制作方法と承認gateは
+`docs/cute-girl-3d-production-method.md`を優先する。三面図や外観画像を置いただけで制作方法が
+決まったとは扱わず、画像設計→head bust→grey model→材質→rig/motion→実ゲームcameraの順で
+各工程を画像比較する。primitive prototypeの形状調整を正式モデリングへ引き継がない。
+
+## `third-person-adventurer-girl-3d-visual-target-v1.png`
+
+正式GLBの外観承認基準。生成画像そのものを3Dモデルやtextureとは扱わない。
+
+- 大きく見える琥珀色の瞳、丸い頬、小さい口、目を隠さない前髪を顔の基準とする。
+- 短い濃紺緑の髪束、葉飾り、ターコイズの重ね着、生成り、コーラル、黄土、革を採用。
+- front / side / backで衣装と髪を一致させる。
+- capsule、tube、球の継ぎ足し、棒状四肢、下着状の骨盤面は不合格例とする。
+- 正式制作前に顔拡大sheetと後方ゲームcamera silhouette sheetを追加する。
+
 ## `third-person-adventurer-turnaround-v1.png`
 
 OpenAIの組み込み画像生成で作成した三面図の比較用v1。正式モデル・配信素材ではない。
