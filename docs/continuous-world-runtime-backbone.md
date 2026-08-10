@@ -5,6 +5,7 @@
 - `scripts/generate-world-route-runtime.mjs`が正本からruntime JSONを機械生成する。216 anchorを手で複製しない。
 - `worldTerrainBackbone.ts`が唯一のENU投影と全Stage registryを提供する。
 - `islandTerrainSurface.ts`が決定論的な海岸、旧カルデラ・北西高地・中央分水嶺、三水系、北東湿潤／南西雨陰を持つ標準LODを生成する。地上route anchorの高度は地形生成の補助情報に留め、海岸断面・分水界・河道を上書きしない。実際の歩行経路は生成後の正本地形へ接地させる。雲上anchorは地形でなく構造物高度とする。
+- 経路検証は正本地形を変更しない。密サンプリングで全点の陸域所属、地表接地誤差、区間勾配を測り、不合格区間は等高線・谷・鞍部・海岸段丘に沿うよう経路側を迂回させる。地形を経路高度へ持ち上げたり削ったりして合格させてはならない。
 - backboneは全島surface、経路、標高、region、watershedを所有する。島全体の最高詳細meshは作らない。
 - corridor chunkはbackbone上のsurface・植生・岩・構造物だけを所有する。
 - currentとforward chunkを保持し、Stage境界でscene/canvas/rendererを再生成しない。

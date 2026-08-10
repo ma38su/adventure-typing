@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ISLAND_WATERWAYS, ISLAND_WATER_BODIES, nearestWaterwayDistanceKm } from './islandHydrology'
+import { ISLAND_WATERWAYS, ISLAND_WATER_BODIES, nearestWaterwayDistanceKm, sampleWaterwayDistancesKm } from './islandHydrology'
 import { sampleIslandSurface } from './islandTerrainSurface'
 import { WORLD_PROJECTION } from './worldTerrainBackbone'
 
@@ -37,6 +37,13 @@ describe('island hydrology', () => {
     expect(result.waterway.id).toBe('kotoba-river')
     expect(result.distanceKm).toBeLessThan(1e-8)
     expect(result.downstream01).toBeGreaterThan(.3)
+  })
+
+  it('samples every channel continuously before selecting the nearest one', () => {
+    const samples = sampleWaterwayDistancesKm(-.4, -.36)
+    expect(samples).toHaveLength(ISLAND_WATERWAYS.length)
+    expect(new Set(samples.map(({ waterway }) => waterway.id)).size).toBe(ISLAND_WATERWAYS.length)
+    expect(samples.every(({ distanceKm }) => Number.isFinite(distanceKm))).toBe(true)
   })
 
   it('keeps every persistent channel descending toward its outlet', () => {

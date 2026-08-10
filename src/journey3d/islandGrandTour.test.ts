@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import * as THREE from 'three'
 import { enuToGeographic, ISLAND_GRAND_TOUR_ROUTE, ISLAND_GRAND_TOUR_STOPS, sampleTourStop, tourProgressForStop } from './islandGrandTour'
 import { sampleIslandSurface } from './islandTerrainSurface'
 
@@ -32,6 +33,28 @@ describe('island grand tour', () => {
       const horizontalKm = Math.hypot(next.eastKm - current.eastKm, next.northKm - current.northKm)
       const grade = Math.abs(next.surface.heightKm - current.surface.heightKm) / horizontalKm
       expect(grade, `route segment ${index}`).toBeLessThan(0.22)
+    }
+  })
+
+  it('keeps the interpolated walking line on land and below a 22 percent grade', () => {
+    const curve = new THREE.CatmullRomCurve3(
+      ISLAND_GRAND_TOUR_ROUTE.map((point) => new THREE.Vector3(point.eastKm, 0, -point.northKm)),
+      true,
+      'centripetal',
+      .35,
+    )
+    const points = Array.from({ length: 2401 }, (_, index) => {
+      const point = curve.getPoint(index / 2400)
+      const geographic = enuToGeographic(point.x, -point.z)
+      return { point, surface: sampleIslandSurface(geographic.latitudeDeg, geographic.longitudeDeg) }
+    })
+    expect(points.filter(({ surface }) => !surface.land)).toEqual([])
+    for (let index = 1; index < points.length; index += 1) {
+      const current = points[index]
+      const previous = points[index - 1]
+      const distanceKm = Math.hypot(current.point.x - previous.point.x, current.point.z - previous.point.z)
+      const grade = Math.abs(current.surface.heightKm - previous.surface.heightKm) / distanceKm
+      expect(grade, `dense route sample ${index}`).toBeLessThan(.22)
     }
   })
 

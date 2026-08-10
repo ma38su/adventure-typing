@@ -1,5 +1,5 @@
 import { projectAnchorToEnu, WORLD_PROJECTION, WORLD_ROUTE_REGISTRY, type WorldRouteAnchor } from './worldTerrainBackbone'
-import { nearestWaterwayDistanceKm } from './islandHydrology'
+import { sampleWaterwayDistancesKm } from './islandHydrology'
 
 export type GeographicPoint = { latitudeDeg: number; longitudeDeg: number }
 export type IslandSurfaceSample = GeographicPoint & {
@@ -82,11 +82,12 @@ function unconstrainedHeightKm(eastKm: number, northKm: number, coastDistanceKm:
   const centralWatershed = 0.31 * gaussian((eastKm + 0.3) ** 2 + (northKm - 3.2) ** 2, 3.6)
   const southeastLavaPlain = 0.07 * gaussian((eastKm - 5.1) ** 2 + (northKm + 3.8) ** 2, 4.2)
   const southwestBayErosion = 0.22 * gaussian((eastKm + 5.8) ** 2 + (northKm + 2.1) ** 2, 2.15)
-  const drainage = nearestWaterwayDistanceKm(eastKm, northKm)
-  const valleyRadius = drainage.waterway.id === 'kotoba-river' ? .34 : .18
-  const valleyDepth = (drainage.waterway.id === 'kotoba-river' ? .022 : .009)
-    + drainage.downstream01 * (drainage.waterway.id === 'kotoba-river' ? .026 : .012)
-  const fluvialIncision = valleyDepth * gaussian(drainage.distanceKm ** 2, valleyRadius)
+  const fluvialIncision = Math.max(...sampleWaterwayDistancesKm(eastKm, northKm).map((drainage) => {
+    const mainstem = drainage.waterway.id === 'kotoba-river'
+    const valleyRadius = mainstem ? .34 : .18
+    const valleyDepth = (mainstem ? .022 : .009) + drainage.downstream01 * (mainstem ? .026 : .012)
+    return valleyDepth * gaussian(drainage.distanceKm ** 2, valleyRadius)
+  }))
   return Math.min(GROUND_ANCHOR_MAX_KM, inland * Math.max(0.008, 0.025 + calderaRim + northwestPeak + centralWatershed + southeastLavaPlain - southwestBayErosion - fluvialIncision))
 }
 
@@ -107,13 +108,13 @@ function constrainedHeightKm(eastKm: number, northKm: number, coastDistanceKm: n
     const distanceSquared = (eastKm - point.eastKm) ** 2 + (northKm - point.northKm) ** 2
     // Route metadata may guide the macro surface, but it must not override the
     // shoreline or turn authored travel heights into terrain spikes.
-    const weight = gaussian(distanceSquared, 1.8) / Math.max(Math.sqrt(distanceSquared), .12)
+    const weight = gaussian(distanceSquared, 1.35)
     correction += weight * (point.anchor.altitudeKm - groundAnchorBaselines[index])
     totalWeight += weight
   }
   const coastAuthority = clamp01(coastDistanceKm / 0.9)
   const boundedCorrection = totalWeight > 0
-    ? Math.max(-0.26, Math.min(0.26, correction / totalWeight)) * coastAuthority
+    ? Math.max(-0.16, Math.min(0.16, correction / totalWeight)) * coastAuthority
     : 0
   const corrected = baseline + boundedCorrection
   return Math.max(0.003, Math.min(GROUND_ANCHOR_MAX_KM, corrected))

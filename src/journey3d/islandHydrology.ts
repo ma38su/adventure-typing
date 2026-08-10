@@ -37,7 +37,7 @@ export const ISLAND_WATERWAYS: readonly IslandWaterway[] = [
   {
     id: 'rain-forest-stream', name: '北東雨森沢', widthKm: .015, catchmentKm2: 9.4, flowClass: 'perennial',
     points: [
-      { eastKm: -.2, northKm: .15 }, { eastKm: .25, northKm: .9 }, { eastKm: .75, northKm: 1.8 },
+      { eastKm: .25, northKm: .9 }, { eastKm: .75, northKm: 1.8 },
       { eastKm: 1.25, northKm: 2.7 }, { eastKm: 1.75, northKm: 3.65 }, { eastKm: 2.25, northKm: 4.55 },
       { eastKm: 2.65, northKm: 5.45 }, { eastKm: 3.35, northKm: 6.0 }, { eastKm: 4.15, northKm: 6.25 },
     ],
@@ -68,9 +68,12 @@ export const ISLAND_WATER_BODIES: readonly IslandWaterBody[] = [
   { id: 'west-platform-pool-b', kind: 'tide-pool', eastKm: -7.02, northKm: 2.3, radiusKm: .036 },
 ] as const
 
-export function nearestWaterwayDistanceKm(eastKm: number, northKm: number) {
-  let best: { waterway: IslandWaterway; distanceKm: number; downstream01: number } | undefined
+export type WaterwayDistanceSample = { waterway: IslandWaterway; distanceKm: number; downstream01: number }
+
+export function sampleWaterwayDistancesKm(eastKm: number, northKm: number): readonly WaterwayDistanceSample[] {
+  const samples: WaterwayDistanceSample[] = []
   for (const waterway of ISLAND_WATERWAYS) {
+    let best: WaterwayDistanceSample | undefined
     for (let index = 0; index < waterway.points.length - 1; index += 1) {
       const a = waterway.points[index]
       const b = waterway.points[index + 1]
@@ -85,6 +88,12 @@ export function nearestWaterwayDistanceKm(eastKm: number, northKm: number) {
         downstream01: (index + t) / (waterway.points.length - 1),
       }
     }
+    samples.push(best!)
   }
-  return best!
+  return samples
+}
+
+export function nearestWaterwayDistanceKm(eastKm: number, northKm: number) {
+  return sampleWaterwayDistancesKm(eastKm, northKm)
+    .reduce((best, sample) => sample.distanceKm < best.distanceKm ? sample : best)
 }
