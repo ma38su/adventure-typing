@@ -1,7 +1,7 @@
 # 3Dシーン制作ブリーフ: 花と草原から木漏れ日の森へ
 
 最終更新: 2026-08-10
-状態: 文章ブリーフ継続・日本画水彩絵コンテv1が最新版正本。Three.jsは技術greybox
+状態: 文章ブリーフ継続・WebGL実装絵コンテv2が目標品質／表現正本。Three.jsは技術greybox
 対象区間: `花と草原 → 木漏れ日の森`
 
 ## 1. この文書の役割
@@ -32,19 +32,19 @@
 - 森の密度: 個別の葉の描き込みではなく、幹、樹冠、低木の大きな面の重なりで表す。
 - 輪郭: 強い黒線を使わず、色面と2〜3段階の柔らかな陰影で読む。
 
-雰囲気・色・景観構図・物語上の移動方向の最新版正本:
+日本画・水彩方向を探った画風検討履歴（最終正本ではない）:
 
 - `artwork/preproduction/meadow-to-forest-storyboard-nihonga-simplified-v1.png`
 
-旧実装密度・再利用モデルの過去検討画像（正本ではない）:
+目標品質・表現・実装密度・構図変化の最終正本:
 
 - `artwork/preproduction/meadow-to-forest-storyboard-webgl-implementation-v2.png`
 
-三人称構図追加時の制作順:
+Stage 2以降と三人称構図追加時の制作順:
 
 - `docs/stage-storyboard-production-gate.md`
-- 日本画水彩v1の景観を正本として保ち、女の子三人称構図、HUD/typing safe zoneを追加検証する。新たな景観正本を作る工程ではない。
-- WebGL実装v1/v2は旧密度参考に降格し、構図や画調の判断には使わない。
+- WebGL実装v2の内容を流用せず、大色面、ローポリ面、水彩紙感、非対称、近中遠景、選択的な密度という視覚文法を各Stage固有ブリーフへ適用する。
+- 女の子三人称構図とHUD/typing safe zoneは景観正本を変更せず、別overlay gateで検証する。
 
 次区間にも適用する共通ルール:
 
@@ -216,7 +216,7 @@ type JourneySceneInput = {
 ```text
 作業前に README.md と docs/3d-scene-brief-meadow-to-forest.md を最後まで読んでください。
 
-「花と草原から木漏れ日の森へ」の連続3Dシーンを制作してください。アート基準は artwork/preproduction/meadow-to-forest-storyboard-nihonga-simplified-v1.png です。
+「花と草原から木漏れ日の森へ」の連続3Dシーンを制作してください。目標品質・表現基準は artwork/preproduction/meadow-to-forest-storyboard-webgl-implementation-v2.png です。草原や橋という内容を別Stageへ流用せず、大色面、ローポリ面、水彩紙感、非対称、近中遠景、選択的な密度という視覚文法を使用してください。
 
 まずブリーフ記載の10秒・6コマに対応するルートとカメラをグレーボックスで作り、各コマ位置のスクリーンショットを提出してください。承認後、同ブリーフのモデル、マテリアル、シェーダー、植生、エフェクトを品質版へ進めてください。
 
