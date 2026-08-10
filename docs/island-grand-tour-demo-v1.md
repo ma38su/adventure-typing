@@ -26,6 +26,9 @@
 
 ## 対象ファイル
 
-- 通常版: `artwork/renderer-prototypes/kotoba-island-grand-tour-v1.html`
-- 単体版: `artwork/renderer-prototypes/kotoba-island-grand-tour-v1-standalone.html`
+- 配布用単体版: `artwork/renderer-prototypes/kotoba-island-grand-tour-v1.html`
+- 互換名の単体版: `artwork/renderer-prototypes/kotoba-island-grand-tour-v1-standalone.html`
+- 開発用ソース: `artwork/renderer-prototypes/kotoba-island-grand-tour-v1-dev.html`
 - route正本: `src/journey3d/islandGrandTour.ts`
+
+配布用と互換名の2ファイルにはThree.js、地形、routeのJavaScriptがすべて埋め込まれている。`file://`で直接開ける。`-dev.html`はViteがbare module importとTypeScript importを解決する開発用であり、直接開かない。
