@@ -30,6 +30,9 @@ describe('island hydrology', () => {
   it('keeps island water varied without inventing a large inland lake', () => {
     expect(ISLAND_WATER_BODIES.map((body) => body.kind)).toEqual(expect.arrayContaining(['spring-pool', 'rain-marsh', 'tide-pool']))
     expect(Math.max(...ISLAND_WATER_BODIES.map((body) => body.radiusKm))).toBeLessThanOrEqual(.12)
+    expect(ISLAND_WATER_BODIES.filter((body) => body.kind === 'spring-pool').length).toBeGreaterThanOrEqual(2)
+    expect(ISLAND_WATER_BODIES.filter((body) => body.kind === 'rain-marsh').length).toBeGreaterThanOrEqual(4)
+    expect(ISLAND_WATER_BODIES.filter((body) => body.kind === 'tide-pool').length).toBeGreaterThanOrEqual(3)
   })
 
   it('can locate the owning drainage line for terrain incision', () => {

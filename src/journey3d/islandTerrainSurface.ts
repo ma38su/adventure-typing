@@ -146,7 +146,7 @@ export function sampleIslandSurface(latitudeDeg: number, longitudeDeg: number): 
     : coastDistanceKm < -1.05 ? 'outer-reef'
       : coastDistanceKm < 0 ? 'shallow-water'
         : coastDistanceKm < .48 && southwestEstuary ? 'estuary-wetland'
-          : coastDistanceKm < .52 && shelteredSand ? 'sand-shore'
+          : coastDistanceKm < .72 && shelteredSand ? 'sand-shore'
             : coastDistanceKm < .3 ? 'rock-shore'
               : 'inland'
   const bathymetryKm = land ? 0 : -Math.min(.18, .006 + Math.max(0, -coastDistanceKm) * .018)

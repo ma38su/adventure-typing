@@ -62,10 +62,14 @@ export const ISLAND_WATERWAYS: readonly IslandWaterway[] = [
 
 export const ISLAND_WATER_BODIES: readonly IslandWaterBody[] = [
   { id: 'spring-eye', kind: 'spring-pool', eastKm: -.8, northKm: -.8, radiusKm: .075 },
+  { id: 'spring-lower-pool', kind: 'spring-pool', eastKm: -1.52, northKm: -.52, radiusKm: .048 },
   { id: 'rain-marsh-a', kind: 'rain-marsh', eastKm: 2.58, northKm: 5.34, radiusKm: .11 },
   { id: 'rain-marsh-b', kind: 'rain-marsh', eastKm: 2.42, northKm: 5.18, radiusKm: .065 },
+  { id: 'rain-marsh-c', kind: 'rain-marsh', eastKm: 2.78, northKm: 5.12, radiusKm: .052 },
+  { id: 'estuary-backwater', kind: 'rain-marsh', eastKm: -5.72, northKm: -1.52, radiusKm: .09 },
   { id: 'west-platform-pool-a', kind: 'tide-pool', eastKm: -7.15, northKm: 2.48, radiusKm: .052 },
   { id: 'west-platform-pool-b', kind: 'tide-pool', eastKm: -7.02, northKm: 2.3, radiusKm: .036 },
+  { id: 'west-platform-pool-c', kind: 'tide-pool', eastKm: -6.88, northKm: 2.61, radiusKm: .028 },
 ] as const
 
 export type WaterwayDistanceSample = { waterway: IslandWaterway; distanceKm: number; downstream01: number }
